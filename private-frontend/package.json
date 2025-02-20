@@ -1,0 +1,54 @@
+{
+  "name": "@sfeir-lille/ai-magine-private-frontend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "prettier:c": "prettier --check",
+    "prettier:w": "prettier --write",
+    "lint:c": "eslint",
+    "lint:w": "eslint --write",
+    "test": "vitest --passWithNoTests",
+    "test:w": "npm run test -- --watch",
+    "build": "vite build --config vite.config.mts",
+    "start": "vite --config vite.config.mts",
+    "start:dev": "npm run start"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Thomas SLOBODA",
+    "email": "sloboda.t@sfeir.com"
+  },
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "^3.0.6",
+    "autoprefixer": "^10.4.20",
+    "dotenv": "^16.4.7",
+    "eslint": "^9.20.1",
+    "postcss": "^8.5.3",
+    "prettier": "^3.5.1",
+    "tailwindcss": "^4.0.7",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.1",
+    "vitest": "^3.0.6"
+  },
+  "dependencies": {
+    "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-slot": "^1.1.2",
+    "@tailwindcss/vite": "^4.0.7",
+    "@tanstack/react-query": "^5.66.7",
+    "axios": "^1.7.9",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.475.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-intl": "^7.1.6",
+    "react-router": "^7.2.0",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss-animate": "^1.0.7"
+  }
+}

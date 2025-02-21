@@ -1,3 +1,20 @@
 {
-  "greetings": "Hello, { name }!"
+  "greetings": "Hello, {{ name }}!",
+  "enter-event-id": "Enter the event id",
+  "event-identifier": "Event identifier",
+  "allow-contact": "Is SFEIR allowed to contact me ?",
+  "no": "No",
+  "yes": "Yes",
+  "name": "Firstname / Lastname",
+  "job-title": "Job title",
+  "job-title-placeholder": "Fullstack developer",
+  "email-address": "Email address",
+  "prompt": "Prompt",
+  "enter-prompt-placeholder": "Enter your image generation prompt here",
+  "empty-name-error": "Empty firstname / lastname",
+  "empty-email-error": "Empty email",
+  "invalid-email-error": "Invalid email",
+  "empty-job-title-error": "Empty job title",
+  "empty-allow-contact-error": "No option selected",
+  "empty-prompt-error": "Empty prompt"
 }

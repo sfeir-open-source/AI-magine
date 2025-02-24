@@ -1,4 +1,6 @@
-import * as assert from 'node:assert';
+import { nanoid } from 'nanoid';
+import {Assert} from "@/utils/assert";
+
 
 class SfeirEvent {
   constructor(
@@ -17,12 +19,21 @@ class SfeirEvent {
     };
   }
 
+  match(id: string) {
+    return this.id === id;
+  }
+
   static from(id: string, name: string, startDate: Date, endDate: Date) {
     return new SfeirEvent(id, name, startDate, endDate);
   }
 
   static create(name: string, startDate: Date, endDate: Date) {
-    return new SfeirEvent(crypto.randomUUID(), name, startDate, endDate);
+    return new SfeirEvent(nanoid(8), name, startDate, endDate);
+  }
+
+  isActive() {
+    const now = Date.now();
+    return this.startDate.getTime() <= now && this.endDate.getTime() >= now;
   }
 }
 
@@ -31,6 +42,12 @@ export class SfeirEventBuilder {
   private _name: string | undefined;
   private _startDate: Date | undefined;
   private _endDate: Date | undefined;
+
+  private constructor() {}
+
+  static create() {
+    return new SfeirEventBuilder();
+  }
 
   withId(id: string) {
     this._id = id;
@@ -53,17 +70,22 @@ export class SfeirEventBuilder {
   }
 
   build() {
-    assert(this._name, 'Name is required');
-    assert(this._startDate, 'Start date is required');
-    assert(this._endDate, 'End date is required');
+    Assert.isNotEmpty(this._name, 'Name is required');
+    Assert.isNotEmpty(this._startDate, 'Start date is required');
+    Assert.isNotEmpty(this._endDate, 'End date is required');
+
+    if (this._startDate!.getTime() > this._endDate!.getTime()) {
+      throw new Error('Start date must be before end date');
+    }
+
     if (!this._id) {
-      return SfeirEvent.create(this._name, this._startDate, this._endDate);
+      return SfeirEvent.create(this._name!, this._startDate!, this._endDate!);
     }
     return SfeirEvent.from(
       this._id,
-      this._name,
-      this._startDate,
-      this._endDate
+      this._name!,
+      this._startDate!,
+      this._endDate!
     );
   }
 }

@@ -38,5 +38,8 @@
       "lint:all:w",
       "prettier:all:w"
     ]
+  },
+  "dependencies": {
+    "nanoid": "^5.1.2"
   }
 }

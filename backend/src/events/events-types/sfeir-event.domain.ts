@@ -77,13 +77,13 @@ export class SfeirEventBuilder {
     }
 
     if (!this._id) {
-      return SfeirEvent.create(this._name, this._startDate, this._endDate);
+      return SfeirEvent.create(this._name!, this._startDate!, this._endDate!);
     }
     return SfeirEvent.from(
       this._id,
-      this._name,
-      this._startDate,
-      this._endDate
+      this._name!,
+      this._startDate!,
+      this._endDate!
     );
   }
 }

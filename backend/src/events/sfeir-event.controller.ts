@@ -54,7 +54,7 @@ export class SfeirEventController {
   @HttpCode(HttpStatus.MOVED_PERMANENTLY)
   @ApiOperation({ summary: 'Delete an event' })
   @ApiResponse({
-    status: 200,
+    status: 301,
     description: 'The event has been successfully deleted.',
   })
   async deleteSfeirEvent(@Param('id') id: string): Promise<void> {

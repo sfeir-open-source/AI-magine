@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { SfeirEventBuilder } from '@/events/events-types/sfeir-event.domain';
 
 const eventName = 'foobar';
@@ -38,5 +37,5 @@ describe('SfeirEvent', () => {
 
   it('should have valid dates boundaries', () => {
     expect(() => builderWithInvertedDates.build()).toThrow();
-  })
+  });
 });

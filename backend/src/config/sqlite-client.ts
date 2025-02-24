@@ -1,5 +1,4 @@
 import { verbose, Database } from 'sqlite3';
-import * as process from 'node:process';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

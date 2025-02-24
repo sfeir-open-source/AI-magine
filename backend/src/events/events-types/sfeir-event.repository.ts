@@ -1,6 +1,6 @@
 import { SfeirEventBuilder } from '@/events/events-types/sfeir-event.domain';
 
-export const SFEIR_EVENT_REPOSITORY = 'SFEIR_EVENT_REPOSITORY';
+export const SFEIR_EVENT_REPOSITORY = Symbol('SFEIR_EVENT_REPOSITORY');
 
 export interface SfeirEventRepository {
   getSfeirEvents(): Promise<ReturnType<SfeirEventBuilder['build']>[]>;

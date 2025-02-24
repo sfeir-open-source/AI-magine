@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { vi } from 'vitest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { SfeirEventController } from '@/events/sfeir-event.controller';
 import { SfeirEventService } from '@/events/sfeir-event.service';
@@ -84,8 +84,8 @@ describe('SfeirEventController', () => {
     it('should create a new event', async () => {
       const createDto: CreateSfeirEventDto = {
         name: 'New Event',
-        startDateTs: new Date(2023, 1, 1, 0, 0, 0).getTime().toString(),
-        endDateTs: new Date(2023, 1, 2, 0, 0, 0).getTime().toString(),
+        startDateTimestamp: new Date(2023, 1, 1, 0, 0, 0).getTime().toString(),
+        endDateTimestamp: new Date(2023, 1, 2, 0, 0, 0).getTime().toString(),
       };
       const mockEvent = SfeirEventBuilder.create()
         .withId('1')

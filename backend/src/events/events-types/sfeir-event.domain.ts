@@ -1,6 +1,4 @@
 import { nanoid } from 'nanoid';
-import {Assert} from "@/utils/assert";
-
 
 class SfeirEvent {
   constructor(
@@ -70,22 +68,22 @@ export class SfeirEventBuilder {
   }
 
   build() {
-    Assert.isNotEmpty(this._name, 'Name is required');
-    Assert.isNotEmpty(this._startDate, 'Start date is required');
-    Assert.isNotEmpty(this._endDate, 'End date is required');
+    if (!this._name) throw new Error('Name is required');
+    if (!this._startDate) throw new Error('Start date is required');
+    if (!this._endDate) throw new Error('End date is required');
 
-    if (this._startDate!.getTime() > this._endDate!.getTime()) {
+    if (this._startDate.getTime() > this._endDate.getTime()) {
       throw new Error('Start date must be before end date');
     }
 
     if (!this._id) {
-      return SfeirEvent.create(this._name!, this._startDate!, this._endDate!);
+      return SfeirEvent.create(this._name, this._startDate, this._endDate);
     }
     return SfeirEvent.from(
       this._id,
-      this._name!,
-      this._startDate!,
-      this._endDate!
+      this._name,
+      this._startDate,
+      this._endDate
     );
   }
 }

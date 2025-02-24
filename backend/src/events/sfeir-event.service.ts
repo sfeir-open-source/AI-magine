@@ -25,13 +25,13 @@ export class SfeirEventService {
 
   async createSfeirEvent({
     name,
-    startDateTs,
-    endDateTs,
+    startDateTimestamp,
+    endDateTimestamp,
   }: CreateSfeirEventDto): Promise<ReturnType<SfeirEventBuilder['build']>> {
     const newEventBuilder = SfeirEventBuilder.create()
       .withName(name)
-      .withStartDate(new Date(parseInt(startDateTs)))
-      .withEndDate(new Date(parseInt(endDateTs)));
+      .withStartDate(new Date(parseInt(startDateTimestamp)))
+      .withEndDate(new Date(parseInt(endDateTimestamp)));
 
     return this.sfeirEventRepository.saveSfeirEvent(newEventBuilder.build());
   }

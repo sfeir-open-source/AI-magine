@@ -1,20 +1,20 @@
-import {ApiProperty} from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class HealthStatus {
   @ApiProperty({
     enum: ['UP', 'DOWN'],
-    description: 'Current health status'
+    description: 'Current health status',
   })
   status: 'UP' | 'DOWN';
 
   @ApiProperty({
-    description: 'Timestamp of the health check'
+    description: 'Timestamp of the health check',
   })
   timestamp: string;
 
   @ApiProperty({
     description: 'Additional health check details',
-    required: false
+    required: false,
   })
   details?: Record<string, unknown>;
 }

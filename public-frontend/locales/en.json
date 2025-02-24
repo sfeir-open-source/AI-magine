@@ -16,5 +16,9 @@
   "invalid-email-error": "Invalid email",
   "empty-job-title-error": "Empty job title",
   "empty-allow-contact-error": "No option selected",
-  "empty-prompt-error": "Empty prompt"
+  "empty-prompt-error": "Empty prompt",
+  "return-to-event-selection": "Return to event selection",
+  "ends": "Ends",
+  "error-retrieving-event": "Error while retrieving event",
+  "error": "Error"
 }

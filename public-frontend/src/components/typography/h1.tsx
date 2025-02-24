@@ -1,5 +1,5 @@
 import { HTMLAttributes, PropsWithChildren } from 'react';
-import { clsx } from 'clsx';
+import { cn } from '@/lib/utils';
 
 export const TypographyH1 = ({
   children,
@@ -8,7 +8,7 @@ export const TypographyH1 = ({
 }: PropsWithChildren<HTMLAttributes<HTMLHeadingElement>>) => {
   return (
     <h1
-      className={clsx(
+      className={cn(
         'scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl',
         className
       )}

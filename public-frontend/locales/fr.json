@@ -16,5 +16,9 @@
   "invalid-email-error": "Email invalide",
   "empty-job-title-error": "Intitutlé de poste vide",
   "empty-allow-contact-error": "Aucune option sélectionnée",
-  "empty-prompt-error": "Prompt vide"
+  "empty-prompt-error": "Prompt vide",
+  "return-to-event-selection": "Retourner à la sélection de l'évènement",
+  "ends": "Fin",
+  "error-retrieving-event": "Une erreur est survenue lors de la récupération de l'évènement",
+  "error": "Erreur"
 }

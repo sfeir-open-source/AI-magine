@@ -17,7 +17,7 @@ describe('EventSelectionPage', () => {
     expect(screen.getByText('Go')).toBeDisabled();
   })
 
-  it('allows submitting with and event id and triggers navigation to event page', async () => {
+  it('allows submitting with an event id by clicking a button and triggers navigation to event page', async () => {
     const navigateMock = vi.fn();
     (useNavigate as Mock).mockReturnValue(navigateMock);
 
@@ -30,6 +30,19 @@ describe('EventSelectionPage', () => {
     expect(screen.getByText('Go')).not.toBeDisabled();
 
     await userEvent.click(screen.getByText('Go'))
+
+    expect(navigateMock).toHaveBeenCalledWith(`/events/${fakeIdentifier}`)
+  })
+
+  it('allows submitting with an event id by using Enter key and triggers navigation to event page', async () => {
+    const navigateMock = vi.fn();
+    (useNavigate as Mock).mockReturnValue(navigateMock);
+
+    render(<EventSelectionPage />);
+
+    const fakeIdentifier = 'identifier'
+
+    await userEvent.type(screen.getByPlaceholderText(i18n.t('event-identifier')), `${fakeIdentifier}[Enter]`)
 
     expect(navigateMock).toHaveBeenCalledWith(`/events/${fakeIdentifier}`)
   })

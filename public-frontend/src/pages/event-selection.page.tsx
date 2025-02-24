@@ -1,6 +1,6 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, useState } from 'react';
 import { AppLayout } from '@/src/components/app-layout/app-layout';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
@@ -16,15 +16,27 @@ export const EventSelectionPage = () => {
   };
 
   const onValidateEventId = () => {
-    navigate(`/events/${eventId}`);
-  }
+    if (eventId) navigate(`/events/${eventId}`);
+  };
+
+  const onKeyUpEventSelectionInput = (
+    event: KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === 'Enter') onValidateEventId();
+  };
 
   return (
     <AppLayout>
       <p className="mb-16 mt-32 text-center">{t('enter-event-id')}</p>
       <div className="flex gap-4">
-        <Input placeholder={t('event-identifier')} onChange={onChangeEventId} />
-        <Button disabled={!eventId} onClick={onValidateEventId}>Go</Button>
+        <Input
+          placeholder={t('event-identifier')}
+          onChange={onChangeEventId}
+          onKeyUp={onKeyUpEventSelectionInput}
+        />
+        <Button disabled={!eventId} onClick={onValidateEventId}>
+          Go
+        </Button>
       </div>
     </AppLayout>
   );

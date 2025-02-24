@@ -19,9 +19,9 @@ export const EventPromptPage = () => {
       <AppLayout>
         <Alert variant="destructive" className="mt-12">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>{t('error')}</AlertTitle>
           <AlertDescription>
-            Error while retrieving event: {error.message}
+            {t('error-retrieving-event')}: {error.message}
           </AlertDescription>
         </Alert>
         <div className="flex justify-center mt-6">

@@ -20,5 +20,6 @@
   "return-to-event-selection": "Return to event selection",
   "ends": "Ends",
   "error-retrieving-event": "Error while retrieving event",
-  "error": "Error"
+  "error": "Error",
+  "failed-create-prompt": "Failed to send prompt"
 }

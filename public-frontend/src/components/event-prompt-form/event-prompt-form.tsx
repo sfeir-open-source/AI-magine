@@ -24,6 +24,7 @@ import { useEventPromptMutation } from '@/src/hooks/useEventPromptMutation';
 import { useFingerprint } from '@/src/hooks/useFingerprint';
 import { useNavigate } from 'react-router';
 import { LoadingSpinner } from '@/src/components/loading-spinner/loading-spinner';
+import { toast } from "sonner"
 
 export const STORAGE_NAME_KEY = 'name';
 export const STORAGE_EMAIL_KEY = 'email';
@@ -75,17 +76,22 @@ export const EventPromptForm = ({ event }: EventPromptFormProps) => {
     localStorage.setItem(STORAGE_ALLOW_CONTACT_KEY, data.allowContact);
     localStorage.setItem(STORAGE_PROMPT_KEY, data.prompt);
 
-    const promptId = await mutateAsync({
-      browserFingerprint: fingerprint,
-      eventId: event.id,
-      userName: data.name,
-      userEmail: data.email,
-      jobTitle: data.jobTitle,
-      allowContact: data.allowContact === 'true',
-      prompt: data.prompt,
-    });
+    try {
+      const promptId = await mutateAsync({
+        browserFingerprint: fingerprint,
+        eventId: event.id,
+        userName: data.name,
+        userEmail: data.email,
+        jobTitle: data.jobTitle,
+        allowContact: data.allowContact === 'true',
+        prompt: data.prompt,
+      });
 
-    navigate(`/events/${event.id}/prompts/${promptId}/loading`);
+      navigate(`/events/${event.id}/prompts/${promptId}/loading`);
+    } catch(e) {
+      toast.error(`${t('failed-create-prompt')}: ${(e as Error).message}`)
+    }
+
   };
 
   return (

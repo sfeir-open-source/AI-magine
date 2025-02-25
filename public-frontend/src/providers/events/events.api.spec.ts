@@ -1,7 +1,7 @@
 import nock from 'nock';
 import { eventsApi } from '@/src/providers/events/events.api';
 import { Event } from '@/src/domain/Event';
-import { expect } from 'vitest';
+import { NewEventPromptRequestBody } from '@/src/domain/EventRepository';
 
 const apiMock = nock(import.meta.env.VITE_BACKEND_API_URL);
 
@@ -33,4 +33,41 @@ describe('EventsApi', () => {
       await expect(() => eventsApi.getEventById(eventId)).rejects.toThrow();
     });
   });
+
+  describe('sendPromptForEvent', () => {
+    it('calls backend api to send a new prompt for an event', async () => {
+      const fakeEventPromptResponse = { promptId: 'fake-prompt-id' };
+      const fakeEventId = 'identifier'
+      const fakePayload: NewEventPromptRequestBody = {
+        userEmail: 'email',
+        userName: 'name',
+        jobTitle: 'job',
+        allowContact: false,
+        prompt: 'prompt',
+        browserFingerprint: 'fingerprint',
+      }
+
+      apiMock.post(`/events/${fakeEventId}/prompt`).reply(200, fakeEventPromptResponse);
+
+      const result = await eventsApi.sendPromptForEvent(fakeEventId, fakePayload);
+
+      expect(result).toEqual(fakeEventPromptResponse.promptId);
+    })
+
+    it('throws an error if the call fails', async () => {
+      const fakeEventId = 'identifier'
+      const fakePayload: NewEventPromptRequestBody = {
+        userEmail: 'email',
+        userName: 'name',
+        jobTitle: 'job',
+        allowContact: false,
+        prompt: 'prompt',
+        browserFingerprint: 'fingerprint',
+      }
+
+      apiMock.post(`/events/${fakeEventId}/prompts`).reply(500);
+
+      await expect(() => eventsApi.sendPromptForEvent(fakeEventId, fakePayload)).rejects.toThrow();
+    });
+  })
 });

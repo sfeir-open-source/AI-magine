@@ -8,6 +8,7 @@ export const ReactRouterConfig = () => {
       <Route path="/" element={<Navigate to="/events" replace />} />
       <Route path="/events" Component={EventSelectionPage} />
       <Route path="/events/:eventId" Component={EventPromptPage} />
+      <Route path="/events/:eventId/prompts/:promptId/loading" element={<div>loading</div>} />
     </Routes>
   );
 };

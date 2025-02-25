@@ -24,6 +24,7 @@ describe('EventPromptPage', () => {
   it('displays the form when the event is loaded', () => {
     (useEventById as Mock).mockReturnValue({
       data: new Event(
+        'id',
         'test event',
         new Date().toISOString(),
         new Date().toISOString()

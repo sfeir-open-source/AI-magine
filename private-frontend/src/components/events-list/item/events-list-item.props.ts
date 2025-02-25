@@ -1,6 +1,6 @@
-export type SfeirEvent = {
+export interface EventsListItemProps {
     id: string;
-    name:string;
+    name: string;
     startDate: Date;
     endDate: Date;
 }

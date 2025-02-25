@@ -4,10 +4,10 @@ import { ServicesContext } from '@/src/providers/services/services.context';
 
 export const useServices = (): UseServices => {
   const context = useContext(ServicesContext);
-  if (!context?.sfeirEventsService) {
-    throw new Error('sfeirEventsService is not defined');
+  if (!context?.eventsService) {
+    throw new Error('eventsService is not defined');
   }
   return {
-    sfeirEventsService: context.sfeirEventsService,
+    eventsService: context.eventsService,
   };
 };

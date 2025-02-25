@@ -1,3 +1,14 @@
 {
-  "greetings": "Bonjour, { name }!"
+  "commons": {
+    "appName": "AI-magine",
+    "logoAlt": "Logo AI-magine",
+    "sidebar": {
+      "events": {
+        "label": "Évènements"
+      }
+    }
+  },
+  "events-list": {
+    "title": "Liste des évènements"
+  }
 }

@@ -1,5 +1,5 @@
-import { SfeirEventService } from '@/src/services/sfeir-event';
+import { EventService } from 'src/services/event';
 
 export type UseServices = {
-  sfeirEventsService: SfeirEventService;
+  eventsService: EventService;
 };

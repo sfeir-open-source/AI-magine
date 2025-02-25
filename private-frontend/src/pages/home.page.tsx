@@ -1,17 +1,44 @@
-import React from 'react';
-import { Logo } from '@/src/components/logo';
-import { SfeirEventsList } from '@/src/components/sfeir-events-list';
-import { useTranslations } from '@/src/hooks/use-translations';
+import { EventsList } from '@/src/components/events-list';
+import i18n from '@/src/config/i18n';
+import { Container } from '@/src/components/container';
+import {
+  Sidebar,
+  SidebarGroup,
+  SidebarGroupLabel, SidebarHeader,
+  SidebarInset,
+  SidebarMenu, SidebarMenuItem,
+  SidebarProvider,
+} from '@/components/ui/sidebar';
+import { Outlet } from 'react-router';
+import {Logo} from "@/src/components/logo";
+import {TypographyH1} from "@/src/components/typography";
 
 export const HomePage = () => {
-  const { t } = useTranslations();
   return (
-    <>
-      <Logo />
-      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-        {t('greetings', { name: 'John Doe' })}
-      </h1>
-      <SfeirEventsList />
-    </>
+    <Container>
+      <SidebarProvider>
+        <Sidebar collapsible="icon">
+          <SidebarHeader>
+            <SidebarMenu>
+              <SidebarGroup className={'flex flex-row items-center justify-between'}>
+                  <Logo height={48} width={48} />
+                  <TypographyH1 style={{fontSize: '2rem'}}>{i18n.t('common.appName')}</TypographyH1>
+              </SidebarGroup>
+            </SidebarMenu>
+          </SidebarHeader>
+          <SidebarMenu>
+            <SidebarGroup>
+              <SidebarGroupLabel>
+                {i18n.t('common.sidebar.events.label')}
+              </SidebarGroupLabel>
+              <EventsList />
+            </SidebarGroup>
+          </SidebarMenu>
+        </Sidebar>
+        <SidebarInset>
+          <Outlet />
+        </SidebarInset>
+      </SidebarProvider>
+    </Container>
   );
 };

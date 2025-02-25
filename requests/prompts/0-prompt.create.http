@@ -1,0 +1,13 @@
+### POST Create a prompt
+POST {{protocol}}{{host}}:{{port}}/v1/events/foobar/prompts
+Content-Type: application/json
+
+{
+  "browserFingerprint": "FoobarFingerprint",
+  "userEmail": "doe.j@sfeir.com",
+  "userName": "John DOE",
+  "jobTitle": "Software Engineer",
+  "allowContact": false,
+  "prompt": "Hello, world !"
+}
+###

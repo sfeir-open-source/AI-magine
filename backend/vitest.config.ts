@@ -15,5 +15,8 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['json', 'html'],
     },
+    env: {
+      'EMAIL_HASH_SECRET': 'Y3e$$F5thgw9y!u*MJzp@86arQ8cAD&S'
+    }
   },
 });

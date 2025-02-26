@@ -16,4 +16,6 @@ export interface EventRepository {
     eventId: string,
     payload: NewEventPromptRequestBody
   ): Promise<string>;
+
+  listenForPromptGenerationEvent(eventId: string, promptId: string, onEvent: (event: MessageEvent) => void): void
 }

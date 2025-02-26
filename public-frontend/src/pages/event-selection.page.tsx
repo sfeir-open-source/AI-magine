@@ -26,7 +26,7 @@ export const EventSelectionPage = () => {
   };
 
   return (
-    <AppLayout>
+    <>
       <p className="mb-16 mt-32 text-center">{t('enter-event-id')}</p>
       <div className="flex gap-4">
         <Input
@@ -38,6 +38,6 @@ export const EventSelectionPage = () => {
           Go
         </Button>
       </div>
-    </AppLayout>
+    </>
   );
 };

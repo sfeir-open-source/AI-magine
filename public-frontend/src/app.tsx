@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router';
 import { ReactRouterConfig } from '@/src/config/react-router';
 import { EventsContext } from '@/src/providers/events/events.context';
 import { eventsApi } from '@/src/providers/events/events.api';
+import { Toaster } from '@/components/ui/sonner';
 
 export const App = () => {
   return (
@@ -11,6 +12,7 @@ export const App = () => {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <ReactRouterConfig />
+          <Toaster />
         </BrowserRouter>
       </QueryClientProvider>
     </EventsContext.Provider>

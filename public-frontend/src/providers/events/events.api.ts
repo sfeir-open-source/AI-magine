@@ -45,6 +45,12 @@ class EventsApi implements EventRepository {
       throw new Error(`Failed to retrieve event with id ${eventId} : ${e}`);
     }
   }
+
+  listenForPromptGenerationEvent(eventId: string, promptId: string, onEvent: (event: MessageEvent) => void) {
+    const eventSource = new EventSource(`/events/${eventId}/prompts/${promptId}`)
+
+    eventSource.onmessage = onEvent
+  }
 }
 
 export const eventsApi = new EventsApi();

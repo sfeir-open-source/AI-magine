@@ -70,4 +70,23 @@ describe('EventsApi', () => {
       await expect(() => eventsApi.sendPromptForEvent(fakeEventId, fakePayload)).rejects.toThrow();
     });
   })
+
+  describe('listenForPromptGenerationEvent', () => {
+    it("creates an EventSource and handle incoming messages", () => {
+      const eventId = "123";
+      const promptId = "456";
+      const mockCallback = vi.fn();
+
+      eventsApi.listenForPromptGenerationEvent(eventId, promptId, mockCallback);
+
+      expect(EventSource).toHaveBeenCalledWith(`/events/${eventId}/prompts/${promptId}`);
+
+      const mockEvent = new MessageEvent("message", { data: "test data" });
+      const eventSourceInstance = (EventSource as any).mock.instances[0];
+
+      eventSourceInstance.onmessage(mockEvent);
+
+      expect(mockCallback).toHaveBeenCalledWith(mockEvent);
+    });
+  })
 });

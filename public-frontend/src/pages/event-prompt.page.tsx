@@ -33,15 +33,11 @@ export const EventPromptPage = () => {
     );
   }
 
-  return (
-    <AppLayout>
-      {isFetching ? (
-        <div className="flex justify-center mt-12">
-          <LoadingSpinner width={96} height={96}/>
-        </div>
-      ) : (
-        event && <EventPromptForm event={event} />
-      )}
-    </AppLayout>
+  return isFetching ? (
+    <div className="flex justify-center mt-12">
+      <LoadingSpinner width={96} height={96} />
+    </div>
+  ) : (
+    event && <EventPromptForm event={event} />
   );
 };

@@ -1,4 +1,4 @@
-import { SfeirEventBuilder } from '@/events/events-types/sfeir-event.domain';
+import { SfeirEvent } from '@/events/events-types';
 import { SfeirEventMappers } from '@/events/events-types/sfeir-event.mappers';
 
 const startDate = new Date(2024, 10, 3, 0, 0, 0);
@@ -13,12 +13,7 @@ const dtoObject = {
   endDate: endDate.toISOString(),
   isActive: false,
 };
-const domainObject = SfeirEventBuilder.create()
-  .withId(id)
-  .withName(name)
-  .withStartDate(startDate)
-  .withEndDate(endDate)
-  .build();
+const domainObject = SfeirEvent.from(id, name, startDate, endDate);
 
 describe('SfeirEventMappers - fromDomainToDto', () => {
   it('should transform domain object to dto', () => {

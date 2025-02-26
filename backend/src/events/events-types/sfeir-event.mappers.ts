@@ -1,16 +1,13 @@
-import { SfeirEventDto } from '@/events/events-types/dtos';
-import { SfeirEventBuilder } from '@/events/events-types/sfeir-event.domain';
+import { SfeirEventDto } from '@/events/events-types/sfeir-event.dtos';
+import { SfeirEvent } from '@/events/events-types';
 
 export class SfeirEventMappers {
-  static fromDomainToDTO(
-    actual: ReturnType<SfeirEventBuilder['build']>
-  ): SfeirEventDto {
-    const object = actual.toJSON();
+  static fromDomainToDTO(actual: SfeirEvent): SfeirEventDto {
     return {
-      id: object.id,
-      name: object.name,
-      startDate: object.startDate.toISOString(),
-      endDate: object.endDate.toISOString(),
+      id: actual.id,
+      name: actual.name,
+      startDate: actual.startDate.toISOString(),
+      endDate: actual.endDate.toISOString(),
       isActive: actual.isActive(),
     };
   }
@@ -26,14 +23,10 @@ export class SfeirEventMappers {
     startDate: string | number;
     endDate: string | number;
     isActive: boolean;
-  }): ReturnType<SfeirEventBuilder['build']> {
-    const builder = SfeirEventBuilder.create()
-      .withName(name)
-      .withStartDate(new Date(startDate))
-      .withEndDate(new Date(endDate));
+  }): SfeirEvent {
     if (id) {
-      builder.withId(id);
+      return SfeirEvent.from(id, name, new Date(startDate), new Date(endDate));
     }
-    return builder.build();
+    return SfeirEvent.create(name, new Date(startDate), new Date(endDate));
   }
 }

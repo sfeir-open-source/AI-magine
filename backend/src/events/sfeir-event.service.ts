@@ -1,6 +1,6 @@
 import {
   CreateSfeirEventDto,
-  SfeirEventBuilder,
+  SfeirEvent,
   SFEIR_EVENT_REPOSITORY,
   SfeirEventRepository,
 } from '@/events/events-types';
@@ -13,13 +13,11 @@ export class SfeirEventService {
     private readonly sfeirEventRepository: SfeirEventRepository
   ) {}
 
-  async getSfeirEvents(): Promise<ReturnType<SfeirEventBuilder['build']>[]> {
+  async getSfeirEvents(): Promise<SfeirEvent[]> {
     return this.sfeirEventRepository.getSfeirEvents();
   }
 
-  async getSfeirEvent(
-    id: string
-  ): Promise<ReturnType<SfeirEventBuilder['build']> | undefined> {
+  async getSfeirEvent(id: string): Promise<SfeirEvent | undefined> {
     return this.sfeirEventRepository.getSfeirEvent(id);
   }
 
@@ -27,13 +25,14 @@ export class SfeirEventService {
     name,
     startDateTimestamp,
     endDateTimestamp,
-  }: CreateSfeirEventDto): Promise<ReturnType<SfeirEventBuilder['build']>> {
-    const newEventBuilder = SfeirEventBuilder.create()
-      .withName(name)
-      .withStartDate(new Date(parseInt(startDateTimestamp)))
-      .withEndDate(new Date(parseInt(endDateTimestamp)));
-
-    return this.sfeirEventRepository.saveSfeirEvent(newEventBuilder.build());
+  }: CreateSfeirEventDto): Promise<SfeirEvent> {
+    return this.sfeirEventRepository.saveSfeirEvent(
+      SfeirEvent.create(
+        name,
+        new Date(parseInt(startDateTimestamp)),
+        new Date(parseInt(endDateTimestamp))
+      )
+    );
   }
 
   async deleteSfeirEvent(id: string): Promise<void> {

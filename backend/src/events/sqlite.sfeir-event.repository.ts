@@ -1,4 +1,4 @@
-import { SfeirEventBuilder, SfeirEventRepository } from '@/events/events-types';
+import { SfeirEvent, SfeirEventRepository } from '@/events/events-types';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { Inject, Injectable } from '@nestjs/common';
 
@@ -18,7 +18,7 @@ export class SqliteSfeirEventRepository implements SfeirEventRepository {
       .catch(console.error);
   }
 
-  async getSfeirEvents(): Promise<ReturnType<SfeirEventBuilder['build']>[]> {
+  async getSfeirEvents(): Promise<SfeirEvent[]> {
     const storedEvents = await this.sqliteClient.all<{
       id: string;
       name: string;
@@ -30,27 +30,24 @@ export class SqliteSfeirEventRepository implements SfeirEventRepository {
       params: {},
     });
     return storedEvents.map((storedEvent) =>
-      SfeirEventBuilder.create()
-        .withId(storedEvent.id)
-        .withName(storedEvent.name)
-        .withStartDate(new Date(storedEvent.startDateTs))
-        .withEndDate(new Date(storedEvent.endDateTs))
-        .build()
+      SfeirEvent.from(
+        storedEvent.id,
+        storedEvent.name,
+        new Date(storedEvent.startDateTs),
+        new Date(storedEvent.endDateTs)
+      )
     );
   }
 
-  async saveSfeirEvent(
-    sfeirEvent: ReturnType<SfeirEventBuilder['build']>
-  ): Promise<ReturnType<SfeirEventBuilder['build']>> {
-    const newSfeirEvent = sfeirEvent.toJSON();
+  async saveSfeirEvent(sfeirEvent: SfeirEvent): Promise<SfeirEvent> {
     await this.sqliteClient.run({
       sql: `INSERT INTO events (id, name, startDateTs, endDateTs)
                   VALUES (?1, ?2, ?3, ?4);`,
       params: {
-        1: newSfeirEvent.id,
-        2: newSfeirEvent.name,
-        3: newSfeirEvent.startDate.getTime(),
-        4: newSfeirEvent.endDate.getTime(),
+        1: sfeirEvent.id,
+        2: sfeirEvent.name,
+        3: sfeirEvent.startDate.getTime(),
+        4: sfeirEvent.endDate.getTime(),
       },
     });
     return sfeirEvent;
@@ -65,9 +62,7 @@ export class SqliteSfeirEventRepository implements SfeirEventRepository {
     });
   }
 
-  async getSfeirEvent(
-    id: string
-  ): Promise<ReturnType<SfeirEventBuilder['build']> | undefined> {
+  async getSfeirEvent(id: string): Promise<SfeirEvent | undefined> {
     const row = await this.sqliteClient.get<{
       id: string;
       name: string;
@@ -82,11 +77,11 @@ export class SqliteSfeirEventRepository implements SfeirEventRepository {
     if (!row) {
       return undefined;
     }
-    return SfeirEventBuilder.create()
-      .withId(row.id)
-      .withName(row.name)
-      .withStartDate(new Date(row.startDateTs))
-      .withEndDate(new Date(row.endDateTs))
-      .build();
+    return SfeirEvent.from(
+      row.id,
+      row.name,
+      new Date(row.startDateTs),
+      new Date(row.endDateTs)
+    );
   }
 }

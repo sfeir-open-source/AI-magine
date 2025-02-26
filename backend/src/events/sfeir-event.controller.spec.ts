@@ -2,7 +2,7 @@ import { vi } from 'vitest';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { SfeirEventController } from '@/events/sfeir-event.controller';
 import { SfeirEventService } from '@/events/sfeir-event.service';
-import { CreateSfeirEventDto, SfeirEventBuilder } from '@/events/events-types';
+import { CreateSfeirEventDto, SfeirEvent } from '@/events/events-types';
 
 describe('SfeirEventController', () => {
   let sfeirEventController: SfeirEventController;
@@ -22,12 +22,12 @@ describe('SfeirEventController', () => {
   describe('getSfeirEvents', () => {
     it('should return a list of events', async () => {
       const mockEvents = [
-        SfeirEventBuilder.create()
-          .withId('1')
-          .withName('Event 1')
-          .withStartDate(new Date(2023, 1, 1))
-          .withEndDate(new Date(2023, 1, 2))
-          .build(),
+        SfeirEvent.from(
+          '1',
+          'Event 1',
+          new Date(2023, 1, 1),
+          new Date(2023, 1, 2)
+        ),
       ];
       vi.spyOn(sfeirEventService, 'getSfeirEvents').mockResolvedValue(
         mockEvents
@@ -49,12 +49,12 @@ describe('SfeirEventController', () => {
 
   describe('getSfeirEvent', () => {
     it('should return an event by id', async () => {
-      const mockEvent = SfeirEventBuilder.create()
-        .withId('1')
-        .withName('Event 1')
-        .withStartDate(new Date(2023, 1, 1))
-        .withEndDate(new Date(2023, 1, 2))
-        .build();
+      const mockEvent = SfeirEvent.from(
+        '1',
+        'Event 1',
+        new Date(2023, 1, 1),
+        new Date(2023, 1, 2)
+      );
       vi.spyOn(sfeirEventService, 'getSfeirEvent').mockResolvedValue(mockEvent);
 
       const result = await sfeirEventController.getSfeirEvent('1');
@@ -87,12 +87,12 @@ describe('SfeirEventController', () => {
         startDateTimestamp: new Date(2023, 1, 1, 0, 0, 0).getTime().toString(),
         endDateTimestamp: new Date(2023, 1, 2, 0, 0, 0).getTime().toString(),
       };
-      const mockEvent = SfeirEventBuilder.create()
-        .withId('1')
-        .withName('New Event')
-        .withStartDate(new Date(2023, 1, 1, 0, 0, 0))
-        .withEndDate(new Date(2023, 1, 2, 0, 0, 0))
-        .build();
+      const mockEvent = SfeirEvent.from(
+        '1',
+        'New Event',
+        new Date(2023, 1, 1),
+        new Date(2023, 1, 2)
+      );
       vi.spyOn(sfeirEventService, 'createSfeirEvent').mockResolvedValue(
         mockEvent
       );

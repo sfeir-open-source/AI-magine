@@ -1,17 +1,13 @@
-import { SfeirEventBuilder } from '@/events/events-types/sfeir-event.domain';
+import { SfeirEvent } from '@/events/events-types/sfeir-event.domain';
 
 export const SFEIR_EVENT_REPOSITORY = Symbol('SFEIR_EVENT_REPOSITORY');
 
 export interface SfeirEventRepository {
-  getSfeirEvents(): Promise<ReturnType<SfeirEventBuilder['build']>[]>;
+  getSfeirEvents(): Promise<SfeirEvent[]>;
 
-  saveSfeirEvent(
-    sfeirEvent: ReturnType<SfeirEventBuilder['build']>
-  ): Promise<ReturnType<SfeirEventBuilder['build']>>;
+  saveSfeirEvent(sfeirEvent: SfeirEvent): Promise<SfeirEvent>;
 
   deleteSfeirEvent(id: string): Promise<void>;
 
-  getSfeirEvent(
-    id: string
-  ): Promise<ReturnType<SfeirEventBuilder['build']> | undefined>;
+  getSfeirEvent(id: string): Promise<SfeirEvent | undefined>;
 }

@@ -23,7 +23,7 @@ export class SfeirEventController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all events' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'All events',
     type: SfeirEventDto,
     isArray: true,
@@ -39,7 +39,7 @@ export class SfeirEventController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create an event' })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: 'The event has been successfully created.',
     type: SfeirEventDto,
   })
@@ -51,10 +51,10 @@ export class SfeirEventController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.MOVED_PERMANENTLY)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete an event' })
   @ApiResponse({
-    status: 301,
+    status: HttpStatus.NO_CONTENT,
     description: 'The event has been successfully deleted.',
   })
   async deleteSfeirEvent(@Param('id') id: string): Promise<void> {
@@ -65,12 +65,12 @@ export class SfeirEventController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get an event' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'The event was found.',
     type: SfeirEventDto,
   })
   @ApiResponse({
-    status: 422,
+    status: HttpStatus.NOT_FOUND,
     description: 'The event could not be found.',
   })
   async getSfeirEvent(@Param('id') id: string): Promise<SfeirEventDto> {

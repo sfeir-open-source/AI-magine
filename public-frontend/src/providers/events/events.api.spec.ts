@@ -36,7 +36,7 @@ describe('EventsApi', () => {
 
   describe('sendPromptForEvent', () => {
     it('calls backend api to send a new prompt for an event', async () => {
-      const fakeEventPromptResponse = { promptId: 'fake-prompt-id' };
+      const fakeEventPromptResponse = { id: 'fake-prompt-id' };
       const fakeEventId = 'identifier'
       const fakePayload: NewEventPromptRequestBody = {
         userEmail: 'email',
@@ -47,11 +47,11 @@ describe('EventsApi', () => {
         browserFingerprint: 'fingerprint',
       }
 
-      apiMock.post(`/events/${fakeEventId}/prompt`).reply(200, fakeEventPromptResponse);
+      apiMock.post(`/events/${fakeEventId}/prompts`).reply(200, fakeEventPromptResponse);
 
       const result = await eventsApi.sendPromptForEvent(fakeEventId, fakePayload);
 
-      expect(result).toEqual(fakeEventPromptResponse.promptId);
+      expect(result).toEqual(fakeEventPromptResponse.id);
     })
 
     it('throws an error if the call fails', async () => {

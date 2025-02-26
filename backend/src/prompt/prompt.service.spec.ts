@@ -4,6 +4,8 @@ import { nanoid } from 'nanoid';
 import { PromptService } from '@/prompt/prompt.service';
 import { CreatePromptDto, PromptRepository } from '@/prompt/prompt-types';
 import { UserService } from '@/user/user.service';
+import { Prompt } from '@/prompt/prompt-types/prompt.domain';
+import { User } from '@/user/user-types';
 
 vi.mock('nanoid', () => {
   return {
@@ -45,12 +47,12 @@ describe('PromptService', () => {
       .mockReturnValueOnce('generatedPromptId')
       .mockReturnValueOnce('generatedUserId');
 
-    const expectedPrompt = {
-      id: 'generatedPromptId',
-      eventId: 'event1',
-      userId: 'existingUserId',
-      prompt: 'Sample Prompt',
-    };
+    const expectedPrompt = Prompt.from(
+      'generatedPromptId',
+      'event1',
+      'existingUserId',
+      'Sample Prompt'
+    );
     vi.mocked(userServiceMock.getUserIdByEmail).mockResolvedValue(
       'existingUserId'
     );
@@ -90,20 +92,20 @@ describe('PromptService', () => {
       .mockReturnValueOnce('generatedUserId')
       .mockReturnValueOnce('generatedUserId');
 
-    const createdUser = {
-      id: 'generatedUserId',
-      hashedEmail: 'email@example.com',
-      name: 'John Doe',
-      jobTitle: 'Engineer',
-      browserFingerprint: 'fingerprint123',
-      allowContact: true,
-    };
-    const expectedPrompt = {
-      id: 'generatedPromptId',
-      eventId: 'event1',
-      userId: 'generatedUserId',
-      prompt: 'Sample Prompt',
-    };
+    const createdUser = User.from(
+      'generatedUserId',
+      'email@example.com',
+      'fingerprint123',
+      true,
+      'John Doe',
+      'Engineer'
+    );
+    const expectedPrompt = Prompt.from(
+      'generatedPromptId',
+      'event1',
+      'generatedUserId',
+      'Sample Prompt'
+    );
 
     vi.mocked(userServiceMock.getUserIdByEmail).mockResolvedValue(undefined);
     vi.mocked(userServiceMock.create).mockResolvedValue(createdUser);
@@ -118,14 +120,7 @@ describe('PromptService', () => {
     expect(userServiceMock.getUserIdByEmail).toHaveBeenCalledWith(
       'email@example.com'
     );
-    expect(userServiceMock.create).toHaveBeenCalledWith({
-      id: 'generatedUserId',
-      hashedEmail: 'email@example.com',
-      name: 'John Doe',
-      jobTitle: 'Engineer',
-      browserFingerprint: 'fingerprint123',
-      allowContact: true,
-    });
+    expect(userServiceMock.create).toHaveBeenCalledWith(createdUser);
     expect(promptRepositoryMock.countByEventIdAndUserId).toHaveBeenCalledWith(
       'generatedUserId',
       'event1'

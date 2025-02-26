@@ -1,5 +1,31 @@
-### POST Create a prompt
-POST {{protocol}}{{host}}:{{port}}/v1/events/foobar/prompts
+### Create SFEIR Event for prompt
+< {%
+    const now = new Date(Date.now());
+    const startDateTs = (new Date(now.getFullYear(), now.getMonth() + 1, now.getDate(), 1, 0, 0)).getTime();
+    const endDateTs = (new Date(now.getFullYear(), now.getMonth() + 1, now.getDate() + 1, 1, 0, 0)).getTime();
+
+    request.variables.set("sfeirEvents_startDateTs", startDateTs.toString());
+    request.variables.set("sfeirEvents_endDateTs", endDateTs.toString());
+%}
+POST {{protocol}}{{host}}:{{port}}/v1/events
+Content-Type: application/json
+
+{
+  "name": "Event created from request files 123456",
+  "startDateTs": "{{sfeirEvents_startDateTs}}",
+  "endDateTs": "{{sfeirEvents_endDateTs}}"
+}
+
+> {%
+
+    client.global.set('sfeirEvents_selectedId', response.body.id);
+%}
+
+####
+
+####
+# @name POST Create a prompt
+POST {{protocol}}{{host}}:{{port}}/v1/events/{{sfeirEvents_selectedId}}/prompts
 Content-Type: application/json
 
 {

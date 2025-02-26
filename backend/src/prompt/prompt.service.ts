@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreatePromptDto } from '@/prompt/prompt-types/prompt.dto';
-import { nanoid } from 'nanoid';
 import { PROMPT_REPOSITORY, PromptRepository } from '@/prompt/prompt-types';
 import { UserService } from '@/user/user.service';
 import { Prompt } from '@/prompt/prompt-types/prompt.domain';
+import { User } from '@/user/user-types';
 
 @Injectable()
 export class PromptService {
@@ -24,14 +24,15 @@ export class PromptService {
   }: CreatePromptDto & { eventId: string }): Promise<Prompt> {
     let userId = await this.userService.getUserIdByEmail(userEmail);
     if (!userId) {
-      const createdUser = await this.userService.create({
-        id: nanoid(32),
-        hashedEmail: userEmail,
-        name: userName,
-        jobTitle,
-        browserFingerprint,
-        allowContact,
-      });
+      const createdUser = await this.userService.create(
+        User.create(
+          userEmail,
+          browserFingerprint,
+          allowContact,
+          userName,
+          jobTitle
+        )
+      );
       userId = createdUser.id;
     }
     if (!userId) {
@@ -43,12 +44,9 @@ export class PromptService {
     if (userPromptCountOnEvent >= 3) {
       return Promise.reject('User has reached maximum number of prompts');
     }
-    const newPrompt = await this.promptRepository.save({
-      id: nanoid(32),
-      userId,
-      eventId,
-      prompt,
-    });
+    const newPrompt = await this.promptRepository.save(
+      Prompt.create(eventId, userId, prompt)
+    );
     return Promise.resolve(newPrompt);
   }
 }

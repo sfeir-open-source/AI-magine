@@ -17,9 +17,20 @@ import { Button } from '@/components/ui/button';
 import i18n from '@/src/config/i18n';
 import { useTranslation } from 'react-i18next';
 import { TypographyH2 } from '@/src/components/typography/h2';
-import {Event} from '@/src/domain/Event';
+import { Event } from '@/src/domain/Event';
 import { TypographyLead } from '@/src/components/typography/lead';
 import { format } from 'date-fns';
+import { useEventPromptMutation } from '@/src/hooks/useEventPromptMutation';
+import { useFingerprint } from '@/src/hooks/useFingerprint';
+import { useNavigate } from 'react-router';
+import { LoadingSpinner } from '@/src/components/loading-spinner/loading-spinner';
+import { toast } from "sonner"
+
+export const STORAGE_NAME_KEY = 'name';
+export const STORAGE_EMAIL_KEY = 'email';
+export const STORAGE_JOB_KEY = 'job-title';
+export const STORAGE_ALLOW_CONTACT_KEY = 'allow-contact';
+export const STORAGE_PROMPT_KEY = 'prompt';
 
 const PromptFormSchema = z.object({
   name: z.string().nonempty({ message: i18n.t('empty-name-error') }),
@@ -36,30 +47,59 @@ const PromptFormSchema = z.object({
 
 type EventPromptFormProps = {
   event: Event;
-}
+};
 
-export const EventPromptForm = ({event}: EventPromptFormProps) => {
+export const EventPromptForm = ({ event }: EventPromptFormProps) => {
   const { t } = useTranslation();
+
+  const { mutateAsync, isPending } = useEventPromptMutation();
+
+  const fingerprint = useFingerprint();
+
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof PromptFormSchema>>({
     resolver: zodResolver(PromptFormSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      jobTitle: '',
-      allowContact: '',
-      prompt: '',
+      name: localStorage.getItem(STORAGE_NAME_KEY) ?? '',
+      email: localStorage.getItem(STORAGE_EMAIL_KEY) ?? '',
+      jobTitle: localStorage.getItem(STORAGE_JOB_KEY) ?? '',
+      allowContact: localStorage.getItem(STORAGE_ALLOW_CONTACT_KEY) ?? '',
+      prompt: localStorage.getItem(STORAGE_PROMPT_KEY) ?? '',
     },
   });
 
-  function onSubmit(data: z.infer<typeof PromptFormSchema>) {
-    console.log(data);
-  }
+  const onSubmit = async (data: z.infer<typeof PromptFormSchema>) => {
+    localStorage.setItem(STORAGE_NAME_KEY, data.name);
+    localStorage.setItem(STORAGE_EMAIL_KEY, data.email);
+    localStorage.setItem(STORAGE_JOB_KEY, data.jobTitle);
+    localStorage.setItem(STORAGE_ALLOW_CONTACT_KEY, data.allowContact);
+    localStorage.setItem(STORAGE_PROMPT_KEY, data.prompt);
+
+    try {
+      const promptId = await mutateAsync({
+        browserFingerprint: fingerprint,
+        eventId: event.id,
+        userName: data.name,
+        userEmail: data.email,
+        jobTitle: data.jobTitle,
+        allowContact: data.allowContact === 'true',
+        prompt: data.prompt,
+      });
+
+      navigate(`/events/${event.id}/prompts/${promptId}/loading`);
+    } catch(e) {
+      toast.error(`${t('failed-create-prompt')}: ${(e as Error).message}`)
+    }
+
+  };
 
   return (
     <div className="mt-8">
       <TypographyH2>{event.name}</TypographyH2>
-      <TypographyLead className="mt-2 mb-6 text-lg">{t('ends')}: {format(event.endDate, 'dd/MM/yyyy HH:mm')}</TypographyLead>
+      <TypographyLead className="mt-2 mb-6 text-lg">
+        {t('ends')}: {format(event.endDate, 'dd/MM/yyyy HH:mm')}
+      </TypographyLead>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-2 mb-6">
@@ -160,8 +200,8 @@ export const EventPromptForm = ({event}: EventPromptFormProps) => {
               </FormItem>
             )}
           />
-          <Button className="w-full mt-4" type="submit">
-            Go
+          <Button className="w-full mt-4" type="submit" disabled={isPending}>
+            {isPending ? <LoadingSpinner /> : 'Go'}
           </Button>
         </form>
       </Form>

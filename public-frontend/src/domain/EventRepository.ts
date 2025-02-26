@@ -1,5 +1,19 @@
-import {Event} from '@/src/domain/Event'
+import { Event } from '@/src/domain/Event';
+
+export type NewEventPromptRequestBody = {
+  browserFingerprint: string;
+  userEmail: string;
+  userName?: string;
+  jobTitle?: string;
+  allowContact: boolean;
+  prompt: string;
+};
 
 export interface EventRepository {
-  getEventById(id: string): Promise<Event>;
+  getEventById(eventId: string): Promise<Event>;
+
+  sendPromptForEvent(
+    eventId: string,
+    payload: NewEventPromptRequestBody
+  ): Promise<string>;
 }

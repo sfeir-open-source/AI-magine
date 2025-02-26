@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import { Event } from '@/src/domain/Event';
-import { EventRepository } from '@/src/domain/EventRepository';
+import { NewEventPromptRequestBody, EventRepository } from '@/src/domain/EventRepository';
 
 class EventsApi implements EventRepository {
   private http: AxiosInstance;
@@ -11,19 +11,38 @@ class EventsApi implements EventRepository {
     });
   }
 
-  async getEventById(id: string) {
+  async sendPromptForEvent(
+    eventId: string,
+    payload: NewEventPromptRequestBody
+  ): Promise<string> {
+    try {
+      const response = await this.http.post<{ promptId: string }>(
+        `/events/${eventId}/prompt`,
+        payload
+      );
+
+      return response.data.promptId;
+    } catch (e) {
+      throw new Error(
+        `Failed to send prompt for event with id ${eventId} : ${e}`
+      );
+    }
+  }
+
+  async getEventById(eventId: string) {
     try {
       const response = await this.http.get<{
+        id: string;
         name: string;
         startDate: string;
         endDate: string;
-      }>(`/events/${id}`);
+      }>(`/events/${eventId}`);
 
-      const { name, startDate, endDate } = response.data;
+      const { id, name, startDate, endDate } = response.data;
 
-      return new Event(name, startDate, endDate);
+      return new Event(id, name, startDate, endDate);
     } catch (e) {
-      throw new Error(`Failed to retrieve event with id ${id} : ${e}`);
+      throw new Error(`Failed to retrieve event with id ${eventId} : ${e}`);
     }
   }
 }

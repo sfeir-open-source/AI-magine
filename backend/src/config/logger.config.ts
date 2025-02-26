@@ -7,10 +7,13 @@ const transports: winston.transport[] = [
     format: winston.format.combine(
       winston.format.timestamp(),
       winston.format.ms(),
-      nestWinstonModuleUtilities.format.nestLike(process.env.npm_package_name || 'APP_NAME', {
-        colors: true,
-        prettyPrint: true,
-      })
+      nestWinstonModuleUtilities.format.nestLike(
+        process.env.npm_package_name || 'APP_NAME',
+        {
+          colors: true,
+          prettyPrint: true,
+        }
+      )
     ),
   }),
 ];
@@ -24,8 +27,18 @@ transports.push(
   })
 );
 
+transports.push(
+  new winston.transports.File({
+    filename: 'logs/info.log',
+    level: 'info',
+    maxsize: 5242880, // 5MB
+    maxFiles: 5,
+  })
+);
+
 export const loggerConfig: WinstonModuleOptions = {
   transports,
+  level: 'info',
   format: winston.format.combine(
     winston.format.errors({ stack: true }),
     winston.format.json()

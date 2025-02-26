@@ -5,3 +5,5 @@ dist
 coverage
 logs
 .idea
+*.sqlite
+.DS_Store

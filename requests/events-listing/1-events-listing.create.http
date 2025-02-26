@@ -1,0 +1,37 @@
+### Create SFEIR Event
+< {%
+    const now = new Date(Date.now());
+    const startDateTs = (new Date(now.getFullYear(), now.getMonth() + 1, now.getDate(), 1, 0, 0)).getTime();
+    const endDateTs = (new Date(now.getFullYear(), now.getMonth() + 1, now.getDate() + 1, 1, 0, 0)).getTime();
+
+    request.variables.set("sfeirEvents_startDateTs", startDateTs.toString());
+    request.variables.set("sfeirEvents_endDateTs", endDateTs.toString());
+%}
+POST {{protocol}}{{host}}:{{port}}/v1/events
+Content-Type: application/json
+
+{
+  "name": "Event created from request files",
+  "startDateTs": "{{sfeirEvents_startDateTs}}",
+  "endDateTs": "{{sfeirEvents_endDateTs}}"
+}
+
+> {%
+
+    const items = client.global.get('sfeirEvents_list');
+    items.push(response.body);
+    client.global.set('sfeirEvents_list', items);
+
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        const body = response.body;
+        client.assert(body.id !== undefined, "Response body doesn't have id");
+        client.assert(body.name !== undefined, "Response body doesn't have name");
+        client.assert(body.startDate !== undefined, "Response body doesnt have startDate");
+        client.assert(body.endDate !== undefined, "Response body doesnt have endDate");
+        client.assert(body.isActive !== undefined, "Response body doesnt have isActive");
+    });
+
+%}
+
+###

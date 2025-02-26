@@ -6,7 +6,7 @@ export class HealthService {
   async getLiveness(): Promise<HealthStatus> {
     return {
       status: 'UP',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 
@@ -14,9 +14,7 @@ export class HealthService {
     return {
       status: 'UP',
       timestamp: new Date().toISOString(),
-      details: {
-
-      }
+      details: {},
     };
   }
 }

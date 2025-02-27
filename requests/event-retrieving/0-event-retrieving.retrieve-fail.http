@@ -4,7 +4,7 @@ GET {{protocol}}{{host}}:{{port}}/v1/events/foobar
 > {%
 
     client.test("Request executed unsuccessfully", function () {
-        client.assert(response.status === 422, "Response status is not 422");
+        client.assert(response.status === 404, "Response status is not 404");
     });
 
  %}

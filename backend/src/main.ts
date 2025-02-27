@@ -14,7 +14,7 @@ config();
   const SWAGGER_BASE_PATH = process.env.SWAGGER_BASE_PATH || '/docs';
 
   app.enableCors({
-    origin: process.env.CORS_ALLOWED_ORIGINS || '',
+    origin: (process.env.CORS_ALLOWED_ORIGINS || "").split(","),
   });
 
   const config = new DocumentBuilder()

@@ -5,9 +5,9 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
-  UnprocessableEntityException,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SfeirEventService } from '@/events/sfeir-event.service';
@@ -77,9 +77,7 @@ export class SfeirEventController {
     const storedEvent = await this.sfeirEventService.getSfeirEvent(id);
 
     if (!storedEvent) {
-      throw new UnprocessableEntityException(
-        `Event with id ${id} doest not exists.`
-      );
+      throw new NotFoundException(`Event with id ${id} doest not exists.`);
     }
     return SfeirEventMappers.fromDomainToDTO(storedEvent);
   }

@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { UnprocessableEntityException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { SfeirEventController } from '@/events/sfeir-event.controller';
 import { SfeirEventService } from '@/events/sfeir-event.service';
 import { CreateSfeirEventDto, SfeirEvent } from '@/events/events-types';
@@ -73,9 +73,7 @@ describe('SfeirEventController', () => {
       await expect(
         sfeirEventController.getSfeirEvent('invalid-id')
       ).rejects.toThrow(
-        new UnprocessableEntityException(
-          'Event with id invalid-id doest not exists.'
-        )
+        new NotFoundException('Event with id invalid-id doest not exists.')
       );
     });
   });

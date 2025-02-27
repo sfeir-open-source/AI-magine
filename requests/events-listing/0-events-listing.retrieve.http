@@ -57,7 +57,7 @@ Content-Type: application/json
 
 > {%
 
-    const items = client.global.get('sfeirEvents_list');
+    const items = client.global.get('sfeirEvents_list') ?? [];
     items.push(response.body);
     client.global.set('sfeirEvents_list', items);
 

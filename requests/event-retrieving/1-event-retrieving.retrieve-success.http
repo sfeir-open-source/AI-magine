@@ -32,7 +32,7 @@ GET {{protocol}}{{host}}:{{port}}/v1/events/{{sfeirEvents_selectedId}}
 
     client.test("Request executed successfully", function () {
         client.assert(response.status === 200, "Response status is not 200");
-        const body = response.body;
+        const body = response.body[0];
         client.assert(body.id !== undefined, "Response body doesn't have id");
         client.assert(body.name !== undefined, "Response body doesn't have name");
         client.assert(body.startDate !== undefined, "Response body doesnt have startDate");

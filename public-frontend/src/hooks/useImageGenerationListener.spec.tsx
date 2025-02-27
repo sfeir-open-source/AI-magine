@@ -10,7 +10,7 @@ vi.mock('react-router');
 vi.mock('@/src/providers/events/useEventsProvider', () => ({
   useEventsProvider: () => ({
     listenForPromptGenerationEvent: (_eventId: string, _promptId: string, onEvent: (evt: any) => void) => {
-      onEvent({ data: { type: 'done' } });
+      onEvent({ data: JSON.stringify({ type: 'done' }) });
     },
   }),
 }));

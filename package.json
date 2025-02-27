@@ -35,8 +35,8 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "lint:all:w",
-      "prettier:all:w"
+      "lint:w",
+      "prettier:w"
     ]
   },
   "dependencies": {

@@ -1,6 +1,9 @@
 import axios, { AxiosInstance } from 'axios';
 import { Event } from '@/src/domain/Event';
-import { NewEventPromptRequestBody, EventRepository } from '@/src/domain/EventRepository';
+import {
+  NewEventPromptRequestBody,
+  EventRepository,
+} from '@/src/domain/EventRepository';
 
 class EventsApi implements EventRepository {
   private http: AxiosInstance;
@@ -13,23 +16,20 @@ class EventsApi implements EventRepository {
 
   async sendPromptForEvent(
     eventId: string,
-    payload: NewEventPromptRequestBody,
-  ): Promise<string> {
+    payload: NewEventPromptRequestBody
+  ): Promise<{ promptId: string; userId: string }> {
     try {
       const response = await this.http.post<{
         id: string;
         eventId: string;
         userId: string;
         prompt: string;
-      }>(
-        `/events/${eventId}/prompts`,
-        payload,
-      );
+      }>(`/events/${eventId}/prompts`, payload);
 
-      return response.data.id;
+      return { promptId: response.data.id, userId: response.data.userId };
     } catch (e) {
       throw new Error(
-        `Failed to send prompt for event with id ${eventId} : ${e}`,
+        `Failed to send prompt for event with id ${eventId} : ${e}`
       );
     }
   }
@@ -51,8 +51,14 @@ class EventsApi implements EventRepository {
     }
   }
 
-  listenForPromptGenerationEvent(eventId: string, promptId: string, onEvent: (event: MessageEvent) => void) {
-    const eventSource = new EventSource(`/events/${eventId}/prompts/${promptId}`);
+  listenForPromptGenerationEvent(
+    eventId: string,
+    promptId: string,
+    onEvent: (event: MessageEvent) => void
+  ) {
+    const eventSource = new EventSource(
+      `/events/${eventId}/prompts/${promptId}`
+    );
 
     eventSource.onmessage = onEvent;
   }

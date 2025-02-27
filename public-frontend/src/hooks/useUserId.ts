@@ -1,10 +1,9 @@
-import Cookies from 'js-cookie';
 import { useState } from 'react';
 
-export const USER_ID_COOKIE_NAME = 'userId';
+export const STORAGE_USER_ID_KEY = 'user-id';
 
 export const useUserId = () => {
-  const [userId] = useState<string | undefined>(Cookies.get(USER_ID_COOKIE_NAME));
+  const [userId] = useState<string | null>(localStorage.getItem(STORAGE_USER_ID_KEY));
 
   return userId;
 };

@@ -15,7 +15,11 @@ export interface EventRepository {
   sendPromptForEvent(
     eventId: string,
     payload: NewEventPromptRequestBody
-  ): Promise<string>;
+  ): Promise<{ promptId: string, userId: string }>;
 
-  listenForPromptGenerationEvent(eventId: string, promptId: string, onEvent: (event: MessageEvent) => void): void
+  listenForPromptGenerationEvent(
+    eventId: string,
+    promptId: string,
+    onEvent: (event: MessageEvent) => void
+  ): void;
 }

@@ -6,6 +6,7 @@ import { CreatePromptDto, PromptRepository } from '@/prompt/prompt-types';
 import { UserService } from '@/user/user.service';
 import { Prompt } from '@/prompt/prompt-types/prompt.domain';
 import { User } from '@/user/user-types';
+import {ImageGenerationService} from "@/image-generation/image-generation.service";
 
 vi.mock('nanoid', () => {
   return {
@@ -17,6 +18,7 @@ describe('PromptService', () => {
   let promptService: PromptService;
   let promptRepositoryMock: PromptRepository;
   let userServiceMock: UserService;
+  let imageGenerationServiceMock: ImageGenerationService;
 
   beforeEach(() => {
     promptRepositoryMock = {
@@ -29,7 +31,11 @@ describe('PromptService', () => {
       getUserIdByEmail: vi.fn(),
     } as unknown as UserService;
 
-    promptService = new PromptService(promptRepositoryMock, userServiceMock);
+    imageGenerationServiceMock = {
+      generateImageFromPrompt: vi.fn(),
+    } as unknown as ImageGenerationService;
+
+    promptService = new PromptService(promptRepositoryMock, userServiceMock, imageGenerationServiceMock);
   });
 
   it('should create a new prompt if all conditions are met', async () => {

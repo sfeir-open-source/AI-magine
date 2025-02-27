@@ -4,13 +4,15 @@ import { PROMPT_REPOSITORY, PromptRepository } from '@/prompt/prompt-types';
 import { UserService } from '@/user/user.service';
 import { Prompt } from '@/prompt/prompt-types/prompt.domain';
 import { User } from '@/user/user-types';
+import {ImageGenerationService} from "@/image-generation/image-generation.service";
 
 @Injectable()
 export class PromptService {
   constructor(
     @Inject(PROMPT_REPOSITORY)
     private readonly promptRepository: PromptRepository,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly imageGenerationService: ImageGenerationService
   ) {}
 
   async createPrompt({
@@ -48,5 +50,11 @@ export class PromptService {
       Prompt.create(eventId, userId, prompt)
     );
     return Promise.resolve(newPrompt);
+  }
+
+  async generateImage(prompt: string): Promise<string> {
+    const img = await this.imageGenerationService.generateImageFromPrompt(prompt);
+    console.log({img});
+    return Promise.resolve(prompt);
   }
 }

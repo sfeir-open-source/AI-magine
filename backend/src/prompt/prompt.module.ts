@@ -5,9 +5,10 @@ import { UserModule } from '@/user/user.module';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { PROMPT_REPOSITORY } from '@/prompt/prompt-types';
 import { SqlitePromptRepository } from '@/prompt/sqlite.prompt.repository';
+import {ImageGenerationModule} from "@/image-generation/image-generation.module";
 
 @Module({
-  imports: [UserModule],
+  imports: [UserModule, ImageGenerationModule],
   controllers: [PromptController],
   providers: [
     PromptService,

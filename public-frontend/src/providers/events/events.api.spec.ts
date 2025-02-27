@@ -36,7 +36,7 @@ describe('EventsApi', () => {
 
   describe('sendPromptForEvent', () => {
     it('calls backend api to send a new prompt for an event', async () => {
-      const fakeEventPromptResponse = { id: 'fake-prompt-id' };
+      const fakeEventPromptResponse = { id: 'fake-prompt-id', userId: 'fake-user-id' };
       const fakeEventId = 'identifier'
       const fakePayload: NewEventPromptRequestBody = {
         userEmail: 'email',
@@ -51,7 +51,7 @@ describe('EventsApi', () => {
 
       const result = await eventsApi.sendPromptForEvent(fakeEventId, fakePayload);
 
-      expect(result).toEqual(fakeEventPromptResponse.id);
+      expect(result).toEqual({ promptId: fakeEventPromptResponse.id, userId: fakeEventPromptResponse.userId });
     })
 
     it('throws an error if the call fails', async () => {

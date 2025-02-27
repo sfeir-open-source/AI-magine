@@ -16,7 +16,7 @@ export const EventPromptPage = () => {
 
   if (error) {
     return (
-      <AppLayout>
+      <>
         <Alert variant="destructive" className="mt-12">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>{t('error')}</AlertTitle>
@@ -29,7 +29,7 @@ export const EventPromptPage = () => {
             <NavLink to="/events">{t('return-to-event-selection')}</NavLink>
           </Button>
         </div>
-      </AppLayout>
+      </>
     );
   }
 

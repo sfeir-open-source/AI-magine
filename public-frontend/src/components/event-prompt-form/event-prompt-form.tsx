@@ -25,6 +25,7 @@ import { useFingerprint } from '@/src/hooks/useFingerprint';
 import { useNavigate } from 'react-router';
 import { LoadingSpinner } from '@/src/components/loading-spinner/loading-spinner';
 import { toast } from "sonner"
+import { STORAGE_USER_ID_KEY } from '@/src/hooks/useUserId';
 
 export const STORAGE_NAME_KEY = 'name';
 export const STORAGE_EMAIL_KEY = 'email';
@@ -77,7 +78,7 @@ export const EventPromptForm = ({ event }: EventPromptFormProps) => {
     localStorage.setItem(STORAGE_PROMPT_KEY, data.prompt);
 
     try {
-      const promptId = await mutateAsync({
+      const { promptId, userId } = await mutateAsync({
         browserFingerprint: fingerprint,
         eventId: event.id,
         userName: data.name,
@@ -86,6 +87,8 @@ export const EventPromptForm = ({ event }: EventPromptFormProps) => {
         allowContact: data.allowContact === 'true',
         prompt: data.prompt,
       });
+
+      localStorage.setItem(STORAGE_USER_ID_KEY, userId)
 
       navigate(`/events/${event.id}/prompts/${promptId}/loading`);
     } catch(e) {

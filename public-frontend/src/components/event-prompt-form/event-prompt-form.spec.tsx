@@ -14,6 +14,7 @@ import i18n from 'i18next';
 import { useEventPromptMutation } from '@/src/hooks/useEventPromptMutation';
 import { useFingerprint } from '@/src/hooks/useFingerprint';
 import { Toaster } from '@/components/ui/sonner';
+import { STORAGE_USER_ID_KEY } from '@/src/hooks/useUserId';
 
 vi.mock('react-router', () => ({
   ...vi.importActual('react-router'),
@@ -84,7 +85,8 @@ describe('EventPromptForm', () => {
     (useNavigate as Mock).mockReturnValue(navigateMock);
 
     const fakePromptId = 'fake-prompt-id';
-    const mutateAsyncMock = vi.fn().mockReturnValue(fakePromptId);
+    const fakeUserId = 'fake-user'
+    const mutateAsyncMock = vi.fn().mockReturnValue({ promptId: fakePromptId, userId: fakeUserId });
     (useEventPromptMutation as Mock).mockReturnValue({
       mutateAsync: mutateAsyncMock,
     });
@@ -150,6 +152,9 @@ describe('EventPromptForm', () => {
     expect(localStorage.getItem(STORAGE_ALLOW_CONTACT_KEY)).toEqual('false');
     expect(localStorage.getItem(STORAGE_PROMPT_KEY)).toEqual(
       fakePromptRequest.prompt
+    );
+    expect(localStorage.getItem(STORAGE_USER_ID_KEY)).toEqual(
+      fakeUserId
     );
   });
 

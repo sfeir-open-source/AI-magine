@@ -7,10 +7,11 @@ import {
 
 class EventsApi implements EventRepository {
   private http: AxiosInstance;
+  private baseURL = import.meta.env.VITE_BACKEND_API_URL;
 
   constructor() {
     this.http = axios.create({
-      baseURL: import.meta.env.VITE_BACKEND_API_URL,
+      baseURL: this.baseURL,
     });
   }
 
@@ -57,7 +58,7 @@ class EventsApi implements EventRepository {
     onEvent: (event: MessageEvent) => void
   ) {
     const eventSource = new EventSource(
-      `/events/${eventId}/prompts/${promptId}`
+      `${this.baseURL}/events/${eventId}/prompts/${promptId}`
     );
 
     eventSource.onmessage = onEvent;

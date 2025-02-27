@@ -1,5 +1,7 @@
 import { PromptController } from '@/prompt/prompt.controller';
 import { vi } from 'vitest';
+import { of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { PromptService } from '@/prompt/prompt.service';
 import { CreatePromptDto } from '@/prompt/prompt-types';
 import { Response } from 'express';
@@ -14,6 +16,32 @@ describe('PromptController', () => {
     } as unknown as PromptService;
 
     promptController = new PromptController(promptService);
+  });
+
+  describe('getPromptStatus', () => {
+    it('should emit the correct event data with eventId and promptId', () => {
+      const eventId = 'event123';
+      const promptId = 'prompt456';
+
+      const mockObservable = of({
+        data: { eventId, promptId, type: 'done' },
+      }).pipe(map((event) => event as MessageEvent));
+
+      const intervalMock = vi
+        .spyOn(PromptController.prototype as never, 'getPromptStatus')
+        .mockReturnValue(mockObservable);
+
+      const result$ = promptController.getPromptStatus(eventId, promptId);
+
+      expect(result$).toBeDefined();
+      result$.subscribe((event) => {
+        expect(event.data.eventId).toBe(eventId);
+        expect(event.data.promptId).toBe(promptId);
+        expect(event.data.type).toBe('done');
+      });
+
+      intervalMock.mockRestore();
+    });
   });
 
   describe('createPrompt', () => {

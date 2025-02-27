@@ -3,10 +3,6 @@
     const now = new Date(Date.now());
     const startDateTs = (new Date(now.getFullYear(), now.getMonth() + 1, now.getDate(), 1, 0, 0)).getTime();
     const endDateTs = (new Date(now.getFullYear(), now.getMonth() + 1, now.getDate() + 1, 1, 0, 0)).getTime();
-console.log({
-    startDateTs,
-    endDateTs
-})
     request.variables.set("sfeirEvents_startDateTs", startDateTs.toString());
     request.variables.set("sfeirEvents_endDateTs", endDateTs.toString());
 %}

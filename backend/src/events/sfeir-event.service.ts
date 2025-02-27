@@ -5,6 +5,7 @@ import {
   SfeirEventRepository,
 } from '@/events/events-types';
 import { Inject, Injectable } from '@nestjs/common';
+import { SfeirEventMappers } from '@/events/events-types/sfeir-event.mappers';
 
 @Injectable()
 export class SfeirEventService {
@@ -29,8 +30,8 @@ export class SfeirEventService {
     return this.sfeirEventRepository.saveSfeirEvent(
       SfeirEvent.create(
         name,
-        new Date(parseInt(startDateTimestamp)),
-        new Date(parseInt(endDateTimestamp))
+        SfeirEventMappers.fromTimestampStringToDate(startDateTimestamp),
+        SfeirEventMappers.fromTimestampStringToDate(endDateTimestamp)
       )
     );
   }

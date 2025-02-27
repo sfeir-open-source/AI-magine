@@ -29,4 +29,12 @@ export class SfeirEventMappers {
     }
     return SfeirEvent.create(name, new Date(startDate), new Date(endDate));
   }
+
+  static fromTimestampStringToDate(timestampString: string | undefined) {
+    if (!timestampString) {
+      throw new Error('Timestamp string is undefined');
+    }
+    const timestamp = parseInt(timestampString);
+    return new Date(timestamp);
+  }
 }

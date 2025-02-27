@@ -19,7 +19,6 @@ export class User {
     if (!id) throw new Error('Id is required');
     if (!hashedEmail) throw new Error('Email is required');
     if (!browserFingerprint) throw new Error('Browser fingerprint is required');
-    if (!allowContact) throw new Error('Allow contact is required');
 
     this.id = id;
     this.name = name;

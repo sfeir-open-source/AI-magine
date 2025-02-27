@@ -51,8 +51,8 @@ Content-Type: application/json
 
 {
   "name": "Second event created from request files",
-  "startDateTs": "{{sfeirEvents_startDateTs}}",
-  "endDateTs": "{{sfeirEvents_endDateTs}}"
+  "startDateTimestamp": "{{sfeirEvents_startDateTs}}",
+  "endDateTimestamp": "{{sfeirEvents_endDateTs}}"
 }
 
 > {%

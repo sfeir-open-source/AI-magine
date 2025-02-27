@@ -21,5 +21,6 @@
   "ends": "Ends",
   "error-retrieving-event": "Error while retrieving event",
   "error": "Error",
-  "failed-create-prompt": "Failed to send prompt"
+  "failed-create-prompt": "Failed to send prompt",
+  "failed-authenticate-redirect": "Failed to authenticate user. You will be redirected."
 }

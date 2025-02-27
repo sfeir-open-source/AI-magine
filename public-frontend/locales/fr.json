@@ -21,5 +21,6 @@
   "ends": "Fin",
   "error-retrieving-event": "Une erreur est survenue lors de la récupération de l'évènement",
   "error": "Erreur",
-  "failed-create-prompt": "Échec de l'envoi du prompt"
+  "failed-create-prompt": "Échec de l'envoi du prompt",
+  "failed-authenticate-redirect": "Échec de l'authentification. Vous allez être redirigé."
 }

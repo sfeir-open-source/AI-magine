@@ -36,7 +36,7 @@ describe('EventsApi', () => {
 
   describe('sendPromptForEvent', () => {
     it('calls backend api to send a new prompt for an event', async () => {
-      const fakeEventPromptResponse = { promptId: 'fake-prompt-id' };
+      const fakeEventPromptResponse = { id: 'fake-prompt-id' };
       const fakeEventId = 'identifier'
       const fakePayload: NewEventPromptRequestBody = {
         userEmail: 'email',
@@ -47,11 +47,11 @@ describe('EventsApi', () => {
         browserFingerprint: 'fingerprint',
       }
 
-      apiMock.post(`/events/${fakeEventId}/prompt`).reply(200, fakeEventPromptResponse);
+      apiMock.post(`/events/${fakeEventId}/prompts`).reply(200, fakeEventPromptResponse);
 
       const result = await eventsApi.sendPromptForEvent(fakeEventId, fakePayload);
 
-      expect(result).toEqual(fakeEventPromptResponse.promptId);
+      expect(result).toEqual(fakeEventPromptResponse.id);
     })
 
     it('throws an error if the call fails', async () => {
@@ -68,6 +68,25 @@ describe('EventsApi', () => {
       apiMock.post(`/events/${fakeEventId}/prompts`).reply(500);
 
       await expect(() => eventsApi.sendPromptForEvent(fakeEventId, fakePayload)).rejects.toThrow();
+    });
+  })
+
+  describe('listenForPromptGenerationEvent', () => {
+    it("creates an EventSource and handle incoming messages", () => {
+      const eventId = "123";
+      const promptId = "456";
+      const mockCallback = vi.fn();
+
+      eventsApi.listenForPromptGenerationEvent(eventId, promptId, mockCallback);
+
+      expect(EventSource).toHaveBeenCalledWith(`/events/${eventId}/prompts/${promptId}`);
+
+      const mockEvent = new MessageEvent("message", { data: "test data" });
+      const eventSourceInstance = (EventSource as any).mock.instances[0];
+
+      eventSourceInstance.onmessage(mockEvent);
+
+      expect(mockCallback).toHaveBeenCalledWith(mockEvent);
     });
   })
 });

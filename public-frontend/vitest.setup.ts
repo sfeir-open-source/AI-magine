@@ -1,11 +1,11 @@
-import '@testing-library/jest-dom/vitest'
-import '@/src/config/i18n'
+import '@testing-library/jest-dom/vitest';
+import '@/src/config/i18n';
 
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
-}))
+}));
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -19,4 +19,9 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-})
+});
+
+Object.defineProperty(window, 'EventSource', {
+  writable: true,
+  value: vi.fn(),
+});

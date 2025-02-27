@@ -13,18 +13,23 @@ class EventsApi implements EventRepository {
 
   async sendPromptForEvent(
     eventId: string,
-    payload: NewEventPromptRequestBody
+    payload: NewEventPromptRequestBody,
   ): Promise<string> {
     try {
-      const response = await this.http.post<{ promptId: string }>(
-        `/events/${eventId}/prompt`,
-        payload
+      const response = await this.http.post<{
+        id: string;
+        eventId: string;
+        userId: string;
+        prompt: string;
+      }>(
+        `/events/${eventId}/prompts`,
+        payload,
       );
 
-      return response.data.promptId;
+      return response.data.id;
     } catch (e) {
       throw new Error(
-        `Failed to send prompt for event with id ${eventId} : ${e}`
+        `Failed to send prompt for event with id ${eventId} : ${e}`,
       );
     }
   }
@@ -44,6 +49,12 @@ class EventsApi implements EventRepository {
     } catch (e) {
       throw new Error(`Failed to retrieve event with id ${eventId} : ${e}`);
     }
+  }
+
+  listenForPromptGenerationEvent(eventId: string, promptId: string, onEvent: (event: MessageEvent) => void) {
+    const eventSource = new EventSource(`/events/${eventId}/prompts/${promptId}`);
+
+    eventSource.onmessage = onEvent;
   }
 }
 

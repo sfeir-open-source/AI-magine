@@ -16,8 +16,8 @@ import { useFingerprint } from '@/src/hooks/useFingerprint';
 import { Toaster } from '@/components/ui/sonner';
 import { STORAGE_USER_ID_KEY } from '@/src/hooks/useUserId';
 
-vi.mock('react-router', () => ({
-  ...vi.importActual('react-router'),
+vi.mock('react-router', async (importOriginal) => ({
+  ...(await importOriginal()),
   useNavigate: vi.fn(),
 }));
 

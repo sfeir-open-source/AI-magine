@@ -1,7 +1,6 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
-import { AppLayout } from '@/src/components/app-layout/app-layout';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 

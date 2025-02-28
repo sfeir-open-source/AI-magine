@@ -1,4 +1,3 @@
-import { AppLayout } from '@/src/components/app-layout/app-layout';
 import { NavLink, useParams } from 'react-router';
 import { useEventById } from '@/src/hooks/useEventById';
 import { EventPromptForm } from '@/src/components/event-prompt-form/event-prompt-form';

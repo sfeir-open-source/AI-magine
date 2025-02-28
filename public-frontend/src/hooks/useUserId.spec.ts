@@ -1,23 +1,23 @@
 import { renderHook } from '@testing-library/react';
-import { afterEach, expect, Mock } from 'vitest';
+import { afterEach, expect } from 'vitest';
 import { STORAGE_USER_ID_KEY, useUserId } from '@/src/hooks/useUserId';
 
 vi.mock('js-cookie', () => ({
   default: {
-    get: vi.fn()
-  }
-}))
+    get: vi.fn(),
+  },
+}));
 
 describe('useUserId', () => {
   afterEach(() => {
-    localStorage.clear()
+    localStorage.clear();
   });
 
   it('returns userId cookie value', () => {
-    localStorage.setItem(STORAGE_USER_ID_KEY, 'user-id')
+    localStorage.setItem(STORAGE_USER_ID_KEY, 'user-id');
 
-    const {result} = renderHook(() => useUserId());
+    const { result } = renderHook(() => useUserId());
 
-    expect(result.current).toEqual('user-id')
-  })
-})
+    expect(result.current).toEqual('user-id');
+  });
+});

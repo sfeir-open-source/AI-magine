@@ -34,10 +34,10 @@ describe('useEventPromptMutation', () => {
       userEmail: 'email',
       prompt: 'prompt',
       jobTitle: 'job',
-      allowContact: false
-    })
+      allowContact: false,
+    });
 
     expect(promptId).toEqual('prompt-id');
-    expect(sendPromptForEventMock).toHaveBeenCalled()
+    expect(sendPromptForEventMock).toHaveBeenCalled();
   });
 });

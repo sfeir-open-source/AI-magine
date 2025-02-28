@@ -21,14 +21,9 @@ describe('SfeirEventController', () => {
 
   describe('getSfeirEvents', () => {
     it('should return a list of events', async () => {
-      const mockEvents = [
-        SfeirEvent.from(
-          '1',
-          'Event 1',
-          new Date(2023, 1, 1),
-          new Date(2023, 1, 2)
-        ),
-      ];
+      const startDate = new Date(2023, 1, 1);
+      const endDate = new Date(2023, 1, 2);
+      const mockEvents = [SfeirEvent.from('1', 'Event 1', startDate, endDate)];
       vi.spyOn(sfeirEventService, 'getSfeirEvents').mockResolvedValue(
         mockEvents
       );
@@ -39,8 +34,8 @@ describe('SfeirEventController', () => {
         {
           id: '1',
           name: 'Event 1',
-          startDate: '2023-01-31T23:00:00.000Z',
-          endDate: '2023-02-01T23:00:00.000Z',
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
           isActive: false,
         },
       ]);
@@ -49,20 +44,17 @@ describe('SfeirEventController', () => {
 
   describe('getSfeirEvent', () => {
     it('should return an event by id', async () => {
-      const mockEvent = SfeirEvent.from(
-        '1',
-        'Event 1',
-        new Date(2023, 1, 1),
-        new Date(2023, 1, 2)
-      );
+      const startDate = new Date(2023, 1, 1);
+      const endDate = new Date(2023, 1, 2);
+      const mockEvent = SfeirEvent.from('1', 'Event 1', startDate, endDate);
       vi.spyOn(sfeirEventService, 'getSfeirEvent').mockResolvedValue(mockEvent);
 
       const result = await sfeirEventController.getSfeirEvent('1');
       expect(result).toEqual({
         id: '1',
         name: 'Event 1',
-        startDate: '2023-01-31T23:00:00.000Z',
-        endDate: '2023-02-01T23:00:00.000Z',
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
         isActive: false,
       });
     });

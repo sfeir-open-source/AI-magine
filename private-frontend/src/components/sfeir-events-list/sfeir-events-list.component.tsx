@@ -1,4 +1,3 @@
-import React from 'react';
 import { useGetSfeirEvents } from '@/src/hooks/use-get-sfeir-events';
 import { useServices } from '@/src/hooks/use-services';
 

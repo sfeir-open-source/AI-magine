@@ -7,8 +7,8 @@
     "prettier:write": "prettier --write .",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "test": "vitest --passWithNoTests",
-    "test:watch": "npm run test -- --watch",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest watch --passWithNoTests",
     "build": "vite build --config vite.config.mts",
     "start": "vite --config vite.config.mts",
     "start:dev": "npm run start"

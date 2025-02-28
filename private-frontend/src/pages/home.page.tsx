@@ -1,4 +1,3 @@
-import React from 'react';
 import { Logo } from '@/src/components/logo';
 import { SfeirEventsList } from '@/src/components/sfeir-events-list';
 import { useTranslations } from '@/src/hooks/use-translations';

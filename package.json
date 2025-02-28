@@ -6,11 +6,11 @@
     "public-frontend"
   ],
   "scripts": {
-    "prettier:c": "npm run prettier:check --workspaces",
-    "prettier:w": "npm run prettier:write --workspaces",
-    "lint:c": "npm run lint --workspaces",
-    "lint:w": "npm run lint:fix --workspaces",
-    "test:w": "npm run test:w --workspaces",
+    "prettier:check": "npm run prettier:check --workspaces",
+    "prettier:write": "npm run prettier:write --workspaces",
+    "lint:check": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces",
+    "test:watch": "npm run test:watch --workspaces",
     "test": "npm run test --workspaces",
     "start:dev": "npm run start:dev --workspaces",
     "release": "semantic-release",
@@ -35,11 +35,14 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "lint:w",
-      "prettier:w"
+      "npm run lint:fix --",
+      "npm run prettier:write --"
     ]
   },
   "dependencies": {
     "nanoid": "^5.1.2"
+  },
+  "overrides": {
+    "globals": "^16.0.0"
   }
 }

@@ -25,8 +25,9 @@ export const useImageGenerationListener = () => {
 
   if (userId) {
     const onEvent = useCallback(
-      (event: MessageEvent<{ type: string }>) => {
-        if (event.data.type === 'done') {
+      (event: MessageEvent<string>) => {
+        const data = JSON.parse(event?.data ?? '{}');
+        if (data.type === 'done') {
           navigate(`/events/${eventId}/users/${userId}/images`);
         }
       },
@@ -42,5 +43,4 @@ export const useImageGenerationListener = () => {
       },
     });
   }
-
 };

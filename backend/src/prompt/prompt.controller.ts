@@ -6,12 +6,15 @@ import {
   Param,
   Post,
   Res,
+  Sse,
 } from '@nestjs/common';
 import { PromptService } from '@/prompt/prompt.service';
 import { CreatePromptDto } from '@/prompt/prompt-types/prompt.dto';
 import { encrypt } from '@/config/crypto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { Observable, interval } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Controller('v1/events/:eventId/prompts')
 export class PromptController {
@@ -44,5 +47,28 @@ export class PromptController {
       sameSite: 'none',
     });
     return createdPrompt;
+  }
+
+  @Sse(':promptId')
+  @HttpCode(HttpStatus.OK)
+  @ApiTags('prompts')
+  @ApiOperation({
+    summary: 'Get a prompt status',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'The prompt status.',
+  })
+  getPromptStatus(
+    @Param('eventId') eventId: string,
+    @Param('promptId') promptId: string
+  ): Observable<MessageEvent> {
+    // Emulate generation latency
+    return interval(1000).pipe(
+      map(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        (_) => ({ data: { eventId, promptId, type: 'done' } }) as MessageEvent
+      )
+    );
   }
 }

@@ -79,7 +79,7 @@ describe('EventsApi', () => {
 
       eventsApi.listenForPromptGenerationEvent(eventId, promptId, mockCallback);
 
-      expect(EventSource).toHaveBeenCalledWith(`/events/${eventId}/prompts/${promptId}`);
+      expect(EventSource).toHaveBeenCalledWith(`${import.meta.env.VITE_BACKEND_API_URL}/events/${eventId}/prompts/${promptId}`);
 
       const mockEvent = new MessageEvent("message", { data: "test data" });
       const eventSourceInstance = (EventSource as any).mock.instances[0];

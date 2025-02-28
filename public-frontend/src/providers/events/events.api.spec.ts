@@ -2,6 +2,7 @@ import nock from 'nock';
 import { eventsApi } from '@/src/providers/events/events.api';
 import { Event } from '@/src/domain/Event';
 import { NewEventPromptRequestBody } from '@/src/domain/EventRepository';
+import { Mock } from 'vitest';
 
 const apiMock = nock(import.meta.env.VITE_BACKEND_API_URL);
 
@@ -13,7 +14,7 @@ describe('EventsApi', () => {
         startDate: new Date().toISOString(),
         endDate: new Date().toISOString(),
       };
-      const eventId = 'identifier'
+      const eventId = 'identifier';
 
       apiMock.get(`/events/${eventId}`).reply(200, mockEventResponse);
 
@@ -26,7 +27,7 @@ describe('EventsApi', () => {
     });
 
     it('throws an error if the call fails', async () => {
-      const eventId = 'identifier'
+      const eventId = 'identifier';
 
       apiMock.get(`/events/${eventId}`).reply(500);
 
@@ -36,8 +37,11 @@ describe('EventsApi', () => {
 
   describe('sendPromptForEvent', () => {
     it('calls backend api to send a new prompt for an event', async () => {
-      const fakeEventPromptResponse = { id: 'fake-prompt-id', userId: 'fake-user-id' };
-      const fakeEventId = 'identifier'
+      const fakeEventPromptResponse = {
+        id: 'fake-prompt-id',
+        userId: 'fake-user-id',
+      };
+      const fakeEventId = 'identifier';
       const fakePayload: NewEventPromptRequestBody = {
         userEmail: 'email',
         userName: 'name',
@@ -45,17 +49,25 @@ describe('EventsApi', () => {
         allowContact: false,
         prompt: 'prompt',
         browserFingerprint: 'fingerprint',
-      }
+      };
 
-      apiMock.post(`/events/${fakeEventId}/prompts`).reply(200, fakeEventPromptResponse);
+      apiMock
+        .post(`/events/${fakeEventId}/prompts`)
+        .reply(200, fakeEventPromptResponse);
 
-      const result = await eventsApi.sendPromptForEvent(fakeEventId, fakePayload);
+      const result = await eventsApi.sendPromptForEvent(
+        fakeEventId,
+        fakePayload
+      );
 
-      expect(result).toEqual({ promptId: fakeEventPromptResponse.id, userId: fakeEventPromptResponse.userId });
-    })
+      expect(result).toEqual({
+        promptId: fakeEventPromptResponse.id,
+        userId: fakeEventPromptResponse.userId,
+      });
+    });
 
     it('throws an error if the call fails', async () => {
-      const fakeEventId = 'identifier'
+      const fakeEventId = 'identifier';
       const fakePayload: NewEventPromptRequestBody = {
         userEmail: 'email',
         userName: 'name',
@@ -63,30 +75,35 @@ describe('EventsApi', () => {
         allowContact: false,
         prompt: 'prompt',
         browserFingerprint: 'fingerprint',
-      }
+      };
 
       apiMock.post(`/events/${fakeEventId}/prompts`).reply(500);
 
-      await expect(() => eventsApi.sendPromptForEvent(fakeEventId, fakePayload)).rejects.toThrow();
+      await expect(() =>
+        eventsApi.sendPromptForEvent(fakeEventId, fakePayload)
+      ).rejects.toThrow();
     });
-  })
+  });
 
   describe('listenForPromptGenerationEvent', () => {
-    it("creates an EventSource and handle incoming messages", () => {
-      const eventId = "123";
-      const promptId = "456";
+    it('creates an EventSource and handle incoming messages', () => {
+      const eventId = '123';
+      const promptId = '456';
       const mockCallback = vi.fn();
 
       eventsApi.listenForPromptGenerationEvent(eventId, promptId, mockCallback);
 
-      expect(EventSource).toHaveBeenCalledWith(`${import.meta.env.VITE_BACKEND_API_URL}/events/${eventId}/prompts/${promptId}`);
+      expect(EventSource).toHaveBeenCalledWith(
+        `${import.meta.env.VITE_BACKEND_API_URL}/events/${eventId}/prompts/${promptId}`
+      );
 
-      const mockEvent = new MessageEvent("message", { data: "test data" });
-      const eventSourceInstance = (EventSource as any).mock.instances[0];
+      const mockEvent = new MessageEvent('message', { data: 'test data' });
+      const eventSourceInstance = (EventSource as unknown as Mock).mock
+        .instances[0];
 
       eventSourceInstance.onmessage(mockEvent);
 
       expect(mockCallback).toHaveBeenCalledWith(mockEvent);
     });
-  })
+  });
 });

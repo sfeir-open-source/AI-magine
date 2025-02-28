@@ -4,8 +4,12 @@ import { TypographyLead } from './lead';
 
 describe('TypographyLead', () => {
   it('displays provided children components', () => {
-    render(<TypographyLead><span>Content here</span></TypographyLead>)
+    render(
+      <TypographyLead>
+        <span>Content here</span>
+      </TypographyLead>
+    );
 
     expect(screen.getByText('Content here')).toBeInTheDocument();
-  })
-})
+  });
+});

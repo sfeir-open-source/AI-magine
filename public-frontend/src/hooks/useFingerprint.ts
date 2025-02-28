@@ -16,5 +16,5 @@ export const useFingerprint = () => {
     setFingerprint();
   }, []);
 
-  return fingerprintHash
-}
+  return fingerprintHash;
+};

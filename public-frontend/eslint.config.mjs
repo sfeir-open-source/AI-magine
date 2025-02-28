@@ -13,7 +13,7 @@ export default [
   pluginReact.configs.flat['jsx-runtime'],
   {
     plugins: {
-      "react-hooks": pluginReactHooks,
+      'react-hooks': pluginReactHooks,
     },
     rules: { ...pluginReactHooks.configs.recommended.rules },
   },

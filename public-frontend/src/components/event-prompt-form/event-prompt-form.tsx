@@ -24,7 +24,7 @@ import { useEventPromptMutation } from '@/src/hooks/useEventPromptMutation';
 import { useFingerprint } from '@/src/hooks/useFingerprint';
 import { useNavigate } from 'react-router';
 import { LoadingSpinner } from '@/src/components/loading-spinner/loading-spinner';
-import { toast } from "sonner"
+import { toast } from 'sonner';
 import { STORAGE_USER_ID_KEY } from '@/src/hooks/useUserId';
 
 export const STORAGE_NAME_KEY = 'name';
@@ -88,13 +88,12 @@ export const EventPromptForm = ({ event }: EventPromptFormProps) => {
         prompt: data.prompt,
       });
 
-      localStorage.setItem(STORAGE_USER_ID_KEY, userId)
+      localStorage.setItem(STORAGE_USER_ID_KEY, userId);
 
       navigate(`/events/${event.id}/prompts/${promptId}/loading`);
-    } catch(e) {
-      toast.error(`${t('failed-create-prompt')}: ${(e as Error).message}`)
+    } catch (e) {
+      toast.error(`${t('failed-create-prompt')}: ${(e as Error).message}`);
     }
-
   };
 
   return (

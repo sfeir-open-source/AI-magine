@@ -1,9 +1,9 @@
-import {SfeirEventService} from "@/src/services/sfeir-event/sfeir-event.service";
+import { SfeirEventService } from '@/src/services/sfeir-event/sfeir-event.service';
 
 export type ServiceContextType = {
-    sfeirEventsService?: SfeirEventService
+  sfeirEventsService?: SfeirEventService;
 };
 
-export type  ServiceProviderProps = {
-    sfeirEventsService: SfeirEventService
-}
+export type ServiceProviderProps = {
+  sfeirEventsService: SfeirEventService;
+};

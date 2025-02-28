@@ -2,7 +2,7 @@ import { LoadingSpinner } from '@/src/components/loading-spinner/loading-spinner
 import { useImageGenerationListener } from '@/src/hooks/useImageGenerationListener';
 
 export const PromptLoadingPage = () => {
-  useImageGenerationListener()
+  useImageGenerationListener();
 
   return (
     <div className="mt-16 flex flex-col items-center">

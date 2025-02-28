@@ -85,8 +85,10 @@ describe('EventPromptForm', () => {
     (useNavigate as Mock).mockReturnValue(navigateMock);
 
     const fakePromptId = 'fake-prompt-id';
-    const fakeUserId = 'fake-user'
-    const mutateAsyncMock = vi.fn().mockReturnValue({ promptId: fakePromptId, userId: fakeUserId });
+    const fakeUserId = 'fake-user';
+    const mutateAsyncMock = vi
+      .fn()
+      .mockReturnValue({ promptId: fakePromptId, userId: fakeUserId });
     (useEventPromptMutation as Mock).mockReturnValue({
       mutateAsync: mutateAsyncMock,
     });
@@ -153,9 +155,7 @@ describe('EventPromptForm', () => {
     expect(localStorage.getItem(STORAGE_PROMPT_KEY)).toEqual(
       fakePromptRequest.prompt
     );
-    expect(localStorage.getItem(STORAGE_USER_ID_KEY)).toEqual(
-      fakeUserId
-    );
+    expect(localStorage.getItem(STORAGE_USER_ID_KEY)).toEqual(fakeUserId);
   });
 
   it('displays an error if call to create prompt failed', async () => {

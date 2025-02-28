@@ -4,16 +4,16 @@ import { NewEventPromptRequestBody } from '@/src/domain/EventRepository';
 
 type EventPromptMutationRequest = {
   eventId: string;
-} & NewEventPromptRequestBody
+} & NewEventPromptRequestBody;
 
 export const useEventPromptMutation = () => {
   const eventsProvider = useEventsProvider();
 
   return useMutation({
     mutationFn: (payload: EventPromptMutationRequest) => {
-      const { eventId, ...eventPrompt } = payload
+      const { eventId, ...eventPrompt } = payload;
 
-      return eventsProvider.sendPromptForEvent(eventId, eventPrompt)
-    }
-  })
-}
+      return eventsProvider.sendPromptForEvent(eventId, eventPrompt);
+    },
+  });
+};

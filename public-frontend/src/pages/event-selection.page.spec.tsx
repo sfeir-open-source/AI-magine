@@ -5,8 +5,8 @@ import i18n from '@/src/config/i18n';
 import { useNavigate } from 'react-router';
 import { Mock } from 'vitest';
 
-vi.mock('react-router', () => ({
-  ...vi.importActual('react-router'),
+vi.mock('react-router', async (importOriginal) => ({
+  ...(await importOriginal()),
   useNavigate: vi.fn(),
 }));
 

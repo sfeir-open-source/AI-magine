@@ -22,5 +22,8 @@
   "error-retrieving-event": "Une erreur est survenue lors de la récupération de l'évènement",
   "error": "Erreur",
   "failed-create-prompt": "Échec de l'envoi du prompt",
-  "failed-authenticate-redirect": "Échec de l'authentification. Vous allez être redirigé."
+  "failed-authenticate-redirect": "Échec de l'authentification. Vous allez être redirigé.",
+  "successful-promote": "Image promue avec succès",
+  "failed-promote": "Échec de la promotion de l'image",
+  "promote": "Promouvoir"
 }

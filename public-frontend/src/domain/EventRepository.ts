@@ -1,4 +1,5 @@
 import { Event } from '@/src/domain/Event';
+import { Image } from '@/src/domain/Image';
 
 export type NewEventPromptRequestBody = {
   browserFingerprint: string;
@@ -16,6 +17,14 @@ export interface EventRepository {
     eventId: string,
     payload: NewEventPromptRequestBody
   ): Promise<{ promptId: string; userId: string }>;
+
+  getImagesForUser(eventId: string, userId: string): Promise<Image[]>;
+
+  promoteUserImage(
+    eventId: string,
+    userId: string,
+    imageId: string
+  ): Promise<void>;
 
   listenForPromptGenerationEvent(
     eventId: string,

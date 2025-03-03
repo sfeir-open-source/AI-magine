@@ -22,5 +22,8 @@
   "error-retrieving-event": "Error while retrieving event",
   "error": "Error",
   "failed-create-prompt": "Failed to send prompt",
-  "failed-authenticate-redirect": "Failed to authenticate user. You will be redirected."
+  "failed-authenticate-redirect": "Failed to authenticate user. You will be redirected.",
+  "successful-promote": "Image promoted successfully",
+  "failed-promote": "Failed to promote image",
+  "promote": "Promote"
 }

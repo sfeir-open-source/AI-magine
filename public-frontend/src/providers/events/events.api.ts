@@ -4,6 +4,7 @@ import {
   NewEventPromptRequestBody,
   EventRepository,
 } from '@/src/domain/EventRepository';
+import { Image } from '@/src/domain/Image';
 
 class EventsApi implements EventRepository {
   private http: AxiosInstance;
@@ -13,6 +14,49 @@ class EventsApi implements EventRepository {
     this.http = axios.create({
       baseURL: this.baseURL,
     });
+  }
+
+  async getImagesForUser(eventId: string, userId: string): Promise<Image[]> {
+    try {
+      const response = await this.http.get<
+        {
+          imageId: string;
+          imageUrl: string;
+          prompt: string;
+          createdAt: string;
+          selected: boolean;
+        }[]
+      >(`/events/${eventId}/users/${userId}/images`);
+
+      return response.data.map(
+        (backendImage) =>
+          new Image(
+            backendImage.imageId,
+            backendImage.prompt,
+            backendImage.imageUrl,
+            backendImage.selected
+          )
+      );
+    } catch (e) {
+      throw new Error(
+        `Failed to retrieve user images : ${(e as Error).message}`
+      );
+    }
+  }
+
+  async promoteUserImage(
+    eventId: string,
+    userId: string,
+    imageId: string
+  ): Promise<void> {
+    try {
+      await this.http.patch(
+        `/events/${eventId}/users/${userId}/images/${imageId}/promote`
+      );
+      return;
+    } catch (e) {
+      throw new Error(`Failed to promote image : ${(e as Error).message}`);
+    }
   }
 
   async sendPromptForEvent(
@@ -30,7 +74,7 @@ class EventsApi implements EventRepository {
       return { promptId: response.data.id, userId: response.data.userId };
     } catch (e) {
       throw new Error(
-        `Failed to send prompt for event with id ${eventId} : ${e}`
+        `Failed to send prompt for event with id ${eventId} : ${(e as Error).message}`
       );
     }
   }
@@ -48,7 +92,9 @@ class EventsApi implements EventRepository {
 
       return new Event(id, name, startDate, endDate);
     } catch (e) {
-      throw new Error(`Failed to retrieve event with id ${eventId} : ${e}`);
+      throw new Error(
+        `Failed to retrieve event with id ${eventId} : ${(e as Error).message}`
+      );
     }
   }
 

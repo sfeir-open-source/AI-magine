@@ -1,7 +1,6 @@
 import { vi } from 'vitest';
 import { Image } from '@/images/images-types';
 
-// Mock nanoid for consistent tests
 vi.mock('nanoid', () => ({
   nanoid: () => 'mocked-nanoid',
 }));

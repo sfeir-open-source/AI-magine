@@ -3,29 +3,14 @@ import { SQLiteClient } from '@/config/sqlite-client';
 import { SqlitePromptRepository } from '@/prompt/sqlite.prompt.repository';
 import { Prompt } from '@/prompt/prompt-types/prompt.domain';
 
-vi.mock('./sqlite.prompt.repository', async () => {
-  const originalModule = await vi.importActual<
-    typeof import('./sqlite.prompt.repository')
-  >('./sqlite.prompt.repository');
-  return {
-    ...originalModule,
-    SQLiteClient: vi.fn().mockImplementation(() => ({
-      run: vi.fn(),
-      get: vi.fn(),
-      all: vi.fn(),
-      close: vi.fn(),
-      serialize: vi.fn(),
-    })),
-  };
-});
-
 describe('SqlitePromptRepository', () => {
   let sqliteClient: SQLiteClient;
   let repository: SqlitePromptRepository;
 
-  beforeAll(() => {
+  beforeEach(async () => {
     sqliteClient = new SQLiteClient();
     repository = new SqlitePromptRepository(sqliteClient);
+    await repository.onApplicationBootstrap();
   });
 
   describe('countByEventIdAndUserId', () => {

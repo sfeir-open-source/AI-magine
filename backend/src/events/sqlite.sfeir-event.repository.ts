@@ -1,6 +1,6 @@
 import { SfeirEvent, SfeirEventRepository } from '@/events/events-types';
 import { SQLiteClient } from '@/config/sqlite-client';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 
 type SfeirEventRow = {
   id: string;
@@ -10,27 +10,24 @@ type SfeirEventRow = {
 };
 
 @Injectable()
-export class SqliteSfeirEventRepository implements SfeirEventRepository {
-  private tableInitialized = false;
-
+export class SqliteSfeirEventRepository
+  implements SfeirEventRepository, OnApplicationBootstrap
+{
   constructor(@Inject() private sqliteClient: SQLiteClient) {}
 
-  private async initTable() {
-    if (this.tableInitialized) return;
+  async onApplicationBootstrap() {
     await this.sqliteClient.run({
       sql: `CREATE TABLE IF NOT EXISTS events
-                      (
-                          id          TEXT PRIMARY KEY,
-                          name        TEXT NOT NULL,
-                          startDateTs INTEGER NOT NULL,
-                          endDateTs   INTEGER NOT NULL
-                      );`,
+                  (
+                      id          TEXT PRIMARY KEY,
+                      name        TEXT    NOT NULL,
+                      startDateTs INTEGER NOT NULL,
+                      endDateTs   INTEGER NOT NULL
+                  );`,
     });
-    this.tableInitialized = true;
   }
 
   async getSfeirEvents(): Promise<SfeirEvent[]> {
-    await this.initTable();
     const storedEvents = await this.sqliteClient.all<SfeirEventRow>({
       sql: `SELECT id, name, startDateTs, endDateTs
                   FROM events`,
@@ -47,7 +44,6 @@ export class SqliteSfeirEventRepository implements SfeirEventRepository {
   }
 
   async saveSfeirEvent(sfeirEvent: SfeirEvent): Promise<SfeirEvent> {
-    await this.initTable();
     await this.sqliteClient.run({
       sql: `INSERT INTO events (id, name, startDateTs, endDateTs)
                   VALUES (?1, ?2, ?3, ?4);`,
@@ -62,7 +58,6 @@ export class SqliteSfeirEventRepository implements SfeirEventRepository {
   }
 
   async deleteSfeirEvent(id: string): Promise<void> {
-    await this.initTable();
     await this.sqliteClient.run({
       sql: `DELETE
                   FROM events
@@ -72,7 +67,6 @@ export class SqliteSfeirEventRepository implements SfeirEventRepository {
   }
 
   async getSfeirEvent(id: string): Promise<SfeirEvent | undefined> {
-    await this.initTable();
     const row = await this.sqliteClient.get<SfeirEventRow>({
       sql: `SELECT id, name, startDateTs, endDateTs
                   FROM events

@@ -3,22 +3,6 @@ import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteImagesRepository } from '@/images/sqlite.images.repository';
 import { Image } from '@/images/images-types';
 
-vi.mock('./sqlite.images.repository', async () => {
-  const originalModule = await vi.importActual<
-    typeof import('./sqlite.images.repository')
-  >('./sqlite.images.repository');
-  return {
-    ...originalModule,
-    SQLiteClient: vi.fn().mockImplementation(() => ({
-      run: vi.fn(),
-      get: vi.fn(),
-      all: vi.fn(),
-      close: vi.fn(),
-      serialize: vi.fn(),
-    })),
-  };
-});
-
 const promptId = 'promptId1';
 const mockImage = Image.create('http://example.com/image.png', promptId);
 
@@ -26,9 +10,10 @@ describe('SqliteImagesRepository', () => {
   let sqliteClient: SQLiteClient;
   let repository: SqliteImagesRepository;
 
-  beforeAll(() => {
+  beforeEach(async () => {
     sqliteClient = new SQLiteClient();
     repository = new SqliteImagesRepository(sqliteClient);
+    await repository.onApplicationBootstrap();
   });
 
   describe('saveImage', () => {

@@ -3,22 +3,6 @@ import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteImageGenerationStatusRepository } from '@/image-generation/sqlite.image-generation-status.repository';
 import { ImageGenerationStatus } from '@/image-generation/image-generation-types';
 
-vi.mock('./sqlite.image-generation-status.repository', async () => {
-  const originalModule = await vi.importActual<
-    typeof import('./sqlite.image-generation-status.repository')
-  >('./sqlite.image-generation-status.repository');
-  return {
-    ...originalModule,
-    SQLiteClient: vi.fn().mockImplementation(() => ({
-      run: vi.fn(),
-      get: vi.fn(),
-      all: vi.fn(),
-      close: vi.fn(),
-      serialize: vi.fn(),
-    })),
-  };
-});
-
 const now = new Date();
 const promptId = 'PromptId1';
 const mockImageGenerationStatus = ImageGenerationStatus.from(
@@ -33,9 +17,10 @@ describe('SqliteImageGenerationStatusRepository', () => {
   let sqliteClient: SQLiteClient;
   let repository: SqliteImageGenerationStatusRepository;
 
-  beforeAll(() => {
+  beforeEach(async () => {
     sqliteClient = new SQLiteClient();
     repository = new SqliteImageGenerationStatusRepository(sqliteClient);
+    await repository.onApplicationBootstrap();
   });
 
   describe('getPromptGenerationStatus', () => {

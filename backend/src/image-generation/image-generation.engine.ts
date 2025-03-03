@@ -50,17 +50,19 @@ export class ImageGenerationEngine {
     });
   }
 
-  processPrompt(promptId: string, prompt: string) {
-    this.generateImageFromPrompt(promptId, prompt)
-      .then(({ promptId, imageContent }) => {
-        return this.imagesService.saveImage(promptId, imageContent);
-      })
-      .then(() => {
-        this.emitter.emit('done', { promptId });
-      })
-      .catch((error) => {
-        this.emitter.emit('error', { promptId, error });
-      });
+  async processPrompt(promptId: string, prompt: string) {
+    try {
+      const { imageContent } = await this.generateImageFromPrompt(
+        promptId,
+        prompt
+      );
+
+      await this.imagesService.saveImage(promptId, imageContent);
+
+      this.emitter.emit('done', { promptId });
+    } catch (error) {
+      this.emitter.emit('error', { promptId, error });
+    }
   }
 
   listenForPromptGenerationDone(

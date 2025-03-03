@@ -3,22 +3,6 @@ import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteUserRepository } from '@/user/sqlite.user.repository';
 import { User } from '@/user/user-types';
 
-vi.mock('./sqlite.user.repository', async () => {
-  const originalModule = await vi.importActual<
-    typeof import('./sqlite.user.repository')
-  >('./sqlite.user.repository');
-  return {
-    ...originalModule,
-    SQLiteClient: vi.fn().mockImplementation(() => ({
-      run: vi.fn(),
-      get: vi.fn(),
-      all: vi.fn(),
-      close: vi.fn(),
-      serialize: vi.fn(),
-    })),
-  };
-});
-
 const mockUser = User.from(
   '2',
   'hashedEmail',
@@ -32,9 +16,10 @@ describe('SqliteUserRepository', () => {
   let sqliteClient: SQLiteClient;
   let repository: SqliteUserRepository;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     sqliteClient = new SQLiteClient();
     repository = new SqliteUserRepository(sqliteClient);
+    await repository.onApplicationBootstrap();
   });
 
   describe('getUserIdByEmail', () => {

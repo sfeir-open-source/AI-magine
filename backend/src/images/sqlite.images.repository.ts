@@ -1,32 +1,29 @@
 import { ImagesRepository } from '@/images/images-types/images.repository';
 import { Image } from './images-types';
-import { Inject } from '@nestjs/common';
+import { Inject, OnApplicationBootstrap } from '@nestjs/common';
 import { SQLiteClient } from '@/config/sqlite-client';
 
-export class SqliteImagesRepository implements ImagesRepository {
-  private tableInitialized = false;
-
+export class SqliteImagesRepository
+  implements ImagesRepository, OnApplicationBootstrap
+{
   constructor(
     @Inject()
     private readonly sqliteClient: SQLiteClient
   ) {}
 
-  private async initTable() {
-    if (this.tableInitialized) return;
+  async onApplicationBootstrap() {
     await this.sqliteClient.run({
       sql: `CREATE TABLE IF NOT EXISTS images
-                      (
-                          id        TEXT PRIMARY KEY,
-                          url       TEXT      NOT NULL,
-                          promptId  TEXT      NOT NULL,
-                          createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-                      );`,
+                  (
+                      id        TEXT PRIMARY KEY,
+                      url       TEXT      NOT NULL,
+                      promptId  TEXT      NOT NULL,
+                      createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                  );`,
     });
-    this.tableInitialized = true;
   }
 
   async saveImage(image: Image): Promise<Image> {
-    await this.initTable();
     await this.sqliteClient.run({
       sql: `INSERT INTO images (id, url, promptId, createdAt)
                   VALUES (?1, ?2, ?3, ?4);`,
@@ -41,7 +38,6 @@ export class SqliteImagesRepository implements ImagesRepository {
   }
 
   async getImageByPromptId(promptId: string): Promise<Image | undefined> {
-    await this.initTable();
     const row = await this.sqliteClient.get<{
       id: string;
       url: string;

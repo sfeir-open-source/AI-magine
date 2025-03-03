@@ -3,22 +3,6 @@ import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteSfeirEventRepository } from '@/events/sqlite.sfeir-event.repository';
 import { SfeirEvent } from '@/events/events-types';
 
-vi.mock('./sqlite.sfeir-event.repository', async () => {
-  const originalModule = await vi.importActual<
-    typeof import('./sqlite.sfeir-event.repository')
-  >('./sqlite.sfeir-event.repository');
-  return {
-    ...originalModule,
-    SQLiteClient: vi.fn().mockImplementation(() => ({
-      run: vi.fn(),
-      get: vi.fn(),
-      all: vi.fn(),
-      close: vi.fn(),
-      serialize: vi.fn(),
-    })),
-  };
-});
-
 const startDateTs = 1633046400000;
 const endDateTs = 1633132800000;
 const mockEvent = SfeirEvent.from(
@@ -32,9 +16,10 @@ describe('SqliteSfeirEventRepository', () => {
   let sqliteClient: SQLiteClient;
   let repository: SqliteSfeirEventRepository;
 
-  beforeAll(() => {
+  beforeEach(async () => {
     sqliteClient = new SQLiteClient();
     repository = new SqliteSfeirEventRepository(sqliteClient);
+    await repository.onApplicationBootstrap();
   });
 
   describe('getSfeirEvents', () => {

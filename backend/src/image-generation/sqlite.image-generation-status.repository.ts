@@ -2,36 +2,31 @@ import {
   ImageGenerationStatus,
   ImageGenerationStatusRepository,
 } from '@/image-generation/image-generation-types';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { SQLiteClient } from '@/config/sqlite-client';
 
 @Injectable()
 export class SqliteImageGenerationStatusRepository
-  implements ImageGenerationStatusRepository
+  implements ImageGenerationStatusRepository, OnApplicationBootstrap
 {
-  private tableInitialized = false;
-
   constructor(@Inject() private readonly sqliteClient: SQLiteClient) {}
 
-  private async initTable() {
-    if (this.tableInitialized) return;
+  async onApplicationBootstrap() {
     await this.sqliteClient.run({
       sql: `CREATE TABLE IF NOT EXISTS image_generation_status
-                      (
-                          id        TEXT PRIMARY KEY,
-                          promptId  TEXT      NOT NULL,
-                          status    TEXT      NOT NULL,
-                          payload   TEXT,
-                          updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-                      );`,
+                  (
+                      id        TEXT PRIMARY KEY,
+                      promptId  TEXT      NOT NULL,
+                      status    TEXT      NOT NULL,
+                      payload   TEXT,
+                      updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                  );`,
     });
-    this.tableInitialized = true;
   }
 
   async getPromptGenerationStatus(
     promptId: string
   ): Promise<ImageGenerationStatus | undefined> {
-    await this.initTable();
     const row = await this.sqliteClient.get<{
       id: string;
       promptId: string;
@@ -64,7 +59,6 @@ export class SqliteImageGenerationStatusRepository
     status: string,
     payload = ''
   ): Promise<ImageGenerationStatus> {
-    await this.initTable();
     const newImageGenerationStatus = ImageGenerationStatus.create(
       promptId,
       status,

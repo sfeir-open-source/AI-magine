@@ -7,24 +7,6 @@ import { Prompt } from '@/prompt/prompt-types/prompt.domain';
 import { User } from '@/user/user-types';
 import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
 
-vi.mock('nanoid', () => {
-  return {
-    nanoid: vi.fn(() => {
-      const stack = new Error().stack;
-
-      if (stack) {
-        if (stack.includes('prompt.domain.ts')) {
-          return 'generatedPromptId';
-        }
-        if (stack.includes('user.domain.ts')) {
-          return 'generatedUserId';
-        }
-      }
-      return 'default-mock-id';
-    }),
-  };
-});
-
 describe('PromptService', () => {
   let promptService: PromptService;
   let promptRepositoryMock: PromptRepository;
@@ -65,7 +47,7 @@ describe('PromptService', () => {
     };
 
     const expectedPrompt = Prompt.from(
-      'generatedPromptId',
+      expect.any(String),
       'event1',
       'existingUserId',
       'Sample Prompt'
@@ -103,7 +85,7 @@ describe('PromptService', () => {
     };
 
     const createdUser = User.from(
-      'generatedUserId',
+      expect.any(String),
       'email@example.com',
       'fingerprint123',
       true,
@@ -111,7 +93,7 @@ describe('PromptService', () => {
       'Engineer'
     );
     const expectedPrompt = Prompt.from(
-      'generatedPromptId',
+      expect.any(String),
       'event1',
       'generatedUserId',
       'Sample Prompt'

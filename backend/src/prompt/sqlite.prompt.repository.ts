@@ -1,33 +1,30 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { PromptRepository } from '@/prompt/prompt-types';
 import { Prompt } from '@/prompt/prompt-types/prompt.domain';
 
 @Injectable()
-export class SqlitePromptRepository implements PromptRepository {
-  private tableInitialized = false;
-
+export class SqlitePromptRepository
+  implements PromptRepository, OnApplicationBootstrap
+{
   constructor(@Inject() private readonly sqliteClient: SQLiteClient) {}
 
-  private async initTable() {
-    if (this.tableInitialized) return true;
+  async onApplicationBootstrap() {
     await this.sqliteClient.run({
       sql: `CREATE TABLE IF NOT EXISTS prompts
-                      (
-                          id       TEXT PRIMARY KEY,
-                          user_id  TEXT NOT NULL,
-                          event_id TEXT NOT NULL,
-                          prompt   TEXT NOT NULL
-                      );`,
+                  (
+                      id       TEXT PRIMARY KEY,
+                      user_id  TEXT NOT NULL,
+                      event_id TEXT NOT NULL,
+                      prompt   TEXT NOT NULL
+                  );`,
     });
-    this.tableInitialized = true;
   }
 
   async countByEventIdAndUserId(
     eventId: string,
     userId: string
   ): Promise<number> {
-    await this.initTable();
     const { count } = await this.sqliteClient.get<{ count: number }>({
       sql: `SELECT COUNT(*) AS count
                   FROM prompts
@@ -42,7 +39,6 @@ export class SqlitePromptRepository implements PromptRepository {
   }
 
   async save(prompt: Prompt): Promise<Prompt> {
-    await this.initTable();
     await this.sqliteClient.run({
       sql: `INSERT INTO prompts (id, user_id, event_id, prompt)
                   VALUES (?1, ?2, ?3, ?4);`,

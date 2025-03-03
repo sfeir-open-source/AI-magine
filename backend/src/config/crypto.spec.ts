@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import { encrypt, decrypt, CipherError, DecipherError } from '@/config/crypto';
 
 const validKey = '%ijCr9WdSF5i7YR@URsoiZ$2n4pdFA4g';

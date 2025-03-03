@@ -1,10 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { vi } from 'vitest';
 import { UserService } from '@/user/user.service';
 import { User, UserRepository } from '@/user/user-types';
 
+const mockUser = User.from('1', 'hash', 'fp', true);
 const mockUserRepository = {
-  save: vi.fn(),
-  getUserIdByEmail: vi.fn(),
+  save: vi.fn().mockResolvedValue(mockUser),
+  getUserIdByEmail: vi.fn().mockResolvedValue('123'),
 };
 
 describe('UserService', () => {
@@ -19,35 +20,33 @@ describe('UserService', () => {
 
   describe('create', () => {
     it('should save the user and return it', async () => {
-      const user = User.from('1', 'hash', 'fp', true);
-      mockUserRepository.save.mockResolvedValue(user);
+      const result = await userService.create(mockUser);
 
-      const result = await userService.create(user);
-
-      expect(mockUserRepository.save).toHaveBeenCalledWith(user);
-      expect(result).toEqual(user);
+      expect(mockUserRepository.save).toHaveBeenCalledWith(mockUser);
+      expect(result).toEqual(mockUser);
     });
   });
 
   describe('getUserIdByEmail', () => {
     it('should return the user ID for a valid email', async () => {
-      const email = 'test@example.com';
-      const userId = '123';
-      mockUserRepository.getUserIdByEmail.mockResolvedValue(userId);
+      mockUserRepository.getUserIdByEmail.mockResolvedValue(mockUser.id);
 
-      const result = await userService.getUserIdByEmail(email);
+      const result = await userService.getUserIdByEmail(mockUser.hashedEmail);
 
-      expect(mockUserRepository.getUserIdByEmail).toHaveBeenCalledWith(email);
-      expect(result).toBe(userId);
+      expect(mockUserRepository.getUserIdByEmail).toHaveBeenCalledWith(
+        mockUser.hashedEmail
+      );
+      expect(result).toBe(mockUser.id);
     });
 
     it('should return undefined if the user is not found', async () => {
-      const email = 'unknown@example.com';
       mockUserRepository.getUserIdByEmail.mockResolvedValue(undefined);
 
-      const result = await userService.getUserIdByEmail(email);
+      const result = await userService.getUserIdByEmail(mockUser.hashedEmail);
 
-      expect(mockUserRepository.getUserIdByEmail).toHaveBeenCalledWith(email);
+      expect(mockUserRepository.getUserIdByEmail).toHaveBeenCalledWith(
+        mockUser.hashedEmail
+      );
       expect(result).toBeUndefined();
     });
   });

@@ -33,8 +33,6 @@ export class SfeirEventDto {
 }
 
 export class CreateSfeirEventDto {
-  private constructor() {}
-
   @ApiProperty({
     name: 'name',
     description: 'Name of the event',

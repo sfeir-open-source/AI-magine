@@ -9,12 +9,12 @@ import {
   Sse,
 } from '@nestjs/common';
 import { PromptService } from '@/prompt/prompt.service';
-import { CreatePromptDto } from '@/prompt/prompt-types/prompt.dto';
+import { CreatePromptBodyDto } from '@/prompt/prompt-types/prompt.dto';
 import { encrypt } from '@/config/crypto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { Observable, interval } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { ImageGenerationMessageEvent } from '@/image-generation/image-generation-types';
 
 @Controller('v1/events/:eventId/prompts')
 export class PromptController {
@@ -29,11 +29,11 @@ export class PromptController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'The prompt has been successfully created.',
-    type: CreatePromptDto,
+    type: CreatePromptBodyDto,
   })
   async createPrompt(
     @Param('eventId') eventId: string,
-    @Body() createDto: CreatePromptDto,
+    @Body() createDto: CreatePromptBodyDto,
     @Res({ passthrough: true }) response: Response
   ) {
     const createdPrompt = await this.promptService.createPrompt({
@@ -62,13 +62,11 @@ export class PromptController {
   getPromptStatus(
     @Param('eventId') eventId: string,
     @Param('promptId') promptId: string
-  ): Observable<MessageEvent> {
-    // Emulate generation latency
-    return interval(1000).pipe(
-      map(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (_) => ({ data: { eventId, promptId, type: 'done' } }) as MessageEvent
-      )
-    );
+  ): Observable<ImageGenerationMessageEvent> {
+    const progress = new Subject<ImageGenerationMessageEvent>();
+
+    this.promptService.getGenerationStatus(promptId, progress);
+
+    return progress.asObservable();
   }
 }

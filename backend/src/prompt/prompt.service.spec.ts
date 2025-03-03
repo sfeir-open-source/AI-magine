@@ -1,16 +1,27 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { vi } from 'vitest';
 
-import { nanoid } from 'nanoid';
 import { PromptService } from '@/prompt/prompt.service';
 import { CreatePromptDto, PromptRepository } from '@/prompt/prompt-types';
 import { UserService } from '@/user/user.service';
 import { Prompt } from '@/prompt/prompt-types/prompt.domain';
 import { User } from '@/user/user-types';
-import {ImageGenerationService} from "@/image-generation/image-generation.service";
+import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
 
 vi.mock('nanoid', () => {
   return {
-    nanoid: vi.fn(),
+    nanoid: vi.fn(() => {
+      const stack = new Error().stack;
+
+      if (stack) {
+        if (stack.includes('prompt.domain.ts')) {
+          return 'generatedPromptId';
+        }
+        if (stack.includes('user.domain.ts')) {
+          return 'generatedUserId';
+        }
+      }
+      return 'default-mock-id';
+    }),
   };
 });
 
@@ -18,7 +29,7 @@ describe('PromptService', () => {
   let promptService: PromptService;
   let promptRepositoryMock: PromptRepository;
   let userServiceMock: UserService;
-  let imageGenerationServiceMock: ImageGenerationService;
+  let imageGenerationEngineMock: ImageGenerationEngine;
 
   beforeEach(() => {
     promptRepositoryMock = {
@@ -31,11 +42,15 @@ describe('PromptService', () => {
       getUserIdByEmail: vi.fn(),
     } as unknown as UserService;
 
-    imageGenerationServiceMock = {
-      generateImageFromPrompt: vi.fn(),
-    } as unknown as ImageGenerationService;
+    imageGenerationEngineMock = {
+      processPrompt: vi.fn(),
+    } as unknown as ImageGenerationEngine;
 
-    promptService = new PromptService(promptRepositoryMock, userServiceMock, imageGenerationServiceMock);
+    promptService = new PromptService(
+      promptRepositoryMock,
+      userServiceMock,
+      imageGenerationEngineMock
+    );
   });
 
   it('should create a new prompt if all conditions are met', async () => {
@@ -48,10 +63,6 @@ describe('PromptService', () => {
       jobTitle: 'Engineer',
       allowContact: true,
     };
-
-    vi.mocked(nanoid)
-      .mockReturnValueOnce('generatedPromptId')
-      .mockReturnValueOnce('generatedUserId');
 
     const expectedPrompt = Prompt.from(
       'generatedPromptId',
@@ -90,13 +101,6 @@ describe('PromptService', () => {
       jobTitle: 'Engineer',
       allowContact: true,
     };
-
-    vi.mocked(nanoid)
-      .mockReturnValueOnce('generatedPromptId')
-      .mockReturnValueOnce('generatedPromptId');
-    vi.mocked(nanoid)
-      .mockReturnValueOnce('generatedUserId')
-      .mockReturnValueOnce('generatedUserId');
 
     const createdUser = User.from(
       'generatedUserId',

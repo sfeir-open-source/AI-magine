@@ -5,24 +5,29 @@ import { Prompt } from '@/prompt/prompt-types/prompt.domain';
 
 @Injectable()
 export class SqlitePromptRepository implements PromptRepository {
-  constructor(@Inject() private readonly sqliteClient: SQLiteClient) {
-    this.sqliteClient
-      .run({
-        sql: `CREATE TABLE IF NOT EXISTS prompts
+  private tableInitialized = false;
+
+  constructor(@Inject() private readonly sqliteClient: SQLiteClient) {}
+
+  private async initTable() {
+    if (this.tableInitialized) return true;
+    await this.sqliteClient.run({
+      sql: `CREATE TABLE IF NOT EXISTS prompts
                       (
                           id       TEXT PRIMARY KEY,
-                          user_id  TEXT,
-                          event_id TEXT,
-                          prompt   TEXT
+                          user_id  TEXT NOT NULL,
+                          event_id TEXT NOT NULL,
+                          prompt   TEXT NOT NULL
                       );`,
-      })
-      .catch(console.error);
+    });
+    this.tableInitialized = true;
   }
 
   async countByEventIdAndUserId(
     eventId: string,
     userId: string
   ): Promise<number> {
+    await this.initTable();
     const { count } = await this.sqliteClient.get<{ count: number }>({
       sql: `SELECT COUNT(*) AS count
                   FROM prompts
@@ -37,6 +42,7 @@ export class SqlitePromptRepository implements PromptRepository {
   }
 
   async save(prompt: Prompt): Promise<Prompt> {
+    await this.initTable();
     await this.sqliteClient.run({
       sql: `INSERT INTO prompts (id, user_id, event_id, prompt)
                   VALUES (?1, ?2, ?3, ?4);`,

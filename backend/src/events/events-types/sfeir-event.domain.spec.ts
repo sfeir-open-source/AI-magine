@@ -52,7 +52,7 @@ describe('SfeirEvent', () => {
     });
   });
 
-  describe('#isActive', () => {
+  describe('isActive', () => {
     it('should return true if the current date is within the event boundaries', () => {
       const now = new Date();
       const startDate = new Date(now.getTime() - 1000);

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreatePromptDto {
+export class CreatePromptBodyDto {
   @ApiProperty({
     name: 'browserFingerprint',
     description: 'Browser fingerprint',
@@ -37,3 +37,7 @@ export class CreatePromptDto {
   })
   prompt: string;
 }
+
+export type CreatePromptDto = CreatePromptBodyDto & {
+  eventId: string;
+};

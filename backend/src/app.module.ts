@@ -9,6 +9,7 @@ import * as path from 'node:path';
 import { PromptModule } from '@/prompt/prompt.module';
 import { UserModule } from '@/user/user.module';
 import { ImageGenerationModule } from '@/image-generation/image-generation.module';
+import { ImagesModule } from '@/images/images.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ImageGenerationModule } from '@/image-generation/image-generation.modul
     SfeirEventModule,
     UserModule,
     ImageGenerationModule,
+    ImagesModule,
     PromptModule,
   ],
   controllers: [AppController],

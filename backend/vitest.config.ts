@@ -13,10 +13,12 @@ export default defineConfig({
     passWithNoTests: true,
     coverage: {
       provider: 'v8',
+      reportsDirectory: 'coverage',
       reporter: ['json', 'html'],
     },
     env: {
-      'EMAIL_HASH_SECRET': 'Y3e$$F5thgw9y!u*MJzp@86arQ8cAD&S'
-    }
+      EMAIL_HASH_SECRET: 'Y3e$$F5thgw9y!u*MJzp@86arQ8cAD&S',
+      SQLITE_DB_PATH: ':memory:',
+    },
   },
 });

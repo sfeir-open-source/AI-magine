@@ -4,7 +4,9 @@ import { PROMPT_REPOSITORY, PromptRepository } from '@/prompt/prompt-types';
 import { UserService } from '@/user/user.service';
 import { Prompt } from '@/prompt/prompt-types/prompt.domain';
 import { User } from '@/user/user-types';
-import {ImageGenerationService} from "@/image-generation/image-generation.service";
+import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
+import { Subject } from 'rxjs';
+import { ImageGenerationMessageEvent } from '@/image-generation/image-generation-types';
 
 @Injectable()
 export class PromptService {
@@ -12,18 +14,18 @@ export class PromptService {
     @Inject(PROMPT_REPOSITORY)
     private readonly promptRepository: PromptRepository,
     private readonly userService: UserService,
-    private readonly imageGenerationService: ImageGenerationService
+    private readonly imageGenerationEngine: ImageGenerationEngine
   ) {}
 
   async createPrompt({
-    eventId,
     prompt,
     browserFingerprint,
-    userEmail,
+    allowContact,
     userName,
     jobTitle,
-    allowContact,
-  }: CreatePromptDto & { eventId: string }): Promise<Prompt> {
+    eventId,
+    userEmail,
+  }: CreatePromptDto): Promise<Prompt> {
     let userId = await this.userService.getUserIdByEmail(userEmail);
     if (!userId) {
       const createdUser = await this.userService.create(
@@ -49,12 +51,17 @@ export class PromptService {
     const newPrompt = await this.promptRepository.save(
       Prompt.create(eventId, userId, prompt)
     );
-    return Promise.resolve(newPrompt);
+    this.imageGenerationEngine.processPrompt(newPrompt.id, newPrompt.prompt);
+    return newPrompt;
   }
 
-  async generateImage(prompt: string): Promise<string> {
-    const img = await this.imageGenerationService.generateImageFromPrompt(prompt);
-    console.log({img});
-    return Promise.resolve(prompt);
+  getGenerationStatus(
+    promptId: string,
+    progress: Subject<ImageGenerationMessageEvent>
+  ) {
+    return this.imageGenerationEngine.listenForPromptGenerationDone(
+      promptId,
+      progress
+    );
   }
 }

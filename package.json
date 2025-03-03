@@ -17,7 +17,8 @@
     "release:backend": "npm run release -w backend",
     "release:private-frontend": "npm run release -w private-frontend",
     "release:public-frontend": "npm run release -w public-frontend",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "public-frontend:docker-build": "docker build -t public-frontend -f public-frontend/Dockerfile ."
   },
   "devDependencies": {
     "@commitlint/cli": "^18.0.0",

@@ -1,0 +1,28 @@
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+COPY ./ ./
+
+RUN ls -lash
+
+RUN npm install
+
+RUN npm run build && ls -lash
+
+FROM node:22-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/dist ./
+
+ENV HOST=$HOST
+ENV PORT=$PORT
+ENV SWAGGER_BASE_PATH=$SWAGGER_BASE_PATH
+ENV CORS_ALLOWED_ORIGINS=$CORS_ALLOWED_ORIGINS
+ENV SQLITE_DB_PATH=$SQLITE_DB_PATH
+ENV EMAIL_HASH_SECRET=$EMAIL_HASH_SECRET
+
+EXPOSE $PORT
+
+CMD ["node", "main.js"]

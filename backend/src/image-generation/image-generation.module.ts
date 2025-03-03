@@ -1,28 +1,25 @@
 import { Module } from '@nestjs/common';
-import { PromptService } from './prompt.service';
-import { PromptController } from './prompt.controller';
-import { UserModule } from '@/user/user.module';
-import { SQLiteClient } from '@/config/sqlite-client';
-import { PROMPT_REPOSITORY } from '@/prompt/prompt-types';
-import { SqlitePromptRepository } from '@/prompt/sqlite.prompt.repository';
-import { ImageGenerationModule } from '@/image-generation/image-generation.module';
+import { ImageGenerationService } from '@/image-generation/image-generation.service';
+import { PicsumImageGenerationClient } from '@/image-generation/picsum.image-generation.client';
+import { IMAGE_GENERATION_CLIENT } from '@/image-generation/image-generation-types/image-generation.client';
 import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
 import { IMAGE_GENERATION_STATUS_REPOSITORY } from '@/image-generation/image-generation-types';
 import { SqliteImageGenerationStatusRepository } from '@/image-generation/sqlite.image-generation-status.repository';
+import { SQLiteClient } from '@/config/sqlite-client';
+import { ImagesModule } from '@/images/images.module';
 import { IMAGES_REPOSITORY } from '@/images/images-types/images.repository';
 import { SqliteImagesRepository } from '@/images/sqlite.images.repository';
-import { ImagesModule } from '@/images/images.module';
+import { ImagesService } from '@/images/images.service';
 
 @Module({
-  imports: [UserModule, ImageGenerationModule, ImagesModule],
-  controllers: [PromptController],
+  imports: [ImagesModule],
   providers: [
-    PromptService,
+    ImageGenerationService,
+    ImagesService,
     SQLiteClient,
-    ImageGenerationEngine,
     {
-      provide: PROMPT_REPOSITORY,
-      useClass: SqlitePromptRepository,
+      provide: IMAGE_GENERATION_CLIENT,
+      useClass: PicsumImageGenerationClient,
     },
     {
       provide: IMAGE_GENERATION_STATUS_REPOSITORY,
@@ -32,6 +29,8 @@ import { ImagesModule } from '@/images/images.module';
       provide: IMAGES_REPOSITORY,
       useClass: SqliteImagesRepository,
     },
+    ImageGenerationEngine,
   ],
+  exports: [ImageGenerationService, ImageGenerationEngine],
 })
-export class PromptModule {}
+export class ImageGenerationModule {}

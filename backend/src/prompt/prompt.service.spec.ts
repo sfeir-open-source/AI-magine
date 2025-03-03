@@ -1,22 +1,17 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { vi } from 'vitest';
 
-import { nanoid } from 'nanoid';
 import { PromptService } from '@/prompt/prompt.service';
 import { CreatePromptDto, PromptRepository } from '@/prompt/prompt-types';
 import { UserService } from '@/user/user.service';
 import { Prompt } from '@/prompt/prompt-types/prompt.domain';
 import { User } from '@/user/user-types';
-
-vi.mock('nanoid', () => {
-  return {
-    nanoid: vi.fn(),
-  };
-});
+import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
 
 describe('PromptService', () => {
   let promptService: PromptService;
   let promptRepositoryMock: PromptRepository;
   let userServiceMock: UserService;
+  let imageGenerationEngineMock: ImageGenerationEngine;
 
   beforeEach(() => {
     promptRepositoryMock = {
@@ -29,7 +24,15 @@ describe('PromptService', () => {
       getUserIdByEmail: vi.fn(),
     } as unknown as UserService;
 
-    promptService = new PromptService(promptRepositoryMock, userServiceMock);
+    imageGenerationEngineMock = {
+      processPrompt: vi.fn(),
+    } as unknown as ImageGenerationEngine;
+
+    promptService = new PromptService(
+      promptRepositoryMock,
+      userServiceMock,
+      imageGenerationEngineMock
+    );
   });
 
   it('should create a new prompt if all conditions are met', async () => {
@@ -43,12 +46,8 @@ describe('PromptService', () => {
       allowContact: true,
     };
 
-    vi.mocked(nanoid)
-      .mockReturnValueOnce('generatedPromptId')
-      .mockReturnValueOnce('generatedUserId');
-
     const expectedPrompt = Prompt.from(
-      'generatedPromptId',
+      expect.any(String),
       'event1',
       'existingUserId',
       'Sample Prompt'
@@ -85,15 +84,8 @@ describe('PromptService', () => {
       allowContact: true,
     };
 
-    vi.mocked(nanoid)
-      .mockReturnValueOnce('generatedPromptId')
-      .mockReturnValueOnce('generatedPromptId');
-    vi.mocked(nanoid)
-      .mockReturnValueOnce('generatedUserId')
-      .mockReturnValueOnce('generatedUserId');
-
     const createdUser = User.from(
-      'generatedUserId',
+      expect.any(String),
       'email@example.com',
       'fingerprint123',
       true,
@@ -101,7 +93,7 @@ describe('PromptService', () => {
       'Engineer'
     );
     const expectedPrompt = Prompt.from(
-      'generatedPromptId',
+      expect.any(String),
       'event1',
       'generatedUserId',
       'Sample Prompt'

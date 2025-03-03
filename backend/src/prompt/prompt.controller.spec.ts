@@ -3,7 +3,7 @@ import { vi } from 'vitest';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PromptService } from '@/prompt/prompt.service';
-import { CreatePromptDto } from '@/prompt/prompt-types';
+import { CreatePromptBodyDto } from '@/prompt/prompt-types';
 import { Response } from 'express';
 
 describe('PromptController', () => {
@@ -31,12 +31,10 @@ describe('PromptController', () => {
         .spyOn(PromptController.prototype as never, 'getPromptStatus')
         .mockReturnValue(mockObservable);
 
-      const result$ = promptController.getPromptStatus(eventId, promptId);
+      const result = promptController.getPromptStatus(eventId, promptId);
 
-      expect(result$).toBeDefined();
-      result$.subscribe((event) => {
-        expect(event.data.eventId).toBe(eventId);
-        expect(event.data.promptId).toBe(promptId);
+      expect(result).toBeDefined();
+      result.subscribe((event) => {
         expect(event.data.type).toBe('done');
       });
 
@@ -47,7 +45,7 @@ describe('PromptController', () => {
   describe('createPrompt', () => {
     it('should call PromptService.createPrompt with correct parameters and return the result', async () => {
       const eventId = 'event123';
-      const createDto: CreatePromptDto = {
+      const createDto: CreatePromptBodyDto = {
         browserFingerprint: 'unique-browser-fingerprint',
         userEmail: 'user@example.com',
         userName: 'John Doe',

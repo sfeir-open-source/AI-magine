@@ -1,23 +1,25 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { User, UserRepository } from '@/user/user-types';
 
 @Injectable()
-export class SqliteUserRepository implements UserRepository {
-  constructor(@Inject() private readonly sqliteClient: SQLiteClient) {
-    this.sqliteClient
-      .run({
-        sql: `CREATE TABLE IF NOT EXISTS users
-                      (
-                          id                 TEXT PRIMARY KEY,
-                          name               TEXT,
-                          email              TEXT    NOT NULL,
-                          browserFingerprint TEXT    NOT NULL,
-                          jobTitle           TEXT,
-                          allowContact       BOOLEAN NOT NULL
-                      );`,
-      })
-      .catch(console.error);
+export class SqliteUserRepository
+  implements UserRepository, OnApplicationBootstrap
+{
+  constructor(@Inject() private readonly sqliteClient: SQLiteClient) {}
+
+  async onApplicationBootstrap() {
+    await this.sqliteClient.run({
+      sql: `CREATE TABLE IF NOT EXISTS users
+                  (
+                      id                 TEXT PRIMARY KEY,
+                      name               TEXT    NOT NULL,
+                      email              TEXT    NOT NULL,
+                      browserFingerprint TEXT    NOT NULL,
+                      jobTitle           TEXT,
+                      allowContact       BOOLEAN NOT NULL DEFAULT 1
+                  );`,
+    });
   }
 
   async getUserIdByEmail(email: string): Promise<string | undefined> {

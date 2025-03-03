@@ -1,22 +1,24 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { PromptRepository } from '@/prompt/prompt-types';
 import { Prompt } from '@/prompt/prompt-types/prompt.domain';
 
 @Injectable()
-export class SqlitePromptRepository implements PromptRepository {
-  constructor(@Inject() private readonly sqliteClient: SQLiteClient) {
-    this.sqliteClient
-      .run({
-        sql: `CREATE TABLE IF NOT EXISTS prompts
-                      (
-                          id       TEXT PRIMARY KEY,
-                          user_id  TEXT,
-                          event_id TEXT,
-                          prompt   TEXT
-                      );`,
-      })
-      .catch(console.error);
+export class SqlitePromptRepository
+  implements PromptRepository, OnApplicationBootstrap
+{
+  constructor(@Inject() private readonly sqliteClient: SQLiteClient) {}
+
+  async onApplicationBootstrap() {
+    await this.sqliteClient.run({
+      sql: `CREATE TABLE IF NOT EXISTS prompts
+                  (
+                      id       TEXT PRIMARY KEY,
+                      user_id  TEXT NOT NULL,
+                      event_id TEXT NOT NULL,
+                      prompt   TEXT NOT NULL
+                  );`,
+    });
   }
 
   async countByEventIdAndUserId(

@@ -1,30 +1,34 @@
 import { SfeirEvent, SfeirEventRepository } from '@/events/events-types';
 import { SQLiteClient } from '@/config/sqlite-client';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
+
+type SfeirEventRow = {
+  id: string;
+  name: string;
+  startDateTs: number;
+  endDateTs: number;
+};
 
 @Injectable()
-export class SqliteSfeirEventRepository implements SfeirEventRepository {
-  constructor(@Inject() private sqliteClient: SQLiteClient) {
-    this.sqliteClient
-      .run({
-        sql: `CREATE TABLE IF NOT EXISTS events
-                      (
-                          id          TEXT PRIMARY KEY,
-                          name        TEXT,
-                          startDateTs INTEGER,
-                          endDateTs   INTEGER
-                      );`,
-      })
-      .catch(console.error);
+export class SqliteSfeirEventRepository
+  implements SfeirEventRepository, OnApplicationBootstrap
+{
+  constructor(@Inject() private sqliteClient: SQLiteClient) {}
+
+  async onApplicationBootstrap() {
+    await this.sqliteClient.run({
+      sql: `CREATE TABLE IF NOT EXISTS events
+                  (
+                      id          TEXT PRIMARY KEY,
+                      name        TEXT    NOT NULL,
+                      startDateTs INTEGER NOT NULL,
+                      endDateTs   INTEGER NOT NULL
+                  );`,
+    });
   }
 
   async getSfeirEvents(): Promise<SfeirEvent[]> {
-    const storedEvents = await this.sqliteClient.all<{
-      id: string;
-      name: string;
-      startDateTs: number;
-      endDateTs: number;
-    }>({
+    const storedEvents = await this.sqliteClient.all<SfeirEventRow>({
       sql: `SELECT id, name, startDateTs, endDateTs
                   FROM events`,
       params: {},
@@ -63,12 +67,7 @@ export class SqliteSfeirEventRepository implements SfeirEventRepository {
   }
 
   async getSfeirEvent(id: string): Promise<SfeirEvent | undefined> {
-    const row = await this.sqliteClient.get<{
-      id: string;
-      name: string;
-      startDateTs: number;
-      endDateTs: number;
-    }>({
+    const row = await this.sqliteClient.get<SfeirEventRow>({
       sql: `SELECT id, name, startDateTs, endDateTs
                   FROM events
                   WHERE id = ?1;`,

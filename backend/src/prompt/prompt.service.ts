@@ -4,24 +4,28 @@ import { PROMPT_REPOSITORY, PromptRepository } from '@/prompt/prompt-types';
 import { UserService } from '@/user/user.service';
 import { Prompt } from '@/prompt/prompt-types/prompt.domain';
 import { User } from '@/user/user-types';
+import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
+import { Subject } from 'rxjs';
+import { ImageGenerationMessageEvent } from '@/image-generation/image-generation-types';
 
 @Injectable()
 export class PromptService {
   constructor(
     @Inject(PROMPT_REPOSITORY)
     private readonly promptRepository: PromptRepository,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly imageGenerationEngine: ImageGenerationEngine
   ) {}
 
   async createPrompt({
-    eventId,
     prompt,
     browserFingerprint,
-    userEmail,
+    allowContact,
     userName,
     jobTitle,
-    allowContact,
-  }: CreatePromptDto & { eventId: string }): Promise<Prompt> {
+    eventId,
+    userEmail,
+  }: CreatePromptDto): Promise<Prompt> {
     let userId = await this.userService.getUserIdByEmail(userEmail);
     if (!userId) {
       const createdUser = await this.userService.create(
@@ -47,6 +51,17 @@ export class PromptService {
     const newPrompt = await this.promptRepository.save(
       Prompt.create(eventId, userId, prompt)
     );
-    return Promise.resolve(newPrompt);
+    this.imageGenerationEngine.processPrompt(newPrompt.id, newPrompt.prompt);
+    return newPrompt;
+  }
+
+  getGenerationStatus(
+    promptId: string,
+    progress: Subject<ImageGenerationMessageEvent>
+  ) {
+    return this.imageGenerationEngine.listenForPromptGenerationDone(
+      promptId,
+      progress
+    );
   }
 }

@@ -11,6 +11,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "types": ["vitest/globals", "@testing-library/jest-dom", "vite/client"]
   }
 }

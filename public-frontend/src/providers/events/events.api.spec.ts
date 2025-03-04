@@ -115,8 +115,8 @@ describe('EventsApi', () => {
 
       const fakeResponse = [
         {
-          imageId: 'fake-image-id',
-          imageUrl: 'http://foo',
+          id: 'fake-image-id',
+          url: 'http://foo',
           prompt: 'prompt',
           selected: false,
         },

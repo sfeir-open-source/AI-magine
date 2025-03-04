@@ -19,4 +19,8 @@ export class ImagesService {
   saveImage(promptId: string, imageUrl: string): Promise<Image> {
     return this.imageRepository.saveImage(Image.create(imageUrl, promptId));
   }
+
+  async getImagesByEventAndUser(eventId: string, userId: string) {
+    return this.imageRepository.getImageByEventIdAndUserId(eventId, userId);
+  }
 }

@@ -3,6 +3,7 @@ import { SQLiteClient } from '@/config/sqlite-client';
 import { IMAGES_REPOSITORY } from '@/images/images-types/images.repository';
 import { SqliteImagesRepository } from '@/images/sqlite.images.repository';
 import { ImagesService } from '@/images/images.service';
+import { ImagesController } from '@/images/images.controller';
 
 @Module({
   providers: [
@@ -13,6 +14,7 @@ import { ImagesService } from '@/images/images.service';
       useClass: SqliteImagesRepository,
     },
   ],
+  controllers: [ImagesController],
   exports: [ImagesService],
 })
 export class ImagesModule {}

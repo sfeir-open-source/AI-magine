@@ -1,6 +1,5 @@
 import { AppLayout } from '@/src/components/app-layout/app-layout';
 import { render, screen } from '@testing-library/react';
-import { expect } from 'vitest';
 import { MemoryRouter } from 'react-router';
 
 describe('AppLayout', () => {

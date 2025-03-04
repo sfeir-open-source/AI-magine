@@ -1,4 +1,4 @@
-import { describe, expect, Mock } from 'vitest';
+import { Mock } from 'vitest';
 import {
   EventPromptForm,
   STORAGE_ALLOW_CONTACT_KEY,

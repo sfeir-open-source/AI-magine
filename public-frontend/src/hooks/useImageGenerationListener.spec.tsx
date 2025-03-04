@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router';
-import { expect, Mock } from 'vitest';
+import { Mock } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useImageGenerationListener } from '@/src/hooks/useImageGenerationListener';
 import i18n from '@/src/config/i18n';

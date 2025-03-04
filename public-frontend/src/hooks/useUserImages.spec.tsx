@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { EventsContext } from '@/src/providers/events/events.context';
 import { EventRepository } from '@/src/domain/EventRepository';
 import { Image } from '@/src/domain/Image';
-import { expect, Mock } from 'vitest';
+import { Mock } from 'vitest';
 import { useParams } from 'react-router';
 
 vi.mock('react-router');

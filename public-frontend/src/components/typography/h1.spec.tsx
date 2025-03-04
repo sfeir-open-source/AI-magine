@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import { expect } from 'vitest';
 import { TypographyH1 } from '@/src/components/typography/h1';
 
 describe('TypographyH1', () => {

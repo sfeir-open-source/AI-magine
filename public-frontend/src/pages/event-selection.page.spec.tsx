@@ -3,7 +3,7 @@ import { EventSelectionPage } from '@/src/pages/event-selection.page';
 import { userEvent } from '@testing-library/user-event';
 import i18n from '@/src/config/i18n';
 import { useNavigate } from 'react-router';
-import { expect, Mock } from 'vitest';
+import { Mock } from 'vitest';
 
 vi.mock('react-router', async (importOriginal) => ({
   ...(await importOriginal()),

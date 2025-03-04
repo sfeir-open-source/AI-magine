@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ImageGenerationService } from '@/image-generation/image-generation.service';
-import { PicsumImageGenerationClient } from '@/image-generation/picsum.image-generation.client';
 import { IMAGE_GENERATION_CLIENT } from '@/image-generation/image-generation-types/image-generation.client';
 import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
 import { IMAGE_GENERATION_STATUS_REPOSITORY } from '@/image-generation/image-generation-types';
@@ -10,6 +9,8 @@ import { ImagesModule } from '@/images/images.module';
 import { IMAGES_REPOSITORY } from '@/images/images-types/images.repository';
 import { SqliteImagesRepository } from '@/images/sqlite.images.repository';
 import { ImagesService } from '@/images/images.service';
+import { ImagenImageGenerationClient } from '@/image-generation/imagen.image-generation-client';
+import { PicsumImageGenerationClient } from '@/image-generation/picsum.image-generation.client';
 
 @Module({
   imports: [ImagesModule],
@@ -19,7 +20,10 @@ import { ImagesService } from '@/images/images.service';
     SQLiteClient,
     {
       provide: IMAGE_GENERATION_CLIENT,
-      useClass: PicsumImageGenerationClient,
+      useClass:
+        !process.env?.IMAGEN_GCP_PROJECT_ID || !process.env.IMAGEN_REGION
+          ? PicsumImageGenerationClient
+          : ImagenImageGenerationClient,
     },
     {
       provide: IMAGE_GENERATION_STATUS_REPOSITORY,

@@ -4,8 +4,6 @@ WORKDIR /app
 
 COPY ./ ./
 
-RUN ls -lash
-
 RUN npm install
 
 RUN npm run build && ls -lash

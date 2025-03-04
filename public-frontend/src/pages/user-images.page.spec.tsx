@@ -1,7 +1,7 @@
 import { UserImagesPage } from '@/src/pages/user-images.page';
 import { render, screen } from '@testing-library/react';
 import { useUserImages } from '@/src/hooks/useUserImages';
-import { expect, Mock } from 'vitest';
+import { Mock } from 'vitest';
 import { Image } from '@/src/domain/Image';
 import { useImagePromotionMutation } from '@/src/hooks/useImagePromotionMutation';
 import { userEvent } from '@testing-library/user-event';

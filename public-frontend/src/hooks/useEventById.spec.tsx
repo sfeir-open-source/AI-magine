@@ -1,7 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { useEventById } from '@/src/hooks/useEventById';
 import { EventsContext } from '@/src/providers/events/events.context';
-import { expect } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { EventRepository } from '@/src/domain/EventRepository';
 

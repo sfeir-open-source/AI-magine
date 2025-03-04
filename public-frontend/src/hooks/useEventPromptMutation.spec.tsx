@@ -3,7 +3,6 @@ import { useEventPromptMutation } from '@/src/hooks/useEventPromptMutation';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { EventsContext } from '@/src/providers/events/events.context';
 import { EventRepository } from '@/src/domain/EventRepository';
-import { expect } from 'vitest';
 
 describe('useEventPromptMutation', () => {
   it('calls a method to send a new prompt', async () => {

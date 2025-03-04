@@ -16,9 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import i18n from '@/src/config/i18n';
 import { useTranslation } from 'react-i18next';
-import { TypographyH2 } from '@/src/components/typography/h2';
 import { Event } from '@/src/domain/Event';
-import { TypographyLead } from '@/src/components/typography/lead';
 import { format } from 'date-fns';
 import { useEventPromptMutation } from '@/src/hooks/useEventPromptMutation';
 import { useFingerprint } from '@/src/hooks/useFingerprint';
@@ -26,6 +24,15 @@ import { useNavigate } from 'react-router';
 import { LoadingSpinner } from '@/src/components/loading-spinner/loading-spinner';
 import { toast } from 'sonner';
 import { STORAGE_USER_ID_KEY } from '@/src/hooks/useUserId';
+import { Sparkles } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 export const STORAGE_NICKNAME_KEY = 'nickname';
 export const STORAGE_EMAIL_KEY = 'email';
@@ -92,22 +99,71 @@ export const EventPromptForm = ({ event }: EventPromptFormProps) => {
   };
 
   return (
-    <div className="mt-8">
-      <TypographyH2>{event.name}</TypographyH2>
-      <TypographyLead className="mt-2 mb-6 text-lg">
-        {t('ends')}: {format(event.endDate, 'dd/MM/yyyy HH:mm')}
-      </TypographyLead>
+    <Card>
+      <CardHeader>
+        <CardTitle>{event.name}</CardTitle>
+        <CardDescription>
+          {t('ends')}: {format(event.endDate, 'dd/MM/yyyy HH:mm')}
+        </CardDescription>
+      </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="flex flex-col gap-2 mb-6">
+          <CardContent>
+            <div className="flex flex-col gap-2 mb-6">
+              <FormField
+                control={form.control}
+                name="nickname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('nickname')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder="John Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('email-address')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder="doe.john@sfeir.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
-              name="nickname"
+              name="allowContact"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('nickname')}</FormLabel>
+                <FormItem className="mb-3">
+                  <FormLabel className="mb-4 block">
+                    {t('allow-contact')}
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} />
+                    <RadioGroup
+                      className="flex gap-16"
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormItem className="flex items-center space-x-2">
+                        <FormControl>
+                          <RadioGroupItem value="false" className="my-0" />
+                        </FormControl>
+                        <FormLabel>{t('no')}</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2">
+                        <FormControl>
+                          <RadioGroupItem value="true" className="my-0" />
+                        </FormControl>
+                        <FormLabel>{t('yes')}</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -115,77 +171,44 @@ export const EventPromptForm = ({ event }: EventPromptFormProps) => {
             />
             <FormField
               control={form.control}
-              name="email"
+              name="prompt"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('email-address')}</FormLabel>
+                  <FormLabel>{t('prompt')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="doe.john@sfeir.com" {...field} />
+                    <Textarea
+                      placeholder={t('enter-prompt-placeholder')}
+                      rows={10}
+                      className="mb-2"
+                      {...field}
+                    />
                   </FormControl>
+                  <FormDescription>You already used x tokens</FormDescription>
+                  <FormDescription>
+                    This prompt uses Imagen to generate your image
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          </div>
-          <FormField
-            control={form.control}
-            name="allowContact"
-            render={({ field }) => (
-              <FormItem className="mb-3">
-                <FormLabel className="mb-4 block">
-                  {t('allow-contact')}
-                </FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    className="flex gap-16"
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormItem className="flex items-center space-x-2">
-                      <FormControl>
-                        <RadioGroupItem value="false" className="my-0" />
-                      </FormControl>
-                      <FormLabel>{t('no')}</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-2">
-                      <FormControl>
-                        <RadioGroupItem value="true" className="my-0" />
-                      </FormControl>
-                      <FormLabel>{t('yes')}</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="prompt"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('prompt')}</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder={t('enter-prompt-placeholder')}
-                    rows={10}
-                    className="mb-2"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>You already used x tokens</FormDescription>
-                <FormDescription>
-                  This prompt uses Imagen to generate your image
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button className="w-full mt-4" type="submit" disabled={isPending}>
-            {isPending ? <LoadingSpinner /> : 'Go'}
-          </Button>
+          </CardContent>
+          <CardFooter>
+            <Button className="w-full mt-4" type="submit" disabled={isPending}>
+              {isPending ? (
+                <>
+                  <LoadingSpinner />
+                  <span>{t('generating-your-image')}</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles />
+                  <span>{t('generate-image')}</span>
+                </>
+              )}
+            </Button>
+          </CardFooter>
         </form>
       </Form>
-    </div>
+    </Card>
   );
 };

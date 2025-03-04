@@ -1,5 +1,4 @@
 import { renderHook } from '@testing-library/react';
-import { afterEach, expect } from 'vitest';
 import { STORAGE_USER_ID_KEY, useUserId } from '@/src/hooks/useUserId';
 
 vi.mock('js-cookie', () => ({

@@ -17,4 +17,5 @@ export default [
     },
     rules: { ...pluginReactHooks.configs.recommended.rules },
   },
+  { ignores: ['dist', 'coverage'] },
 ];

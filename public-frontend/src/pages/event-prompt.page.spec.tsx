@@ -1,4 +1,4 @@
-import { describe, expect, Mock } from 'vitest';
+import { Mock } from 'vitest';
 import { useEventById } from '@/src/hooks/useEventById';
 import { EventPromptPage } from '@/src/pages/event-prompt.page';
 import { render, screen } from '@testing-library/react';

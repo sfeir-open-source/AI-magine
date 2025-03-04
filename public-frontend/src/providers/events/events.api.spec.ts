@@ -2,7 +2,7 @@ import nock from 'nock';
 import { eventsApi } from '@/src/providers/events/events.api';
 import { Event } from '@/src/domain/Event';
 import { NewEventPromptRequestBody } from '@/src/domain/EventRepository';
-import { expect, Mock } from 'vitest';
+import { Mock } from 'vitest';
 import { Image } from '@/src/domain/Image';
 
 const apiMock = nock(import.meta.env.VITE_BACKEND_API_URL);

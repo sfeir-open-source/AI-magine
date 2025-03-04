@@ -1,4 +1,4 @@
-import { describe, expect, Mock } from 'vitest';
+import { Mock } from 'vitest';
 import {
   EventPromptForm,
   STORAGE_ALLOW_CONTACT_KEY,
@@ -65,7 +65,7 @@ describe('EventPromptForm', () => {
       />
     );
 
-    await userEvent.click(screen.getByText('Go'));
+    await userEvent.click(screen.getByText(i18n.t('generate-image')));
 
     expect(navigateMock).not.toHaveBeenCalled();
     expect(
@@ -129,7 +129,7 @@ describe('EventPromptForm', () => {
       screen.getByLabelText(i18n.t('prompt')),
       fakePromptRequest.prompt
     );
-    await userEvent.click(screen.getByText('Go'));
+    await userEvent.click(screen.getByText(i18n.t('generate-image')));
 
     expect(mutateAsyncMock).toHaveBeenCalledWith(fakePromptRequest);
     expect(navigateMock).toHaveBeenCalledWith(
@@ -200,7 +200,7 @@ describe('EventPromptForm', () => {
       screen.getByLabelText(i18n.t('prompt')),
       fakePromptRequest.prompt
     );
-    await userEvent.click(screen.getByText('Go'));
+    await userEvent.click(screen.getByText(i18n.t('generate-image')));
 
     expect(mutateAsyncMock).toHaveBeenCalledWith(fakePromptRequest);
     expect(navigateMock).not.toHaveBeenCalled();

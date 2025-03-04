@@ -5,7 +5,7 @@ import {
   QueryClientProvider,
   useQueryClient,
 } from '@tanstack/react-query';
-import { expect, Mock } from 'vitest';
+import { Mock } from 'vitest';
 import { PropsWithChildren } from 'react';
 import { EventsContext } from '@/src/providers/events/events.context';
 import { EventRepository } from '@/src/domain/EventRepository';

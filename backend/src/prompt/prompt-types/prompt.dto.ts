@@ -14,16 +14,10 @@ export class CreatePromptBodyDto {
   userEmail: string;
 
   @ApiProperty({
-    name: 'userName',
-    description: 'User name',
+    name: 'userNickname',
+    description: 'User nickname',
   })
-  userName: string;
-
-  @ApiProperty({
-    name: 'jobTitle',
-    description: 'Job title',
-  })
-  jobTitle: string;
+  userNickname: string;
 
   @ApiProperty({
     name: 'allowContact',

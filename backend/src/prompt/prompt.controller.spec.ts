@@ -48,8 +48,7 @@ describe('PromptController', () => {
       const createDto: CreatePromptBodyDto = {
         browserFingerprint: 'unique-browser-fingerprint',
         userEmail: 'user@example.com',
-        userName: 'John Doe',
-        jobTitle: 'Software Engineer',
+        userNickname: 'John Doe',
         allowContact: true,
         prompt: 'Test prompt',
       };

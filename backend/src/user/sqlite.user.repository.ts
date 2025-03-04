@@ -13,10 +13,9 @@ export class SqliteUserRepository
       sql: `CREATE TABLE IF NOT EXISTS users
                   (
                       id                 TEXT PRIMARY KEY,
-                      name               TEXT    NOT NULL,
+                      nickname           TEXT    NOT NULL,
                       email              TEXT    NOT NULL,
                       browserFingerprint TEXT    NOT NULL,
-                      jobTitle           TEXT,
                       allowContact       BOOLEAN NOT NULL DEFAULT 1
                   );`,
     });
@@ -37,15 +36,14 @@ export class SqliteUserRepository
 
   async save(user: User): Promise<User> {
     await this.sqliteClient.run({
-      sql: `INSERT INTO users (id, name, email, browserFingerprint, jobTitle, allowContact)
-                  VALUES (?1, ?2, ?3, ?4, ?5, ?6);`,
+      sql: `INSERT INTO users (id, nickname, email, browserFingerprint, allowContact)
+                  VALUES (?1, ?2, ?3, ?4, ?5);`,
       params: {
         1: user.id,
-        2: user.name,
+        2: user.nickname,
         3: user.hashedEmail,
         4: user.browserFingerprint,
-        5: user.jobTitle,
-        6: user.allowContact,
+        5: user.allowContact,
       },
     });
 

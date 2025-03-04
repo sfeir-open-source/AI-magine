@@ -3,14 +3,7 @@ import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteUserRepository } from '@/user/sqlite.user.repository';
 import { User } from '@/user/user-types';
 
-const mockUser = User.from(
-  '2',
-  'hashedEmail',
-  'fingerprint',
-  true,
-  'Name',
-  'Job'
-);
+const mockUser = User.from('2', 'hashedEmail', 'fingerprint', true, 'Nickname');
 
 describe('SqliteUserRepository', () => {
   let sqliteClient: SQLiteClient;
@@ -42,7 +35,7 @@ describe('SqliteUserRepository', () => {
 
   describe('save', () => {
     it('should save the user to the database and return the saved user', async () => {
-      vi.spyOn(sqliteClient, 'run');
+      vi.spyOn(sqliteClient, 'run').mockResolvedValue('ok');
       const result = await repository.save(mockUser);
 
       expect(result).toEqual(mockUser);
@@ -57,7 +50,7 @@ describe('SqliteUserRepository', () => {
         browserFingerprint: mockUser.browserFingerprint,
       });
 
-      const user = User.create('hashedEmail', 'fingerprint', true);
+      const user = User.create('hashedEmail', 'fingerprint', true, 'nickname');
       const result = await repository.checkExists(user);
 
       expect(result).toBe(true);
@@ -67,7 +60,7 @@ describe('SqliteUserRepository', () => {
     it('should return false if no user with the same email or fingerprint exists', async () => {
       vi.spyOn(sqliteClient, 'get').mockResolvedValue(undefined);
 
-      const user = User.create('hashedEmail', 'fingerprint', true);
+      const user = User.create('hashedEmail', 'fingerprint', true, 'nickname');
       const result = await repository.checkExists(user);
 
       expect(result).toBe(false);

@@ -4,8 +4,7 @@ import { Image } from '@/src/domain/Image';
 export type NewEventPromptRequestBody = {
   browserFingerprint: string;
   userEmail: string;
-  userName?: string;
-  jobTitle?: string;
+  userNickname: string;
   allowContact: boolean;
   prompt: string;
 };

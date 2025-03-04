@@ -2,7 +2,7 @@ import { vi } from 'vitest';
 import { UserService } from '@/user/user.service';
 import { User, UserRepository } from '@/user/user-types';
 
-const mockUser = User.from('1', 'hash', 'fp', true);
+const mockUser = User.from('1', 'hash', 'fp', true, 'nickname');
 const mockUserRepository = {
   save: vi.fn().mockResolvedValue(mockUser),
   getUserIdByEmail: vi.fn().mockResolvedValue('123'),

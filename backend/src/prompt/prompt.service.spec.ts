@@ -41,8 +41,7 @@ describe('PromptService', () => {
       prompt: 'Sample Prompt',
       browserFingerprint: 'fingerprint123',
       userEmail: 'email@example.com',
-      userName: 'John Doe',
-      jobTitle: 'Engineer',
+      userNickname: 'John Doe',
       allowContact: true,
     };
 
@@ -79,8 +78,7 @@ describe('PromptService', () => {
       prompt: 'Sample Prompt',
       browserFingerprint: 'fingerprint123',
       userEmail: 'email@example.com',
-      userName: 'John Doe',
-      jobTitle: 'Engineer',
+      userNickname: 'John Doe',
       allowContact: true,
     };
 
@@ -89,8 +87,7 @@ describe('PromptService', () => {
       'email@example.com',
       'fingerprint123',
       true,
-      'John Doe',
-      'Engineer'
+      'John Doe'
     );
     const expectedPrompt = Prompt.from(
       expect.any(String),
@@ -126,8 +123,7 @@ describe('PromptService', () => {
       prompt: 'Sample Prompt',
       browserFingerprint: 'fingerprint123',
       userEmail: 'email@example.com',
-      userName: 'John Doe',
-      jobTitle: 'Engineer',
+      userNickname: 'John Doe',
       allowContact: true,
     };
 
@@ -156,8 +152,7 @@ describe('PromptService', () => {
       prompt: 'Sample Prompt',
       browserFingerprint: 'fingerprint123',
       userEmail: 'email@example.com',
-      userName: 'John Doe',
-      jobTitle: 'Engineer',
+      userNickname: 'John Doe',
       allowContact: true,
     };
 
@@ -165,8 +160,7 @@ describe('PromptService', () => {
     vi.mocked(userServiceMock.create).mockResolvedValue({
       id: '',
       hashedEmail: '',
-      name: '',
-      jobTitle: '',
+      nickname: '',
       browserFingerprint: '',
       allowContact: false,
     });

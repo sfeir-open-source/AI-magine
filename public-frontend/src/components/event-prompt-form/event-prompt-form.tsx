@@ -27,19 +27,17 @@ import { LoadingSpinner } from '@/src/components/loading-spinner/loading-spinner
 import { toast } from 'sonner';
 import { STORAGE_USER_ID_KEY } from '@/src/hooks/useUserId';
 
-export const STORAGE_NAME_KEY = 'name';
+export const STORAGE_NICKNAME_KEY = 'nickname';
 export const STORAGE_EMAIL_KEY = 'email';
-export const STORAGE_JOB_KEY = 'job-title';
 export const STORAGE_ALLOW_CONTACT_KEY = 'allow-contact';
 export const STORAGE_PROMPT_KEY = 'prompt';
 
 const PromptFormSchema = z.object({
-  name: z.string().nonempty({ message: i18n.t('empty-name-error') }),
+  nickname: z.string().nonempty({ message: i18n.t('empty-nickname-error') }),
   email: z
     .string()
     .email({ message: i18n.t('invalid-email-error') })
     .nonempty({ message: i18n.t('empty-email-error') }),
-  jobTitle: z.string().nonempty({ message: i18n.t('empty-job-title-error') }),
   allowContact: z
     .string()
     .nonempty({ message: i18n.t('empty-allow-contact-error') }),
@@ -62,18 +60,16 @@ export const EventPromptForm = ({ event }: EventPromptFormProps) => {
   const form = useForm<z.infer<typeof PromptFormSchema>>({
     resolver: zodResolver(PromptFormSchema),
     defaultValues: {
-      name: localStorage.getItem(STORAGE_NAME_KEY) ?? '',
+      nickname: localStorage.getItem(STORAGE_NICKNAME_KEY) ?? '',
       email: localStorage.getItem(STORAGE_EMAIL_KEY) ?? '',
-      jobTitle: localStorage.getItem(STORAGE_JOB_KEY) ?? '',
       allowContact: localStorage.getItem(STORAGE_ALLOW_CONTACT_KEY) ?? '',
       prompt: localStorage.getItem(STORAGE_PROMPT_KEY) ?? '',
     },
   });
 
   const onSubmit = async (data: z.infer<typeof PromptFormSchema>) => {
-    localStorage.setItem(STORAGE_NAME_KEY, data.name);
+    localStorage.setItem(STORAGE_NICKNAME_KEY, data.nickname);
     localStorage.setItem(STORAGE_EMAIL_KEY, data.email);
-    localStorage.setItem(STORAGE_JOB_KEY, data.jobTitle);
     localStorage.setItem(STORAGE_ALLOW_CONTACT_KEY, data.allowContact);
     localStorage.setItem(STORAGE_PROMPT_KEY, data.prompt);
 
@@ -81,9 +77,8 @@ export const EventPromptForm = ({ event }: EventPromptFormProps) => {
       const { promptId, userId } = await mutateAsync({
         browserFingerprint: fingerprint,
         eventId: event.id,
-        userName: data.name,
+        userNickname: data.nickname,
         userEmail: data.email,
-        jobTitle: data.jobTitle,
         allowContact: data.allowContact === 'true',
         prompt: data.prompt,
       });
@@ -107,10 +102,10 @@ export const EventPromptForm = ({ event }: EventPromptFormProps) => {
           <div className="flex flex-col gap-2 mb-6">
             <FormField
               control={form.control}
-              name="name"
+              name="nickname"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('name')}</FormLabel>
+                  <FormLabel>{t('nickname')}</FormLabel>
                   <FormControl>
                     <Input placeholder="John Doe" {...field} />
                   </FormControl>
@@ -126,22 +121,6 @@ export const EventPromptForm = ({ event }: EventPromptFormProps) => {
                   <FormLabel>{t('email-address')}</FormLabel>
                   <FormControl>
                     <Input placeholder="doe.john@sfeir.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="jobTitle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('job-title')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t('job-title-placeholder')}
-                      {...field}
-                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

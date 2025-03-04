@@ -6,8 +6,6 @@ WORKDIR /app
 # Copy the entire workspace to allow dependencies resolution
 COPY ./ ./
 
-RUN ls -la
-
 # Install dependencies from the workspace root
 RUN npm install
 

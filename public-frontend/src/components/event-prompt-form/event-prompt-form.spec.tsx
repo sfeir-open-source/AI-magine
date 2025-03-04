@@ -3,8 +3,7 @@ import {
   EventPromptForm,
   STORAGE_ALLOW_CONTACT_KEY,
   STORAGE_EMAIL_KEY,
-  STORAGE_JOB_KEY,
-  STORAGE_NAME_KEY,
+  STORAGE_NICKNAME_KEY,
   STORAGE_PROMPT_KEY,
 } from '@/src/components/event-prompt-form/event-prompt-form';
 import { render, screen } from '@testing-library/react';
@@ -69,11 +68,10 @@ describe('EventPromptForm', () => {
     await userEvent.click(screen.getByText('Go'));
 
     expect(navigateMock).not.toHaveBeenCalled();
-    expect(screen.getByText(i18n.t('empty-name-error'))).toBeInTheDocument();
-    expect(screen.getByText(i18n.t('invalid-email-error'))).toBeInTheDocument();
     expect(
-      screen.getByText(i18n.t('empty-job-title-error'))
+      screen.getByText(i18n.t('empty-nickname-error'))
     ).toBeInTheDocument();
+    expect(screen.getByText(i18n.t('invalid-email-error'))).toBeInTheDocument();
     expect(
       screen.getByText(i18n.t('empty-allow-contact-error'))
     ).toBeInTheDocument();
@@ -101,9 +99,8 @@ describe('EventPromptForm', () => {
     const fakePromptRequest = {
       browserFingerprint: fakeFingerprint,
       eventId: fakeEventId,
-      userName: 'test-name',
+      userNickname: 'test-name',
       userEmail: 'test-email@test.com',
-      jobTitle: 'test-job',
       allowContact: false,
       prompt: 'test-prompt',
     };
@@ -120,16 +117,12 @@ describe('EventPromptForm', () => {
     );
 
     await userEvent.type(
-      screen.getByLabelText(i18n.t('name')),
-      fakePromptRequest.userName
+      screen.getByLabelText(i18n.t('nickname')),
+      fakePromptRequest.userNickname
     );
     await userEvent.type(
       screen.getByLabelText(i18n.t('email-address')),
       fakePromptRequest.userEmail
-    );
-    await userEvent.type(
-      screen.getByLabelText(i18n.t('job-title')),
-      fakePromptRequest.jobTitle
     );
     await userEvent.click(screen.getByLabelText(i18n.t('no')));
     await userEvent.type(
@@ -142,14 +135,11 @@ describe('EventPromptForm', () => {
     expect(navigateMock).toHaveBeenCalledWith(
       `/events/event-id/prompts/${fakePromptId}/loading`
     );
-    expect(localStorage.getItem(STORAGE_NAME_KEY)).toEqual(
-      fakePromptRequest.userName
+    expect(localStorage.getItem(STORAGE_NICKNAME_KEY)).toEqual(
+      fakePromptRequest.userNickname
     );
     expect(localStorage.getItem(STORAGE_EMAIL_KEY)).toEqual(
       fakePromptRequest.userEmail
-    );
-    expect(localStorage.getItem(STORAGE_JOB_KEY)).toEqual(
-      fakePromptRequest.jobTitle
     );
     expect(localStorage.getItem(STORAGE_ALLOW_CONTACT_KEY)).toEqual('false');
     expect(localStorage.getItem(STORAGE_PROMPT_KEY)).toEqual(
@@ -177,9 +167,8 @@ describe('EventPromptForm', () => {
     const fakePromptRequest = {
       browserFingerprint: fakeFingerprint,
       eventId: fakeEventId,
-      userName: 'test-name',
+      userNickname: 'test-name',
       userEmail: 'test-email@test.com',
-      jobTitle: 'test-job',
       allowContact: false,
       prompt: 'test-prompt',
     };
@@ -199,16 +188,12 @@ describe('EventPromptForm', () => {
     );
 
     await userEvent.type(
-      screen.getByLabelText(i18n.t('name')),
-      fakePromptRequest.userName
+      screen.getByLabelText(i18n.t('nickname')),
+      fakePromptRequest.userNickname
     );
     await userEvent.type(
       screen.getByLabelText(i18n.t('email-address')),
       fakePromptRequest.userEmail
-    );
-    await userEvent.type(
-      screen.getByLabelText(i18n.t('job-title')),
-      fakePromptRequest.jobTitle
     );
     await userEvent.click(screen.getByLabelText(i18n.t('no')));
     await userEvent.type(

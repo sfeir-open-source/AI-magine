@@ -2,10 +2,9 @@ import { nanoid } from 'nanoid';
 
 export class User {
   id: string;
-  name?: string;
+  nickname: string;
   hashedEmail: string;
   browserFingerprint: string;
-  jobTitle?: string;
   allowContact: boolean;
 
   private constructor(
@@ -13,18 +12,17 @@ export class User {
     hashedEmail: string,
     browserFingerprint: string,
     allowContact: boolean,
-    name?: string,
-    jobTitle?: string
+    nickname: string
   ) {
     if (!id) throw new Error('Id is required');
     if (!hashedEmail) throw new Error('Email is required');
     if (!browserFingerprint) throw new Error('Browser fingerprint is required');
+    if (!nickname) throw new Error('Nickname is required');
 
     this.id = id;
-    this.name = name;
+    this.nickname = nickname;
     this.hashedEmail = hashedEmail;
     this.browserFingerprint = browserFingerprint;
-    this.jobTitle = jobTitle;
     this.allowContact = allowContact;
   }
 
@@ -33,16 +31,14 @@ export class User {
     hashedEmail: string,
     browserFingerprint: string,
     allowContact: boolean,
-    name?: string,
-    jobTitle?: string
+    nickname: string
   ) {
     return new User(
       id,
       hashedEmail,
       browserFingerprint,
       allowContact,
-      name,
-      jobTitle
+      nickname
     );
   }
 
@@ -50,16 +46,14 @@ export class User {
     hashedEmail: string,
     browserFingerprint: string,
     allowContact: boolean,
-    name?: string,
-    jobTitle?: string
+    nickname: string
   ) {
     return new User(
       nanoid(32),
       hashedEmail,
       browserFingerprint,
       allowContact,
-      name,
-      jobTitle
+      nickname
     );
   }
 }

@@ -21,21 +21,14 @@ export class PromptService {
     prompt,
     browserFingerprint,
     allowContact,
-    userName,
-    jobTitle,
+    userNickname,
     eventId,
     userEmail,
   }: CreatePromptDto): Promise<Prompt> {
     let userId = await this.userService.getUserIdByEmail(userEmail);
     if (!userId) {
       const createdUser = await this.userService.create(
-        User.create(
-          userEmail,
-          browserFingerprint,
-          allowContact,
-          userName,
-          jobTitle
-        )
+        User.create(userEmail, browserFingerprint, allowContact, userNickname)
       );
       userId = createdUser.id;
     }

@@ -22,5 +22,11 @@
   "failed-authenticate-redirect": "Failed to authenticate user. You will be redirected.",
   "successful-promote": "Image promoted successfully",
   "failed-promote": "Failed to promote image",
-  "promote": "Promote"
+  "promote": "Promote",
+  "generate-image": "Generate image",
+  "generating-your-image": "Generating your image",
+  "enter-event": "Enter event",
+  "clear": "Clear",
+  "participate-to-event": "Participate to an event",
+  "participate-to-event-description": "To participate, either scan the QRCode or enter the event identifier"
 }

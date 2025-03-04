@@ -58,7 +58,6 @@
     "cls": "^0.1.5",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "embla-carousel-react": "^8.5.2",
     "i18next": "^24.2.2",
     "i18next-browser-languagedetector": "^8.0.4",
     "lucide-react": "^0.475.0",

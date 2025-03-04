@@ -21,7 +21,7 @@
   --primary: hsl(238.5 50.6% 31.8%);
   --primary-foreground: hsl(0 0% 98%);
   --secondary: hsl(238.6 93.3% 64.7%);
-  --secondary-foreground: hsl(0.0 0.0% 100.0%);
+  --secondary-foreground: hsl(0 0% 100%);
   --muted: hsl(240 4.8% 95.9%);
   --muted-foreground: hsl(240 3.8% 46.1%);
   --accent: hsl(240 4.8% 95.9%);
@@ -42,7 +42,7 @@
   --chart-5: hsl(340 75% 55%);
 
   /* SFEIR COLORS */
-  --background: hsl(240.0 18.3% 13.9%);
+  --background: hsl(240 18.3% 13.9%);
   --foreground: hsl(0 0% 98%);
   --card: hsl(238.5 50.6% 31.8%);
   --card-foreground: hsl(0 0% 98%);
@@ -50,16 +50,16 @@
   --popover-foreground: hsl(0 0% 98%);
   --primary: hsl(0 0% 98%);
   --primary-foreground: hsl(238.5 50.6% 31.8%);
-  --secondary: hsl(240.0 18.3% 13.9%);
+  --secondary: hsl(240 18.3% 13.9%);
   --secondary-foreground: hsl(0 0% 98%);
-  --muted: hsl(240.0 18.3% 13.9%);
+  --muted: hsl(240 18.3% 13.9%);
   --muted-foreground: hsl(240 5% 64.9%);
-  --accent: hsl(240.0 18.3% 13.9%);
+  --accent: hsl(240 18.3% 13.9%);
   --accent-foreground: hsl(0 0% 98%);
   --destructive: hsl(0 62.8% 30.6%);
   --destructive-foreground: hsl(0 0% 98%);
-  --border: hsl(240.0 18.3% 13.9%);
-  --input: hsl(240.0 60.0% 1.0%);
+  --border: hsl(240 18.3% 13.9%);
+  --input: hsl(240 60% 1%);
   --ring: hsl(240 4.9% 83.9%);
 }
 

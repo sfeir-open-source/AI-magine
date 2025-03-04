@@ -36,10 +36,14 @@ export class PromptController {
     @Body() createDto: CreatePromptBodyDto,
     @Res({ passthrough: true }) response: Response
   ) {
+    const userEmail = encrypt(
+      createDto.userEmail,
+      process.env.EMAIL_HASH_SECRET
+    );
     const createdPrompt = await this.promptService.createPrompt({
       ...createDto,
       eventId,
-      userEmail: encrypt(createDto.userEmail, process.env.EMAIL_HASH_SECRET),
+      userEmail,
     });
     response.cookie('userId', createdPrompt.userId, {
       httpOnly: true,

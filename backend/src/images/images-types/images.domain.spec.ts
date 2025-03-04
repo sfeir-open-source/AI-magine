@@ -12,14 +12,16 @@ describe('Image Class', () => {
       const url = 'http://example.com/image.png';
       const promptId = 'prompt-id';
       const createdAt = new Date();
+      const selected = false;
 
-      const image = Image.from(id, url, promptId, createdAt);
+      const image = Image.from(id, url, promptId, createdAt, selected);
 
       expect(image).toBeInstanceOf(Image);
       expect(image.id).toBe(id);
       expect(image.url).toBe(url);
       expect(image.promptId).toBe(promptId);
       expect(image.createdAt).toBe(createdAt);
+      expect(image.selected).toBe(selected);
     });
 
     it('should throw an error if id is missing', () => {
@@ -27,9 +29,9 @@ describe('Image Class', () => {
       const promptId = 'prompt-id';
       const createdAt = new Date();
 
-      expect(() => Image.from('', url, promptId, createdAt)).toThrowError(
-        'Id is required'
-      );
+      expect(() =>
+        Image.from('', url, promptId, createdAt, false)
+      ).toThrowError('Id is required');
     });
 
     it('should throw an error if url is missing', () => {
@@ -37,7 +39,7 @@ describe('Image Class', () => {
       const promptId = 'prompt-id';
       const createdAt = new Date();
 
-      expect(() => Image.from(id, '', promptId, createdAt)).toThrowError(
+      expect(() => Image.from(id, '', promptId, createdAt, false)).toThrowError(
         'Url is required'
       );
     });
@@ -47,7 +49,7 @@ describe('Image Class', () => {
       const url = 'http://example.com/image.png';
       const createdAt = new Date();
 
-      expect(() => Image.from(id, url, '', createdAt)).toThrowError(
+      expect(() => Image.from(id, url, '', createdAt, false)).toThrowError(
         'Prompt id is required'
       );
     });
@@ -58,7 +60,7 @@ describe('Image Class', () => {
       const promptId = 'prompt-id';
 
       expect(() =>
-        Image.from(id, url, promptId, null as unknown as Date)
+        Image.from(id, url, promptId, null as unknown as Date, false)
       ).toThrowError('Created at is required');
     });
   });
@@ -82,6 +84,7 @@ describe('Image Class', () => {
       expect(image.createdAt.getTime()).toBeLessThanOrEqual(
         afterCreate.getTime()
       );
+      expect(image.selected).toEqual(false);
     });
 
     it('should throw an error if url is missing', () => {

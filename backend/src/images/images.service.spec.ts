@@ -27,7 +27,8 @@ describe('ImagesService', () => {
         'id123',
         'http://example.com/image.png',
         promptId,
-        new Date()
+        new Date(),
+        false
       );
       mockImageRepository.getImageByPromptId.mockResolvedValue(mockImage);
 

@@ -20,8 +20,8 @@ class EventsApi implements EventRepository {
     try {
       const response = await this.http.get<
         {
-          imageId: string;
-          imageUrl: string;
+          id: string;
+          url: string;
           prompt: string;
           createdAt: string;
           selected: boolean;
@@ -31,9 +31,9 @@ class EventsApi implements EventRepository {
       return response.data.map(
         (backendImage) =>
           new Image(
-            backendImage.imageId,
+            backendImage.id,
             backendImage.prompt,
-            backendImage.imageUrl,
+            backendImage.url,
             backendImage.selected
           )
       );

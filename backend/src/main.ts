@@ -4,7 +4,9 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
-config();
+config({
+  override: true,
+});
 
 (async function bootstrap() {
   const app = (await NestFactory.create(AppModule)) as NestExpressApplication;

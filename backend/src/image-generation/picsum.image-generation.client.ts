@@ -67,7 +67,7 @@ export class PicsumImageGenerationClient implements ImageGenerationClient {
 
   async generateImageFromPrompt(prompt: string): Promise<string> {
     const data = await this.getBase64ImageFromUrl(
-      `https://picsum.photos/seed/${encodeURIComponent(prompt)}/200/300`
+      `https://picsum.photos/seed/${encodeURIComponent(prompt)}/1920/1080`
     );
     if (!data) {
       return '';

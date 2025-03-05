@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteImagesRepository } from '@/images/sqlite.images.repository';
-import { Image } from '@/images/images-types';
+import { Image } from 'src/images/domain';
 
 const promptId = 'promptId1';
 const mockImage = Image.create('http://example.com/image.png', promptId);

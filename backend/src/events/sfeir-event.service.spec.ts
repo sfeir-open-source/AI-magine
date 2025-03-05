@@ -5,7 +5,7 @@ import { vi } from 'vitest';
 import {
   SFEIR_EVENT_REPOSITORY,
   SfeirEventRepository,
-} from '@/events/events-types';
+} from 'src/events/domain';
 
 describe('SfeirEventService', () => {
   let service: SfeirEventService;

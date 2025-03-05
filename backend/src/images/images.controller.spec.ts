@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import { ImagesService } from '@/images/images.service';
 import { ImagesController } from '@/images/images.controller';
-import { Image } from '@/images/images-types';
+import { Image } from 'src/images/domain';
 
 describe('ImagesController', () => {
   let imagesController: ImagesController;

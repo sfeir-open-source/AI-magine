@@ -4,7 +4,7 @@ import { ImageGenerationEngine } from '@/image-generation/image-generation.engin
 import {
   ImageGenerationMessageEvent,
   ImageGenerationStatusRepository,
-} from '@/image-generation/image-generation-types';
+} from 'src/image-generation/domain';
 import { ImageGenerationService } from '@/image-generation/image-generation.service';
 import { ImagesService } from '@/images/images.service';
 

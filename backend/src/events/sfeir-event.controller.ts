@@ -11,8 +11,9 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SfeirEventService } from '@/events/sfeir-event.service';
-import { CreateSfeirEventDto, SfeirEventDto } from '@/events/events-types';
-import { SfeirEventMappers } from '@/events/events-types/sfeir-event.mappers';
+import { GetSfeirEventDto } from 'src/events/domain';
+import { SfeirEventMappers } from '@/events/mapper/sfeir-event.mappers';
+import { CreateSfeirEventDto } from '@/events/dto/create-sfeir-event.dto';
 
 @Controller('v1/events')
 @ApiTags('sfeir-event')
@@ -25,10 +26,10 @@ export class SfeirEventController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'All events',
-    type: SfeirEventDto,
+    type: GetSfeirEventDto,
     isArray: true,
   })
-  async getSfeirEvents(): Promise<SfeirEventDto[]> {
+  async getSfeirEvents(): Promise<GetSfeirEventDto[]> {
     const storedEvents = await this.sfeirEventService.getSfeirEvents();
     return storedEvents.map((storedEvent) =>
       SfeirEventMappers.fromDomainToDTO(storedEvent)
@@ -41,11 +42,11 @@ export class SfeirEventController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'The event has been successfully created.',
-    type: SfeirEventDto,
+    type: GetSfeirEventDto,
   })
   async createSfeirEvent(
     @Body() body: CreateSfeirEventDto
-  ): Promise<SfeirEventDto> {
+  ): Promise<GetSfeirEventDto> {
     const storedEvent = await this.sfeirEventService.createSfeirEvent(body);
     return SfeirEventMappers.fromDomainToDTO(storedEvent);
   }
@@ -67,13 +68,13 @@ export class SfeirEventController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'The event was found.',
-    type: SfeirEventDto,
+    type: GetSfeirEventDto,
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: 'The event could not be found.',
   })
-  async getSfeirEvent(@Param('id') id: string): Promise<SfeirEventDto> {
+  async getSfeirEvent(@Param('id') id: string): Promise<GetSfeirEventDto> {
     const storedEvent = await this.sfeirEventService.getSfeirEvent(id);
 
     if (!storedEvent) {

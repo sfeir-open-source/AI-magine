@@ -1,7 +1,7 @@
 import { beforeEach, vi } from 'vitest';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteUserRepository } from '@/user/sqlite.user.repository';
-import { User } from '@/user/user-types';
+import { User } from 'src/user/domain';
 
 const mockUser = User.from('2', 'hashedEmail', 'fingerprint', true, 'Nickname');
 

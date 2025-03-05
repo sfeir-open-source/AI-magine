@@ -9,12 +9,12 @@ import {
   Sse,
 } from '@nestjs/common';
 import { PromptService } from '@/prompt/prompt.service';
-import { CreatePromptBodyDto } from '@/prompt/prompt-types/prompt.dto';
+import { CreatePromptBodyDto } from '@/prompt/dto/create-prompt.dto';
 import { encrypt } from '@/config/crypto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { Observable, Subject } from 'rxjs';
-import { ImageGenerationMessageEvent } from '@/image-generation/image-generation-types';
+import { ImageGenerationMessageEvent } from 'src/image-generation/domain';
 
 @Controller('v1/events/:eventId/prompts')
 export class PromptController {

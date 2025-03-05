@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { Image } from '@/images/images-types';
+import { Image } from 'src/images/domain';
 
 vi.mock('nanoid', () => ({
   nanoid: () => 'mocked-nanoid',

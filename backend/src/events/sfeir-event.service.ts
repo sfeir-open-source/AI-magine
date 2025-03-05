@@ -1,11 +1,11 @@
 import {
-  CreateSfeirEventDto,
   SfeirEvent,
   SFEIR_EVENT_REPOSITORY,
   SfeirEventRepository,
-} from '@/events/events-types';
+} from 'src/events/domain';
 import { Inject, Injectable } from '@nestjs/common';
-import { SfeirEventMappers } from '@/events/events-types/sfeir-event.mappers';
+import { SfeirEventMappers } from '@/events/mapper/sfeir-event.mappers';
+import { CreateSfeirEventDto } from '@/events/dto/create-sfeir-event.dto';
 
 @Injectable()
 export class SfeirEventService {

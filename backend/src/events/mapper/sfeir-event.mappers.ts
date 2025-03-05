@@ -1,8 +1,8 @@
-import { SfeirEventDto } from '@/events/events-types/sfeir-event.dtos';
-import { SfeirEvent } from '@/events/events-types';
+import { GetSfeirEventDto } from '@/events/dto/get-sfeir-event.dtos';
+import { SfeirEvent } from '@/events/domain';
 
 export class SfeirEventMappers {
-  static fromDomainToDTO(actual: SfeirEvent): SfeirEventDto {
+  static fromDomainToDTO(actual: SfeirEvent): GetSfeirEventDto {
     return {
       id: actual.id,
       name: actual.name,

@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import {
   IMAGES_REPOSITORY,
   ImagesRepository,
-} from '@/images/images-types/images.repository';
-import { Image } from 'src/images/images-types';
+} from '@/images/domain/images.repository';
+import { Image } from 'src/images/domain';
 
 @Injectable()
 export class ImagesService {

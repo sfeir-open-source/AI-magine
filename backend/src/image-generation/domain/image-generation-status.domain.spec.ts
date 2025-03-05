@@ -1,4 +1,4 @@
-import { ImageGenerationStatus } from '@/image-generation/image-generation-types/image-generation-status.domain';
+import { ImageGenerationStatus } from '@/image-generation/domain/image-generation-status.domain';
 
 describe('ImageGenerationStatus', () => {
   describe('from', () => {

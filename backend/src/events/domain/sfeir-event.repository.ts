@@ -1,4 +1,4 @@
-import { SfeirEvent } from '@/events/events-types/sfeir-event.domain';
+import { SfeirEvent } from '@/events/domain/sfeir-event.domain';
 
 export const SFEIR_EVENT_REPOSITORY = Symbol('SFEIR_EVENT_REPOSITORY');
 

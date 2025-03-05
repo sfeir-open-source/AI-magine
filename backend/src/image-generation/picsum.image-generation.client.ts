@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { ImageGenerationClient } from '@/image-generation/image-generation-types/image-generation.client';
+import { ImageGenerationClient } from '@/image-generation/domain/image-generation.client';
 
 @Injectable()
 export class PicsumImageGenerationClient implements ImageGenerationClient {

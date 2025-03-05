@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 import { UserService } from '@/user/user.service';
-import { User, UserRepository } from '@/user/user-types';
+import { User, UserRepository } from 'src/user/domain';
 
 const mockUser = User.from('1', 'hash', 'fp', true, 'nickname');
 const mockUserRepository = {

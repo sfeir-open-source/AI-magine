@@ -3,13 +3,13 @@ import { PromptService } from './prompt.service';
 import { PromptController } from './prompt.controller';
 import { UserModule } from '@/user/user.module';
 import { SQLiteClient } from '@/config/sqlite-client';
-import { PROMPT_REPOSITORY } from '@/prompt/prompt-types';
+import { PROMPT_REPOSITORY } from 'src/prompt/domain';
 import { SqlitePromptRepository } from '@/prompt/sqlite.prompt.repository';
 import { ImageGenerationModule } from '@/image-generation/image-generation.module';
 import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
-import { IMAGE_GENERATION_STATUS_REPOSITORY } from '@/image-generation/image-generation-types';
+import { IMAGE_GENERATION_STATUS_REPOSITORY } from 'src/image-generation/domain';
 import { SqliteImageGenerationStatusRepository } from '@/image-generation/sqlite.image-generation-status.repository';
-import { IMAGES_REPOSITORY } from '@/images/images-types/images.repository';
+import { IMAGES_REPOSITORY } from '@/images/domain/images.repository';
 import { SqliteImagesRepository } from '@/images/sqlite.images.repository';
 import { ImagesModule } from '@/images/images.module';
 

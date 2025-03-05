@@ -1,5 +1,5 @@
-import { ImagesRepository } from '@/images/images-types/images.repository';
-import { Image } from './images-types';
+import { ImagesRepository } from '@/images/domain/images.repository';
+import { Image } from './domain';
 import { Inject, OnApplicationBootstrap } from '@nestjs/common';
 import { SQLiteClient } from '@/config/sqlite-client';
 

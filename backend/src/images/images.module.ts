@@ -4,14 +4,28 @@ import { IMAGES_REPOSITORY } from '@/images/domain/images.repository';
 import { SqliteImagesRepository } from '@/images/sqlite.images.repository';
 import { ImagesService } from '@/images/images.service';
 import { ImagesController } from '@/images/images.controller';
+import { FirestoreImagesRepository } from '@/images/firestore.images.repository';
+import { FirestoreClient } from '@/config/firestore-client';
+import { ConfigModule } from '@nestjs/config';
+import { ConfigurationService } from '@/configuration/configuration.service';
 
 @Module({
+  imports: [ConfigModule],
   providers: [
     ImagesService,
     SQLiteClient,
+    FirestoreClient,
     {
       provide: IMAGES_REPOSITORY,
-      useClass: SqliteImagesRepository,
+      inject: [ConfigurationService, FirestoreClient, SQLiteClient],
+      useFactory: (
+        configurationService: ConfigurationService,
+        firestoreClient: FirestoreClient,
+        sqliteClient: SQLiteClient
+      ) =>
+        configurationService.getFirestoreEnabled()
+          ? new FirestoreImagesRepository(firestoreClient)
+          : new SqliteImagesRepository(sqliteClient),
     },
   ],
   controllers: [ImagesController],

@@ -59,7 +59,7 @@ export class ImageGenerationEngine {
 
       await this.imagesService.saveImage(promptId, imageContent);
 
-      this.emitter.emit('done', { promptId });
+      this.emitter.emit('done', { promptId, imageURL });
     } catch (error) {
       this.emitter.emit('error', { promptId, error });
     }

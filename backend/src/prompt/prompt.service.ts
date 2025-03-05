@@ -51,9 +51,11 @@ export class PromptService {
     const newPrompt = await this.promptRepository.save(
       Prompt.create(eventId, userId, prompt)
     );
-
-    this.imageGenerationEngine.processPrompt(newPrompt.id, newPrompt.prompt);
-
+    this.imageGenerationEngine.processPrompt(
+      eventId,
+      newPrompt.id,
+      newPrompt.prompt
+    );
     return newPrompt;
   }
 

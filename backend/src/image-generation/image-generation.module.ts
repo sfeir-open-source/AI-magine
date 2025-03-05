@@ -11,27 +11,61 @@ import { SqliteImagesRepository } from '@/images/sqlite.images.repository';
 import { ImagesService } from '@/images/images.service';
 import { ImagenImageGenerationClient } from '@/image-generation/imagen.image-generation-client';
 import { PicsumImageGenerationClient } from '@/image-generation/picsum.image-generation.client';
+import { FirestoreImageGenerationStatusRepository } from '@/image-generation/firestore.image-generation-status.repository';
+import { FirestoreImagesRepository } from '@/images/firestore.images.repository';
+import { FirestoreClient } from '@/config/firestore-client';
+import { IMAGES_STORAGE } from '@/images/domain/images.storage';
+import { GCPBucketImagesStorage } from '@/images/gcp-bucket.images.storage';
+import { FakeImagesStorage } from '@/images/fake.images.storage';
+import { ConfigModule } from '@nestjs/config';
+import { ConfigurationService } from '@/configuration/configuration.service';
 
 @Module({
-  imports: [ImagesModule],
+  imports: [ImagesModule, ConfigModule],
   providers: [
     ImageGenerationService,
     ImagesService,
     SQLiteClient,
+    FirestoreClient,
+    {
+      provide: IMAGES_STORAGE,
+      inject: [ConfigurationService],
+      useFactory: (configurationService: ConfigurationService) =>
+        configurationService.getBucketEnabled()
+          ? new GCPBucketImagesStorage(configurationService)
+          : new FakeImagesStorage(),
+    },
     {
       provide: IMAGE_GENERATION_CLIENT,
-      useClass:
-        !process.env?.IMAGEN_GCP_PROJECT_ID || !process.env.IMAGEN_REGION
-          ? PicsumImageGenerationClient
-          : ImagenImageGenerationClient,
+      inject: [ConfigurationService],
+      useFactory: (configurationService: ConfigurationService) =>
+        configurationService.getImagenEnabled()
+          ? new ImagenImageGenerationClient(configurationService)
+          : new PicsumImageGenerationClient(),
     },
     {
       provide: IMAGE_GENERATION_STATUS_REPOSITORY,
-      useClass: SqliteImageGenerationStatusRepository,
+      inject: [ConfigurationService, FirestoreClient, SQLiteClient],
+      useFactory: (
+        configurationService: ConfigurationService,
+        firestoreClient: FirestoreClient,
+        sqliteClient: SQLiteClient
+      ) =>
+        configurationService.getFirestoreEnabled()
+          ? new FirestoreImageGenerationStatusRepository(firestoreClient)
+          : new SqliteImageGenerationStatusRepository(sqliteClient),
     },
     {
       provide: IMAGES_REPOSITORY,
-      useClass: SqliteImagesRepository,
+      inject: [ConfigurationService, FirestoreClient, SQLiteClient],
+      useFactory: (
+        configurationService: ConfigurationService,
+        firestoreClient: FirestoreClient,
+        sqliteClient: SQLiteClient
+      ) =>
+        configurationService.getFirestoreEnabled()
+          ? new FirestoreImagesRepository(firestoreClient)
+          : new SqliteImagesRepository(sqliteClient),
     },
     ImageGenerationEngine,
   ],

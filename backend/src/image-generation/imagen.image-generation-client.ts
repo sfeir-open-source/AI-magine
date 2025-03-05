@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ImageGenerationClient } from '@/image-generation/domain';
 import { helpers, PredictionServiceClient } from '@google-cloud/aiplatform';
 import { google } from '@google-cloud/aiplatform/build/protos/protos';
+import { ConfigurationService } from '@/configuration/configuration.service';
 import IPredictRequest = google.cloud.aiplatform.v1.IPredictRequest;
 import IPredictResponse = google.cloud.aiplatform.v1.IPredictResponse;
 
@@ -10,26 +11,32 @@ export class ImagenImageGenerationClient implements ImageGenerationClient {
   private readonly endpoint: string;
   private readonly predictionServiceClient: PredictionServiceClient;
 
-  constructor() {
-    if (!process.env.IMAGEN_GCP_PROJECT_ID) {
+  constructor(
+    @Inject()
+    private readonly configurationService: ConfigurationService
+  ) {
+    if (!configurationService.getImagenGcpProjectID()) {
       throw new Error('Missing IMAGEN_GCP_PROJECT_ID');
     }
-    if (!process.env.IMAGEN_REGION) {
+    if (!configurationService.getImagenRegion()) {
       throw new Error('Missing IMAGEN_REGION');
     }
 
-    this.endpoint = `projects/${process.env.IMAGEN_GCP_PROJECT_ID}/locations/${process.env.IMAGEN_REGION}/publishers/google/models/imagen-3.0-generate-001`;
+    this.endpoint = `projects/${configurationService.getImagenGcpProjectID()}/locations/${configurationService.getImagenRegion()}/publishers/google/models/imagen-3.0-generate-001`;
     this.predictionServiceClient = new PredictionServiceClient({
-      apiEndpoint: `${process.env.IMAGEN_REGION}-aiplatform.googleapis.com`,
+      apiEndpoint: `${configurationService.getImagenRegion()}-aiplatform.googleapis.com`,
     });
   }
 
   private DEFAULT_IMAGE_REQUEST_PARAMS = {
     sampleCount: 1,
-    addWatermark: false,
+    addWatermark: true,
+    watermarkText: 'SFEIR',
     aspectRatio: '16:9',
-    safetyFilterLevel: 'block_some',
-    personGeneration: 'allow_adult',
+    safetySettings: {
+      categoryAllowList: ['hate', 'harassment', 'sexualContent'],
+      filterStrength: 'HIGH',
+    },
   };
 
   async generateImageFromPrompt(prompt: string): Promise<string> {

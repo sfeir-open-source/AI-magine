@@ -1,13 +1,16 @@
 import { SQLiteClient } from '@/config/sqlite-client';
 import { SqlitePromptRepository } from '@/prompt/sqlite.prompt.repository';
 import { Prompt } from '@/prompt/domain/prompt.domain';
+import { ConfigurationService } from '@/configuration/configuration.service';
 
 describe('SqlitePromptRepository', () => {
   let sqliteClient: SQLiteClient;
   let repository: SqlitePromptRepository;
 
   beforeEach(async () => {
-    sqliteClient = new SQLiteClient();
+    sqliteClient = new SQLiteClient({
+      getSqliteDBPath: () => ':memory:',
+    } as unknown as ConfigurationService);
     repository = new SqlitePromptRepository(sqliteClient);
     await repository.onApplicationBootstrap();
   });

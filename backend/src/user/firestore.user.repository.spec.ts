@@ -42,7 +42,7 @@ describe('FirestoreUserRepository', () => {
         allowContact: true,
         nickname: 'nickname',
       });
-      const exists = await firestoreUserRepository.checkExists(user);
+      const exists = await firestoreUserRepository.checkExistsById(user.id);
 
       expect(mockUserCollection.doc).toHaveBeenCalledWith(user.id);
       expect(exists).toBe(true);
@@ -60,7 +60,7 @@ describe('FirestoreUserRepository', () => {
         allowContact: true,
         nickname: 'nickname',
       });
-      const exists = await firestoreUserRepository.checkExists(user);
+      const exists = await firestoreUserRepository.checkExistsById(user.id);
 
       expect(mockUserCollection.doc).toHaveBeenCalledWith(user.id);
       expect(exists).toBe(false);

@@ -6,8 +6,9 @@ import {
   QuerySnapshot,
 } from '@google-cloud/firestore';
 import { FirestoreClient } from '@/config/firestore-client';
-import { FirestoreImageGenerationStatusRepository } from '@/image-generation/firestore.image-generation-status.repository';
+
 import { ImageGenerationStatus } from '@/image-generation/domain';
+import { FirestoreImageGenerationStatusRepository } from '@/image-generation/firestore.image-generation-status.repository';
 
 vi.mock('@google-cloud/firestore', () => ({
   CollectionReference: vi.fn(),

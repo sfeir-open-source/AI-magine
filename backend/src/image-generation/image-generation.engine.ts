@@ -8,6 +8,7 @@ import {
 } from '@/image-generation/domain';
 import { ImageGenerationEventEmitter } from '@/image-generation/image-generation-event-emitter';
 import { ImagesService } from '@/images/images.service';
+import { IMAGES_STORAGE, ImagesStorage } from '@/images/domain/images.storage';
 
 @Injectable()
 export class ImageGenerationEngine {
@@ -17,7 +18,9 @@ export class ImageGenerationEngine {
     private readonly imageGenerationService: ImageGenerationService,
     @Inject(IMAGE_GENERATION_STATUS_REPOSITORY)
     private readonly imageGenerationStatusRepository: ImageGenerationStatusRepository,
-    private readonly imagesService: ImagesService
+    private readonly imagesService: ImagesService,
+    @Inject(IMAGES_STORAGE)
+    private readonly imagesStorage: ImagesStorage
   ) {
     this.emitter = new ImageGenerationEventEmitter();
     this.emitter.on('image:generation-requested', async (payload) => {
@@ -31,7 +34,21 @@ export class ImageGenerationEngine {
       return this.imageGenerationStatusRepository.updatePromptGenerationStatus(
         payload.promptId,
         'image:generation-done',
-        payload.imageContent ?? ''
+        ''
+      );
+    });
+    this.emitter.on('storage:save-requested', async (payload) => {
+      return this.imageGenerationStatusRepository.updatePromptGenerationStatus(
+        payload.promptId,
+        'storage:save-requested',
+        ''
+      );
+    });
+    this.emitter.on('storage:save-done', async (payload) => {
+      return this.imageGenerationStatusRepository.updatePromptGenerationStatus(
+        payload.promptId,
+        'storage:save-done',
+        payload.imageURL ?? ''
       );
     });
     this.emitter.on('error', async (payload) => {
@@ -50,14 +67,20 @@ export class ImageGenerationEngine {
     });
   }
 
-  async processPrompt(promptId: string, prompt: string) {
+  async processPrompt(eventId: string, promptId: string, prompt: string) {
     try {
       const { imageContent } = await this.generateImageFromPrompt(
         promptId,
         prompt
       );
 
-      await this.imagesService.saveImage(promptId, imageContent);
+      const { imageURL } = await this.saveImage(
+        eventId,
+        promptId,
+        imageContent
+      );
+
+      await this.imagesService.saveImage(promptId, imageURL);
 
       this.emitter.emit('done', { promptId, imageURL });
     } catch (error) {
@@ -108,5 +131,26 @@ export class ImageGenerationEngine {
       imageContent,
     });
     return { promptId, prompt, imageContent };
+  }
+
+  private async saveImage(
+    eventId: string,
+    promptId: string,
+    imageContent: string
+  ) {
+    this.emitter.emit('storage:save-requested', {
+      promptId,
+      imageContent,
+    });
+    const imageURL = await this.imagesStorage.saveImage(
+      eventId,
+      promptId,
+      imageContent
+    );
+    this.emitter.emit('storage:save-done', {
+      promptId,
+      imageURL,
+    });
+    return { eventId, promptId, imageContent, imageURL };
   }
 }

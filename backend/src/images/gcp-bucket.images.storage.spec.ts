@@ -54,8 +54,6 @@ describe('GCPBucketImagesStorage', () => {
         validBase64Image
       );
 
-      console.log(returnedURL);
-
       expect(returnedURL).toBe('mock-public-url');
     });
   });

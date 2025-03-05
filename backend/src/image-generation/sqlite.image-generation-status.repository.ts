@@ -1,7 +1,7 @@
 import {
   ImageGenerationStatus,
   ImageGenerationStatusRepository,
-} from '@/image-generation/image-generation-types';
+} from '@/image-generation/domain';
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { SQLiteClient } from '@/config/sqlite-client';
 

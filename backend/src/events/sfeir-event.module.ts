@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SfeirEventController } from '@/events/sfeir-event.controller';
 import { SfeirEventService } from '@/events/sfeir-event.service';
-import { SFEIR_EVENT_REPOSITORY } from '@/events/events-types';
+import { SFEIR_EVENT_REPOSITORY } from '@/events/domain';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteSfeirEventRepository } from '@/events/sqlite.sfeir-event.repository';
 

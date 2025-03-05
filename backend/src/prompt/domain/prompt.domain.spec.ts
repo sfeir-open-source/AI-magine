@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { Prompt } from '@/prompt/prompt-types/prompt.domain';
+import { Prompt } from '@/prompt/domain/prompt.domain';
 
 vi.mock('nanoid', () => ({
   nanoid: vi.fn(() => 'mockedNanoid'),

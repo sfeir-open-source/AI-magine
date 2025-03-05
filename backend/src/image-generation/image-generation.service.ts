@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import {
   IMAGE_GENERATION_CLIENT,
   ImageGenerationClient,
-} from '@/image-generation/image-generation-types/image-generation.client';
+} from '@/image-generation/domain/image-generation.client';
 
 @Injectable()
 export class ImageGenerationService {

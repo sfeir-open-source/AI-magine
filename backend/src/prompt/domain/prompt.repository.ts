@@ -1,4 +1,4 @@
-import { Prompt } from '@/prompt/prompt-types/prompt.domain';
+import { Prompt } from '@/prompt/domain/prompt.domain';
 
 export const PROMPT_REPOSITORY = Symbol('PROMPT_REPOSITORY');
 

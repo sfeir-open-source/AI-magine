@@ -1,7 +1,7 @@
 import { expect, vi } from 'vitest';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteSfeirEventRepository } from '@/events/sqlite.sfeir-event.repository';
-import { SfeirEvent } from '@/events/events-types';
+import { SfeirEvent } from '@/events/domain';
 
 const startDateTs = 1633046400000;
 const endDateTs = 1633132800000;

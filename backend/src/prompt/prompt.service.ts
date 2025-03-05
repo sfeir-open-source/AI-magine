@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreatePromptDto } from '@/prompt/prompt-types/prompt.dto';
-import { PROMPT_REPOSITORY, PromptRepository } from '@/prompt/prompt-types';
+import { CreatePromptResponseDto } from '@/prompt/dto/create-prompt.response.dto';
+import { PROMPT_REPOSITORY, PromptRepository } from '@/prompt/domain';
 import { UserService } from '@/user/user.service';
-import { Prompt } from '@/prompt/prompt-types/prompt.domain';
-import { User } from '@/user/user-types';
+import { Prompt } from '@/prompt/domain/prompt.domain';
+import { User } from '@/user/domain';
 import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
 import { Subject } from 'rxjs';
-import { ImageGenerationMessageEvent } from '@/image-generation/image-generation-types';
+import { ImageGenerationMessageEvent } from '@/image-generation/domain';
 
 @Injectable()
 export class PromptService {
@@ -24,7 +24,7 @@ export class PromptService {
     userNickname,
     eventId,
     userEmail,
-  }: CreatePromptDto): Promise<Prompt> {
+  }: CreatePromptResponseDto): Promise<Prompt> {
     let userId = await this.userService.getUserIdByEmail(userEmail);
     if (!userId) {
       const createdUser = await this.userService.create(

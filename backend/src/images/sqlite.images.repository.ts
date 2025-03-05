@@ -1,7 +1,7 @@
-import { ImagesRepository } from '@/images/images-types/images.repository';
-import { Image } from './images-types';
+import { ImagesRepository } from '@/images/domain/images.repository';
 import { Inject, OnApplicationBootstrap } from '@nestjs/common';
 import { SQLiteClient } from '@/config/sqlite-client';
+import { Image } from '@/images/domain';
 
 export class SqliteImagesRepository
   implements ImagesRepository, OnApplicationBootstrap

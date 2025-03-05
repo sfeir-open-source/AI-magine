@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { HealthStatus } from '@/health/health-types';
+import { HealthStatusDto } from '@/health/dto/get-health-status.dto';
 
 @Injectable()
 export class HealthService {
-  async getLiveness(): Promise<HealthStatus> {
+  async getLiveness(): Promise<HealthStatusDto> {
     return {
       status: 'UP',
       timestamp: new Date().toISOString(),
     };
   }
 
-  async getReadiness(): Promise<HealthStatus> {
+  async getReadiness(): Promise<HealthStatusDto> {
     return {
       status: 'UP',
       timestamp: new Date().toISOString(),

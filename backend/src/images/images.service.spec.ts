@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ImagesService } from '@/images/images.service';
-import { ImagesRepository } from '@/images/images-types/images.repository';
-import { Image } from '@/images/images-types';
+import { ImagesRepository } from '@/images/domain/images.repository';
+import { Image } from '@/images/domain';
 
 const mockImageRepository = {
   getImageByPromptId: vi.fn(),

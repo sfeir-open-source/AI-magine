@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class HealthStatus {
+export class HealthStatusDto {
   @ApiProperty({
     enum: ['UP', 'DOWN'],
     description: 'Current health status',

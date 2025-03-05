@@ -4,7 +4,7 @@ import { ImageGenerationService } from '@/image-generation/image-generation.serv
 import {
   IMAGE_GENERATION_CLIENT,
   ImageGenerationClient,
-} from '@/image-generation/image-generation-types';
+} from '@/image-generation/domain';
 
 describe('ImageGenerationService', () => {
   let service: ImageGenerationService;

@@ -1,13 +1,4 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "declaration": true,
-    "sourceMap": true
-  },
-  "exclude": [
-    "./src/**/*.spec.ts",
-    "./src/**/*.test.ts",
-    "vitest.config.ts"
-  ]
+  "exclude": ["node_modules", "vitest.config.ts", "dist", "**/*spec.ts"]
 }

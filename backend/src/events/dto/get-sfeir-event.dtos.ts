@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class SfeirEventDto {
+export class GetSfeirEventDto {
   @ApiProperty({
     name: 'id',
     description: 'Unique identifier of the event',
@@ -30,24 +30,4 @@ export class SfeirEventDto {
     description: 'Is the event active',
   })
   isActive: boolean;
-}
-
-export class CreateSfeirEventDto {
-  @ApiProperty({
-    name: 'name',
-    description: 'Name of the event',
-  })
-  name: string;
-
-  @ApiProperty({
-    name: 'startDateTimestamp',
-    description: 'Start date timestamp of the event',
-  })
-  startDateTimestamp: string;
-
-  @ApiProperty({
-    name: 'endDateTimestamp',
-    description: 'End date timestamp of the event',
-  })
-  endDateTimestamp: string;
 }

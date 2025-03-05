@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { User } from '@/user/user-types/user.domain';
+import { User } from '@/user/domain/user.domain';
 
 vi.mock('nanoid', () => ({
   nanoid: () => 'mocked-id-1234567890123456789012',

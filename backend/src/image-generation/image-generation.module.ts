@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ImageGenerationService } from '@/image-generation/image-generation.service';
-import { IMAGE_GENERATION_CLIENT } from '@/image-generation/image-generation-types/image-generation.client';
+import { IMAGE_GENERATION_CLIENT } from '@/image-generation/domain/image-generation.client';
 import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
-import { IMAGE_GENERATION_STATUS_REPOSITORY } from '@/image-generation/image-generation-types';
+import { IMAGE_GENERATION_STATUS_REPOSITORY } from '@/image-generation/domain';
 import { SqliteImageGenerationStatusRepository } from '@/image-generation/sqlite.image-generation-status.repository';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { ImagesModule } from '@/images/images.module';
-import { IMAGES_REPOSITORY } from '@/images/images-types/images.repository';
+import { IMAGES_REPOSITORY } from '@/images/domain/images.repository';
 import { SqliteImagesRepository } from '@/images/sqlite.images.repository';
 import { ImagesService } from '@/images/images.service';
 import { ImagenImageGenerationClient } from '@/image-generation/imagen.image-generation-client';

@@ -1,11 +1,12 @@
 import { vi } from 'vitest';
 
 import { PromptService } from '@/prompt/prompt.service';
-import { CreatePromptDto, PromptRepository } from '@/prompt/prompt-types';
+import { PromptRepository } from '@/prompt/domain';
 import { UserService } from '@/user/user.service';
-import { Prompt } from '@/prompt/prompt-types/prompt.domain';
-import { User } from '@/user/user-types';
+import { Prompt } from '@/prompt/domain/prompt.domain';
+import { User } from '@/user/domain';
 import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
+import { CreatePromptResponseDto } from '@/prompt/dto/create-prompt.response.dto';
 
 describe('PromptService', () => {
   let promptService: PromptService;
@@ -36,7 +37,7 @@ describe('PromptService', () => {
   });
 
   it('should create a new prompt if all conditions are met', async () => {
-    const dto: CreatePromptDto & { eventId: string } = {
+    const dto: CreatePromptResponseDto & { eventId: string } = {
       eventId: 'event1',
       prompt: 'Sample Prompt',
       browserFingerprint: 'fingerprint123',
@@ -73,7 +74,7 @@ describe('PromptService', () => {
   });
 
   it('should create a new user if the user email does not exist', async () => {
-    const dto: CreatePromptDto & { eventId: string } = {
+    const dto: CreatePromptResponseDto & { eventId: string } = {
       eventId: 'event1',
       prompt: 'Sample Prompt',
       browserFingerprint: 'fingerprint123',
@@ -118,7 +119,7 @@ describe('PromptService', () => {
   });
 
   it('should throw an error if the user has reached the maximum number of prompts for an event', async () => {
-    const dto: CreatePromptDto & { eventId: string } = {
+    const dto: CreatePromptResponseDto & { eventId: string } = {
       eventId: 'event1',
       prompt: 'Sample Prompt',
       browserFingerprint: 'fingerprint123',
@@ -147,7 +148,7 @@ describe('PromptService', () => {
   });
 
   it('should throw an error if user creation fails and userId is not found', async () => {
-    const dto: CreatePromptDto & { eventId: string } = {
+    const dto: CreatePromptResponseDto & { eventId: string } = {
       eventId: 'event1',
       prompt: 'Sample Prompt',
       browserFingerprint: 'fingerprint123',

@@ -1,4 +1,4 @@
-import { ImageGenerationStatus } from '@/image-generation/image-generation-types/image-generation-status.domain';
+import { ImageGenerationStatus } from '@/image-generation/domain/image-generation-status.domain';
 
 export const IMAGE_GENERATION_STATUS_REPOSITORY = Symbol(
   'IMAGE_GENERATION_STATUS_REPOSITORY'

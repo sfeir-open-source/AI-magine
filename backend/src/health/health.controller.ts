@@ -1,7 +1,7 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { HealthService } from './health.service';
-import { HealthStatus } from '@/health/health-types';
+import { HealthStatusDto } from '@/health/dto/get-health-status.dto';
 
 @Controller('health')
 @ApiTags('Health')
@@ -14,9 +14,9 @@ export class HealthController {
   @ApiResponse({
     status: 200,
     description: 'Application is alive',
-    type: HealthStatus,
+    type: HealthStatusDto,
   })
-  async getLiveness(): Promise<HealthStatus> {
+  async getLiveness(): Promise<HealthStatusDto> {
     return this.healthService.getLiveness();
   }
 
@@ -25,9 +25,9 @@ export class HealthController {
   @ApiResponse({
     status: 200,
     description: 'Application is ready to serve requests',
-    type: HealthStatus,
+    type: HealthStatusDto,
   })
-  async getReadiness(): Promise<HealthStatus> {
+  async getReadiness(): Promise<HealthStatusDto> {
     return this.healthService.getReadiness();
   }
 }

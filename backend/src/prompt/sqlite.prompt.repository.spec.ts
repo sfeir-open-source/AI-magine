@@ -1,7 +1,7 @@
 import { expect, vi } from 'vitest';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { SqlitePromptRepository } from '@/prompt/sqlite.prompt.repository';
-import { Prompt } from '@/prompt/prompt-types/prompt.domain';
+import { Prompt } from '@/prompt/domain/prompt.domain';
 
 describe('SqlitePromptRepository', () => {
   let sqliteClient: SQLiteClient;

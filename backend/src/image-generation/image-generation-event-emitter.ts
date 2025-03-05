@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events';
 import {
   ImageGenerationEvent,
   ImageGenerationEventKey,
-} from '@/image-generation/image-generation-types/image-generation-event.domain';
+} from '@/image-generation/domain/image-generation-event.domain';
 
 export class ImageGenerationEventEmitter extends EventEmitter {
   emit(

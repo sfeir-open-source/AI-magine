@@ -31,7 +31,3 @@ export class CreatePromptBodyDto {
   })
   prompt: string;
 }
-
-export type CreatePromptDto = CreatePromptBodyDto & {
-  eventId: string;
-};

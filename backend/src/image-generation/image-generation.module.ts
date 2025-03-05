@@ -35,6 +35,6 @@ import { PicsumImageGenerationClient } from '@/image-generation/picsum.image-gen
     },
     ImageGenerationEngine,
   ],
-  exports: [ImageGenerationEngine],
+  exports: [ImageGenerationService, ImageGenerationEngine],
 })
 export class ImageGenerationModule {}

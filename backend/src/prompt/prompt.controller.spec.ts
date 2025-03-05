@@ -3,7 +3,7 @@ import { vi } from 'vitest';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PromptService } from '@/prompt/prompt.service';
-import { CreatePromptBodyDto } from 'src/prompt/domain';
+import { CreatePromptBodyDto } from '@/prompt/domain';
 import { Response } from 'express';
 
 describe('PromptController', () => {

@@ -3,7 +3,7 @@ import {
   IMAGES_REPOSITORY,
   ImagesRepository,
 } from '@/images/domain/images.repository';
-import { Image } from 'src/images/domain';
+import { Image } from '@/images/domain';
 
 @Injectable()
 export class ImagesService {

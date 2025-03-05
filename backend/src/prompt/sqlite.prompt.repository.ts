@@ -1,6 +1,6 @@
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { SQLiteClient } from '@/config/sqlite-client';
-import { PromptRepository } from 'src/prompt/domain';
+import { PromptRepository } from '@/prompt/domain';
 import { Prompt } from '@/prompt/domain/prompt.domain';
 
 @Injectable()

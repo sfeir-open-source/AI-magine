@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ImageGenerationClient } from 'src/image-generation/domain';
+import { ImageGenerationClient } from '@/image-generation/domain';
 import { helpers, PredictionServiceClient } from '@google-cloud/aiplatform';
 import { google } from '@google-cloud/aiplatform/build/protos/protos';
 import IPredictRequest = google.cloud.aiplatform.v1.IPredictRequest;

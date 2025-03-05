@@ -1,4 +1,4 @@
-import { SfeirEvent } from 'src/events/domain';
+import { SfeirEvent } from '@/events/domain';
 
 describe('SfeirEvent', () => {
   const id = 'test-id';

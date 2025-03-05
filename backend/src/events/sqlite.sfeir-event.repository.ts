@@ -1,4 +1,4 @@
-import { SfeirEvent, SfeirEventRepository } from 'src/events/domain';
+import { SfeirEvent, SfeirEventRepository } from '@/events/domain';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 

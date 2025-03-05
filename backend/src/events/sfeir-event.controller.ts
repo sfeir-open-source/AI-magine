@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SfeirEventService } from '@/events/sfeir-event.service';
-import { GetSfeirEventDto } from 'src/events/domain';
+import { GetSfeirEventDto } from '@/events/domain';
 import { SfeirEventMappers } from '@/events/mapper/sfeir-event.mappers';
 import { CreateSfeirEventDto } from '@/events/dto/create-sfeir-event.dto';
 

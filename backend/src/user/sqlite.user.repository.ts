@@ -1,6 +1,6 @@
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { SQLiteClient } from '@/config/sqlite-client';
-import { User, UserRepository } from 'src/user/domain';
+import { User, UserRepository } from '@/user/domain';
 
 @Injectable()
 export class SqliteUserRepository

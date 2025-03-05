@@ -5,7 +5,7 @@ import {
   IMAGE_GENERATION_STATUS_REPOSITORY,
   ImageGenerationMessageEvent,
   ImageGenerationStatusRepository,
-} from 'src/image-generation/domain';
+} from '@/image-generation/domain';
 import { ImageGenerationEventEmitter } from '@/image-generation/image-generation-event-emitter';
 import { ImagesService } from '@/images/images.service';
 

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { UserService } from '@/user/user.service';
 import { SQLiteClient } from '@/config/sqlite-client';
-import { USER_REPOSITORY } from 'src/user/domain';
+import { USER_REPOSITORY } from '@/user/domain';
 import { SqliteUserRepository } from '@/user/sqlite.user.repository';
 
 @Module({

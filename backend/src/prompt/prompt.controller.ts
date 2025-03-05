@@ -14,7 +14,7 @@ import { encrypt } from '@/config/crypto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { Observable, Subject } from 'rxjs';
-import { ImageGenerationMessageEvent } from 'src/image-generation/domain';
+import { ImageGenerationMessageEvent } from '@/image-generation/domain';
 
 @Controller('v1/events/:eventId/prompts')
 export class PromptController {

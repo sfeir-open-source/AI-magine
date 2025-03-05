@@ -1,4 +1,4 @@
-import { Image } from 'src/images/domain';
+import { Image } from '@/images/domain';
 
 export const IMAGES_REPOSITORY = Symbol('IMAGES_REPOSITORY');
 

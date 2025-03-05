@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreatePromptResponseDto } from '@/prompt/dto/create-prompt.response.dto';
-import { PROMPT_REPOSITORY, PromptRepository } from 'src/prompt/domain';
+import { PROMPT_REPOSITORY, PromptRepository } from '@/prompt/domain';
 import { UserService } from '@/user/user.service';
 import { Prompt } from '@/prompt/domain/prompt.domain';
-import { User } from 'src/user/domain';
+import { User } from '@/user/domain';
 import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
 import { Subject } from 'rxjs';
-import { ImageGenerationMessageEvent } from 'src/image-generation/domain';
+import { ImageGenerationMessageEvent } from '@/image-generation/domain';
 
 @Injectable()
 export class PromptService {

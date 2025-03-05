@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteImageGenerationStatusRepository } from '@/image-generation/sqlite.image-generation-status.repository';
-import { ImageGenerationStatus } from 'src/image-generation/domain';
+import { ImageGenerationStatus } from '@/image-generation/domain';
 
 const now = new Date();
 const promptId = 'PromptId1';

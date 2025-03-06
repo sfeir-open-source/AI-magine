@@ -1,8 +1,8 @@
-import { vi } from 'vitest';
 import { NotFoundException } from '@nestjs/common';
 import { SfeirEventController } from '@/events/sfeir-event.controller';
 import { SfeirEventService } from '@/events/sfeir-event.service';
-import { CreateSfeirEventDto, SfeirEvent } from '@/events/domain';
+import { SfeirEvent } from '@/events/domain';
+import { CreateSfeirEventDto } from '@/events/dto/create-sfeir-event.dto';
 
 describe('SfeirEventController', () => {
   let sfeirEventController: SfeirEventController;

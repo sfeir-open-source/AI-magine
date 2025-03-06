@@ -1,13 +1,12 @@
-import { describe, expect, it } from 'vitest';
 import { HealthService } from '@/health/health.service';
-import { HealthStatus } from '@/health/health-types';
+import { HealthStatusDto } from '@/health/dto/get-health-status.dto';
 
 describe('HealthService', () => {
   const healthService = new HealthService();
 
   describe('getLiveness', () => {
     it('should return a health status with status "UP" and a valid timestamp', async () => {
-      const result: HealthStatus = await healthService.getLiveness();
+      const result: HealthStatusDto = await healthService.getLiveness();
 
       expect(result).toHaveProperty('status', 'UP');
       expect(result).toHaveProperty('timestamp');
@@ -17,7 +16,7 @@ describe('HealthService', () => {
 
   describe('getReadiness', () => {
     it('should return a health status with status "UP", a valid timestamp, and an empty details object', async () => {
-      const result: HealthStatus = await healthService.getReadiness();
+      const result: HealthStatusDto = await healthService.getReadiness();
 
       expect(result).toHaveProperty('status', 'UP');
       expect(result).toHaveProperty('timestamp');

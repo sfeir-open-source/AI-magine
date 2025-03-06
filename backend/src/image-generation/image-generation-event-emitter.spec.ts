@@ -1,5 +1,4 @@
 import { ImageGenerationEventEmitter } from './image-generation-event-emitter';
-import { vi } from 'vitest';
 
 describe('ImageGenerationEventEmitter', () => {
   it('should call the listener when an event is emitted', () => {

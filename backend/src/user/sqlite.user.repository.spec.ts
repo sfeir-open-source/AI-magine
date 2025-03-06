@@ -1,4 +1,3 @@
-import { beforeEach, vi } from 'vitest';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteUserRepository } from '@/user/sqlite.user.repository';
 import { User } from '@/user/domain';

@@ -1,4 +1,3 @@
-import { expect, vi } from 'vitest';
 import { UserService } from '@/user/user.service';
 import { User, UserRepository } from '@/user/domain';
 import { EncryptionService } from '@/user/encryption/encryption.service';

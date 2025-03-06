@@ -1,5 +1,4 @@
 import { PromptController } from '@/prompt/prompt.controller';
-import { vi } from 'vitest';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PromptService } from '@/prompt/prompt.service';

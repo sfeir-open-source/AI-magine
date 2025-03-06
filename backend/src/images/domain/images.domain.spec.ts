@@ -1,4 +1,3 @@
-import { vi } from 'vitest';
 import { Image } from '@/images/domain';
 
 vi.mock('nanoid', () => ({

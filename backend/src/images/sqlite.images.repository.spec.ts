@@ -1,4 +1,3 @@
-import { vi } from 'vitest';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteImagesRepository } from '@/images/sqlite.images.repository';
 import { Image } from '@/images/domain';

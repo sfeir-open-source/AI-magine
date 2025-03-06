@@ -1,4 +1,3 @@
-import { describe, expect, it, vi } from 'vitest';
 import { User } from '@/user/domain/user.domain';
 
 vi.mock('nanoid', () => ({

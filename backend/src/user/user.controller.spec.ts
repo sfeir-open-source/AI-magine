@@ -1,6 +1,5 @@
 import { UserController } from './user.controller';
 import { UserService } from '@/user/user.service';
-import { describe, expect } from 'vitest';
 import { Response } from 'express';
 import { User } from '@/user/domain';
 import { HttpStatus } from '@nestjs/common';
@@ -14,12 +13,12 @@ describe('UserController', () => {
     userService = {
       getUserByEmail: vi.fn(),
       create: vi.fn(),
-    } as UserService;
+    } as unknown as UserService;
 
     response = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn(),
-    } as Response;
+    } as unknown as Response;
 
     controller = new UserController(userService);
   });

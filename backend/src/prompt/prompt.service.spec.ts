@@ -1,9 +1,10 @@
-import { PromptService } from '@/prompt/prompt.service';
+import { vi } from 'vitest';
 import { CreatePromptBodyDto, PromptRepository } from '@/prompt/domain';
 import { UserService } from '@/user/user.service';
 import { Prompt } from '@/prompt/domain/prompt.domain';
 import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
 import { BadRequestException } from '@nestjs/common';
+import { PromptService } from '@/prompt/prompt.service';
 import { SfeirEventService } from '@/events/sfeir-event.service';
 import { SfeirEvent } from '@/events/domain';
 

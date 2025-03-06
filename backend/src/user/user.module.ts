@@ -3,6 +3,8 @@ import { UserService } from '@/user/user.service';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { USER_REPOSITORY } from '@/user/domain';
 import { SqliteUserRepository } from '@/user/sqlite.user.repository';
+import { UserController } from '@/user/user.controller';
+import { EncryptionService } from './encryption/encryption.service';
 import { FirestoreUserRepository } from '@/user/firestore.user.repository';
 import { FirestoreClient } from '@/config/firestore-client';
 import { ConfigModule } from '@nestjs/config';

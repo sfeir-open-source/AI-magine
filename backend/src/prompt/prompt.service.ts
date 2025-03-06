@@ -1,9 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { CreatePromptResponseDto } from '@/prompt/dto/create-prompt.response.dto';
-import { PROMPT_REPOSITORY, PromptRepository } from '@/prompt/domain';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  CreatePromptBodyDto,
+  PROMPT_REPOSITORY,
+  PromptRepository,
+} from '@/prompt/domain';
 import { UserService } from '@/user/user.service';
 import { Prompt } from '@/prompt/domain/prompt.domain';
-import { User } from '@/user/domain';
 import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
 import { Subject } from 'rxjs';
 import { ImageGenerationMessageEvent } from '@/image-generation/domain';
@@ -19,32 +21,31 @@ export class PromptService {
 
   async createPrompt({
     prompt,
-    browserFingerprint,
-    allowContact,
-    userNickname,
+    userId,
     eventId,
-    userEmail,
-  }: CreatePromptResponseDto): Promise<Prompt> {
-    let userId = await this.userService.getUserIdByEmail(userEmail);
-    if (!userId) {
-      const createdUser = await this.userService.create(
-        User.create(userEmail, browserFingerprint, allowContact, userNickname)
+  }: CreatePromptBodyDto & { eventId: string }): Promise<Prompt> {
+    const doesUserExists = await this.userService.checkIfExists(userId);
+
+    if (!doesUserExists) {
+      throw new BadRequestException(
+        'User requesting prompt creation does not exist'
       );
-      userId = createdUser.id;
     }
-    if (!userId) {
-      return Promise.reject('User not found');
-    }
+
     const userPromptCountOnEvent =
       await this.promptRepository.countByEventIdAndUserId(userId, eventId);
+
     // TODO: Check with @allienna if we need to define maximum prompt in the event definition
     if (userPromptCountOnEvent >= 3) {
       return Promise.reject('User has reached maximum number of prompts');
     }
+
     const newPrompt = await this.promptRepository.save(
       Prompt.create(eventId, userId, prompt)
     );
+
     this.imageGenerationEngine.processPrompt(newPrompt.id, newPrompt.prompt);
+
     return newPrompt;
   }
 

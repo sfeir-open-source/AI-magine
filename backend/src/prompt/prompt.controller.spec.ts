@@ -4,7 +4,6 @@ import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PromptService } from '@/prompt/prompt.service';
 import { CreatePromptBodyDto } from '@/prompt/domain';
-import { Response } from 'express';
 
 describe('PromptController', () => {
   let promptController: PromptController;
@@ -46,10 +45,7 @@ describe('PromptController', () => {
     it('should call PromptService.createPrompt with correct parameters and return the result', async () => {
       const eventId = 'event123';
       const createDto: CreatePromptBodyDto = {
-        browserFingerprint: 'unique-browser-fingerprint',
-        userEmail: 'user@example.com',
-        userNickname: 'John Doe',
-        allowContact: true,
+        userId: 'mock-user-id',
         prompt: 'Test prompt',
       };
 
@@ -60,33 +56,15 @@ describe('PromptController', () => {
         prompt: createDto.prompt,
       };
 
-      const mockResponse = {
-        cookie: vi.fn(),
-      } as unknown as Response;
-
       vi.spyOn(promptService, 'createPrompt').mockResolvedValueOnce(mockResult);
 
-      const response = await promptController.createPrompt(
-        eventId,
-        createDto,
-        mockResponse
-      );
+      const response = await promptController.createPrompt(eventId, createDto);
 
       expect(promptService.createPrompt).toHaveBeenCalledTimes(1);
       expect(promptService.createPrompt).toHaveBeenCalledWith({
         ...createDto,
         eventId,
-        userEmail: expect.any(String),
       });
-      expect(mockResponse.cookie).toHaveBeenCalledWith(
-        'userId',
-        mockResult.userId,
-        {
-          httpOnly: true,
-          secure: true,
-          sameSite: 'none',
-        }
-      );
       expect(response).toEqual(mockResult);
     });
   });

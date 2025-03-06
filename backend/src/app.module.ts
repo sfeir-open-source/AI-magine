@@ -26,6 +26,5 @@ import { ImagesModule } from '@/images/images.module';
     PromptModule,
   ],
   controllers: [AppController],
-  providers: [],
 })
 export class AppModule {}

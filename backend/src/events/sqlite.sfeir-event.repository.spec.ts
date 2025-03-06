@@ -1,4 +1,3 @@
-import { expect, vi } from 'vitest';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteSfeirEventRepository } from '@/events/sqlite.sfeir-event.repository';
 import { SfeirEvent } from '@/events/domain';

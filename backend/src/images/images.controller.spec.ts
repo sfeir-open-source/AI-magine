@@ -1,4 +1,3 @@
-import { vi } from 'vitest';
 import { ImagesService } from '@/images/images.service';
 import { ImagesController } from '@/images/images.controller';
 import { Image } from '@/images/domain';

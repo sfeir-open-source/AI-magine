@@ -1,4 +1,3 @@
-import { describe, expect, it, vi } from 'vitest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ImageGenerationService } from '@/image-generation/image-generation.service';
 import {

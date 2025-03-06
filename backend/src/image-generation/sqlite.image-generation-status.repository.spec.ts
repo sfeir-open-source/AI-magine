@@ -1,4 +1,3 @@
-import { vi } from 'vitest';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteImageGenerationStatusRepository } from '@/image-generation/sqlite.image-generation-status.repository';
 import { ImageGenerationStatus } from '@/image-generation/domain';

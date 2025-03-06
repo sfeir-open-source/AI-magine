@@ -2,28 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePromptBodyDto {
   @ApiProperty({
-    name: 'browserFingerprint',
-    description: 'Browser fingerprint',
+    name: 'userId',
+    description: 'User id making the request',
   })
-  browserFingerprint: string;
-
-  @ApiProperty({
-    name: 'userEmail',
-    description: 'User email',
-  })
-  userEmail: string;
-
-  @ApiProperty({
-    name: 'userNickname',
-    description: 'User nickname',
-  })
-  userNickname: string;
-
-  @ApiProperty({
-    name: 'allowContact',
-    description: 'Allow contact',
-  })
-  allowContact: boolean;
+  userId: string;
 
   @ApiProperty({
     name: 'prompt',

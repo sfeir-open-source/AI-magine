@@ -1,6 +1,5 @@
 import { SfeirEvent } from '@/events/domain';
 import { SfeirEventMappers } from '@/events/mapper/sfeir-event.mappers';
-import { expect, vi } from 'vitest';
 
 const startDate = new Date(2024, 10, 3, 0, 0, 0);
 const endDate = new Date(2024, 10, 5, 0, 0, 0);

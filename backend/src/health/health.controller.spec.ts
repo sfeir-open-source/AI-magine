@@ -1,7 +1,6 @@
 import { HealthController } from '@/health/health.controller';
 import { HealthService } from '@/health/health.service';
-import { HealthStatus } from '@/health/health-types';
-import { vi } from 'vitest';
+import { HealthStatusDto } from '@/health/dto/get-health-status.dto';
 
 describe('HealthController', () => {
   let healthController: HealthController;
@@ -18,7 +17,7 @@ describe('HealthController', () => {
 
   describe('getLiveness', () => {
     it('should return liveness status from healthService', async () => {
-      const livenessStatus: HealthStatus = {
+      const livenessStatus: HealthStatusDto = {
         status: 'UP',
         timestamp: new Date().toISOString(),
       };
@@ -36,7 +35,7 @@ describe('HealthController', () => {
 
   describe('getReadiness', () => {
     it('should return readiness status from healthService', async () => {
-      const readinessStatus: HealthStatus = {
+      const readinessStatus: HealthStatusDto = {
         status: 'UP',
         timestamp: new Date().toISOString(),
         details: {},

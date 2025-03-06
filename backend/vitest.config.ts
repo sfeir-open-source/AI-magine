@@ -3,7 +3,7 @@ import * as path from 'node:path';
 import { config } from 'dotenv';
 import * as process from 'node:process';
 
-config();
+config({ path: path.resolve(__dirname, './.env.test') });
 
 export default defineConfig({
   resolve: {

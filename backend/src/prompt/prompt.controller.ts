@@ -5,14 +5,11 @@ import {
   HttpStatus,
   Param,
   Post,
-  Res,
   Sse,
 } from '@nestjs/common';
 import { PromptService } from '@/prompt/prompt.service';
 import { CreatePromptBodyDto } from '@/prompt/dto/create-prompt.dto';
-import { encrypt } from '@/config/crypto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
 import { Observable, Subject } from 'rxjs';
 import { ImageGenerationMessageEvent } from '@/image-generation/domain';
 
@@ -33,24 +30,12 @@ export class PromptController {
   })
   async createPrompt(
     @Param('eventId') eventId: string,
-    @Body() createDto: CreatePromptBodyDto,
-    @Res({ passthrough: true }) response: Response
+    @Body() createDto: CreatePromptBodyDto
   ) {
-    const userEmail = encrypt(
-      createDto.userEmail,
-      process.env.EMAIL_HASH_SECRET
-    );
-    const createdPrompt = await this.promptService.createPrompt({
+    return this.promptService.createPrompt({
       ...createDto,
       eventId,
-      userEmail,
     });
-    response.cookie('userId', createdPrompt.userId, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-    });
-    return createdPrompt;
   }
 
   @Sse(':promptId')

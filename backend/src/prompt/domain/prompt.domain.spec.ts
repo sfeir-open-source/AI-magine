@@ -1,4 +1,3 @@
-import { vi } from 'vitest';
 import { Prompt } from '@/prompt/domain/prompt.domain';
 
 vi.mock('nanoid', () => ({

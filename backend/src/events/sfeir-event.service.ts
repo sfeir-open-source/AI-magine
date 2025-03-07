@@ -1,9 +1,9 @@
 import {
-  SfeirEvent,
   SFEIR_EVENT_REPOSITORY,
+  SfeirEvent,
   SfeirEventRepository,
 } from '@/events/domain';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { SfeirEventMappers } from '@/events/mapper/sfeir-event.mappers';
 import { CreateSfeirEventDto } from '@/events/dto/create-sfeir-event.dto';
 
@@ -38,5 +38,13 @@ export class SfeirEventService {
 
   async deleteSfeirEvent(id: string): Promise<void> {
     return this.sfeirEventRepository.deleteSfeirEvent(id);
+  }
+
+  async getAllowedEventPrompts(eventId: string) {
+    const event = await this.sfeirEventRepository.getSfeirEvent(eventId);
+    if (!event) {
+      throw new NotFoundException(`Event ${eventId} not found`);
+    }
+    return event.allowedPrompts;
   }
 }

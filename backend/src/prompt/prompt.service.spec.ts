@@ -21,6 +21,10 @@ describe('PromptService', () => {
       countByEventIdAndUserId: vi.fn(),
     };
 
+    eventServiceMock = {
+      getAllowedEventPrompts: vi.fn().mockResolvedValue(3),
+    } as unknown as SfeirEventService;
+
     userServiceMock = {
       create: vi.fn(),
       checkIfExists: vi.fn(),
@@ -36,6 +40,7 @@ describe('PromptService', () => {
 
     promptService = new PromptService(
       promptRepositoryMock,
+      eventServiceMock,
       userServiceMock,
       imageGenerationEngineMock,
       eventServiceMock

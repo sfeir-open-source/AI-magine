@@ -5,9 +5,11 @@ import { ConfigurationService } from '@/configuration/configuration.service';
 
 const startDateTs = 1633046400000;
 const endDateTs = 1633132800000;
+const allowedPrompts = 3;
 const mockEvent = SfeirEvent.from(
   '1',
   'Event 1',
+  allowedPrompts,
   new Date(startDateTs),
   new Date(endDateTs)
 );
@@ -30,6 +32,7 @@ describe('SqliteSfeirEventRepository', () => {
         {
           id: '1',
           name: 'Event 1',
+          allowedPrompts,
           startDateTs,
           endDateTs,
         },
@@ -55,7 +58,7 @@ describe('SqliteSfeirEventRepository', () => {
       const savedEvent = await repository.saveSfeirEvent(event);
 
       expect(sqliteClient.run).toHaveBeenCalled();
-      expect(savedEvent).toBe(event);
+      expect(savedEvent).toEqual({ ...event, allowedPrompts: 5 });
     });
   });
 
@@ -75,6 +78,7 @@ describe('SqliteSfeirEventRepository', () => {
       vi.spyOn(sqliteClient, 'get').mockResolvedValue({
         id: '1',
         name: 'Event 1',
+        allowedPrompts: 3,
         startDateTs,
         endDateTs,
       });

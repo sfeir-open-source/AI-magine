@@ -3,12 +3,14 @@ import { nanoid } from 'nanoid';
 export class SfeirEvent {
   id: string;
   name: string;
+  allowedPrompts: number;
   startDate: Date;
   endDate: Date;
 
   private constructor(
     id: string,
     name: string,
+    allowedPrompts: number,
     startDate: Date,
     endDate: Date
   ) {
@@ -22,16 +24,23 @@ export class SfeirEvent {
 
     this.id = id;
     this.name = name;
+    this.allowedPrompts = allowedPrompts;
     this.startDate = startDate;
     this.endDate = endDate;
   }
 
-  static from(id: string, name: string, startDate: Date, endDate: Date) {
-    return new SfeirEvent(id, name, startDate, endDate);
+  static from(
+    id: string,
+    name: string,
+    allowedPrompts: number,
+    startDate: Date,
+    endDate: Date
+  ) {
+    return new SfeirEvent(id, name, allowedPrompts, startDate, endDate);
   }
 
   static create(name: string, startDate: Date, endDate: Date) {
-    return new SfeirEvent(nanoid(8), name, startDate, endDate);
+    return new SfeirEvent(nanoid(8), name, 5, startDate, endDate);
   }
 
   isActive() {

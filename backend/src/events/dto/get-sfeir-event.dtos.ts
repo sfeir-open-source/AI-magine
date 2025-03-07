@@ -14,6 +14,12 @@ export class GetSfeirEventDto {
   name: string;
 
   @ApiProperty({
+    name: 'allowedPrompts',
+    description: 'Allowed prompts for the event',
+  })
+  allowedPrompts: number;
+
+  @ApiProperty({
     name: 'startDate',
     description: 'Start date of the event',
   })

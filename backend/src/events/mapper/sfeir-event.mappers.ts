@@ -6,6 +6,7 @@ export class SfeirEventMappers {
     return {
       id: actual.id,
       name: actual.name,
+      allowedPrompts: actual.allowedPrompts,
       startDate: actual.startDate.toISOString(),
       endDate: actual.endDate.toISOString(),
       isActive: actual.isActive(),
@@ -15,17 +16,25 @@ export class SfeirEventMappers {
   static fromDTOToDomain({
     id,
     name,
+    allowedPrompts,
     startDate,
     endDate,
   }: {
     id: string | undefined;
     name: string;
+    allowedPrompts: number;
     startDate: string | number;
     endDate: string | number;
     isActive: boolean;
   }): SfeirEvent {
     if (id) {
-      return SfeirEvent.from(id, name, new Date(startDate), new Date(endDate));
+      return SfeirEvent.from(
+        id,
+        name,
+        allowedPrompts,
+        new Date(startDate),
+        new Date(endDate)
+      );
     }
     return SfeirEvent.create(name, new Date(startDate), new Date(endDate));
   }

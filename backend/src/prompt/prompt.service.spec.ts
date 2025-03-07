@@ -32,6 +32,7 @@ describe('PromptService', () => {
 
     eventServiceMock = {
       getSfeirEvent: vi.fn(),
+      getAllowedEventPrompts: vi.fn().mockResolvedValue(3),
     } as unknown as SfeirEventService;
 
     imageGenerationEngineMock = {
@@ -42,8 +43,7 @@ describe('PromptService', () => {
       promptRepositoryMock,
       eventServiceMock,
       userServiceMock,
-      imageGenerationEngineMock,
-      eventServiceMock
+      imageGenerationEngineMock
     );
   });
 
@@ -88,7 +88,7 @@ describe('PromptService', () => {
       );
       vi.mocked(userServiceMock.checkIfExists).mockResolvedValue(true);
       vi.mocked(eventServiceMock.getSfeirEvent).mockResolvedValue(
-        SfeirEvent.from('event1', 'event', new Date(), new Date())
+        SfeirEvent.from('event1', 'event', 3, new Date(), new Date())
       );
       vi.mocked(promptRepositoryMock.countByEventIdAndUserId).mockResolvedValue(
         2
@@ -116,7 +116,7 @@ describe('PromptService', () => {
 
       vi.mocked(userServiceMock.checkIfExists).mockResolvedValue(true);
       vi.mocked(eventServiceMock.getSfeirEvent).mockResolvedValue(
-        SfeirEvent.from('event1', 'event', new Date(), new Date())
+        SfeirEvent.from('event1', 'event', 3, new Date(), new Date())
       );
       vi.mocked(promptRepositoryMock.countByEventIdAndUserId).mockResolvedValue(
         3

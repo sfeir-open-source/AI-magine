@@ -18,6 +18,7 @@ export class FirestoreSfeirEventRepository implements SfeirEventRepository {
       SfeirEvent.from(
         storedEvent.id,
         storedEvent.get('name'),
+        storedEvent.get('allowedPrompts'),
         new Date(storedEvent.get('startDate')),
         new Date(storedEvent.get('endDate'))
       )
@@ -48,6 +49,7 @@ export class FirestoreSfeirEventRepository implements SfeirEventRepository {
     return SfeirEvent.from(
       id,
       row.get('name'),
+      row.get('allowedPrompts'),
       new Date(row.get('startDate')._seconds * 1000),
       new Date(row.get('endDate')._seconds * 1000)
     );

@@ -51,7 +51,7 @@ export class FirestoreImagesRepository implements ImagesRepository {
         prompt:
           promptsSnapshot.docs
             .find((promptDoc) => promptDoc.id === doc.get('promptId'))
-            ?.get('text') || '',
+            ?.get('prompt') || '',
       }))
       .map((image) => ({
         ...Image.from(

@@ -24,7 +24,7 @@ import { IMAGES_STORAGE } from '@/images/domain/images.storage';
 import { GCPBucketImagesStorage } from '@/images/gcp-bucket.images.storage';
 import { FakeImagesStorage } from '@/images/fake.images.storage';
 import { ConfigurationService } from '@/configuration/configuration.service';
-import { SfeirEventModule } from '@/events/sfeir-event.module';
+import { FirestoreSfeirEventRepository } from '@/events/firestore.sfeir-event.repository';
 
 @Module({
   imports: [UserModule, ImageGenerationModule, ImagesModule, SfeirEventModule],
@@ -81,7 +81,16 @@ import { SfeirEventModule } from '@/events/sfeir-event.module';
     },
     {
       provide: SFEIR_EVENT_REPOSITORY,
-      useClass: SqliteSfeirEventRepository,
+      inject: [ConfigurationService, FirestoreClient, SQLiteClient],
+      useFactory: (
+        configurationService: ConfigurationService,
+        firestoreClient: FirestoreClient,
+        sqliteClient: SQLiteClient
+      ) => {
+        return configurationService.getFirestoreEnabled()
+          ? new FirestoreSfeirEventRepository(firestoreClient)
+          : new SqliteSfeirEventRepository(sqliteClient);
+      },
     },
   ],
 })

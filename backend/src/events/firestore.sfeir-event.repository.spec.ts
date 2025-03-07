@@ -78,6 +78,7 @@ describe('FirestoreSfeirEventRepository', () => {
     expect(collectionMock.doc).toHaveBeenCalledWith(sfeirEvent.id);
     expect(setMock).toHaveBeenCalledWith({
       name: sfeirEvent.name,
+      allowedPrompts: sfeirEvent.allowedPrompts,
       startDate: sfeirEvent.startDate,
       endDate: sfeirEvent.endDate,
     });

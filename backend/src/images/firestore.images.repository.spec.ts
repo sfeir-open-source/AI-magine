@@ -105,7 +105,7 @@ describe('FirestoreImagesRepository', () => {
             id: 'prompt1',
             get: (field: string) => {
               const fields: Record<string, unknown> = {
-                text: 'Sample Prompt',
+                prompt: 'Sample Prompt',
               };
               return fields[field];
             },

@@ -3,9 +3,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useState } from 'react';
 import {
   ArrowBigDown,
-  Download,
+  // Download,
   ImageOff,
-  Share2,
+  MoreHorizontal,
+  // Share2,
   Star,
   ZoomIn,
 } from 'lucide-react';
@@ -13,11 +14,21 @@ import { Lightbox } from '@/src/components/lightbox/lightbox';
 import { Image } from '@/src/domain/Image';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export function DisplayedImage({ image }: { image?: Image }) {
   const { t } = useTranslation();
 
   const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  const onClickViewFull = () => {
+    setLightboxOpen(true);
+  };
 
   return (
     <div>
@@ -64,24 +75,51 @@ export function DisplayedImage({ image }: { image?: Image }) {
                     Created {new Date(image.createdAt).toLocaleDateString()}
                   </p>
                 </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="ghost" className="text-white">
+
+                {/* Desktop actions - hidden on mobile */}
+                <div className="hidden sm:flex gap-2">
+                  {/*<Button size="sm" variant="ghost" className="text-white" disabled>
                     <Download />
                     {t('download')}
                   </Button>
-                  <Button size="sm" variant="ghost" className="text-white">
+                  <Button size="sm" variant="ghost" className="text-white" disabled>
                     <Share2 />
                     {t('share')}
-                  </Button>
+                  </Button>*/}
                   <Button
                     variant="ghost"
                     size="sm"
                     className="text-white"
-                    onClick={() => setLightboxOpen(true)}
+                    onClick={onClickViewFull}
                   >
                     <ZoomIn />
                     {t('view-full')}
                   </Button>
+                </div>
+
+                {/* Mobile actions - shown only on mobile */}
+                <div className="sm:hidden">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="sm" variant="ghost" className="text-white">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="bg-white">
+                      {/*<DropdownMenuItem disabled>
+                        <Share2 />
+                        {t('share')}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem disabled>
+                        <Download />
+                        {t('download')}
+                      </DropdownMenuItem>*/}
+                      <DropdownMenuItem onClick={onClickViewFull}>
+                        <ZoomIn />
+                        {t('view-full')}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
             </div>

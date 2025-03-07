@@ -6,11 +6,9 @@ import { ImagesService } from '@/images/images.service';
 import { ImagesController } from '@/images/images.controller';
 import { FirestoreImagesRepository } from '@/images/firestore.images.repository';
 import { FirestoreClient } from '@/config/firestore-client';
-import { ConfigModule } from '@nestjs/config';
 import { ConfigurationService } from '@/configuration/configuration.service';
 
 @Module({
-  imports: [ConfigModule],
   providers: [
     ImagesService,
     SQLiteClient,

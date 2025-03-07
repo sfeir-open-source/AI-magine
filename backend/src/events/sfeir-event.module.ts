@@ -5,13 +5,11 @@ import { SFEIR_EVENT_REPOSITORY } from '@/events/domain';
 import { SQLiteClient } from '@/config/sqlite-client';
 import { FirestoreSfeirEventRepository } from '@/events/firestore.sfeir-event.repository';
 import { FirestoreClient } from '@/config/firestore-client';
-import { ConfigModule } from '@nestjs/config';
 import { ConfigurationService } from '@/configuration/configuration.service';
 import { SqliteSfeirEventRepository } from '@/events/sqlite.sfeir-event.repository';
 
 @Module({
   controllers: [SfeirEventController],
-  imports: [ConfigModule],
   providers: [
     SfeirEventService,
     SQLiteClient,

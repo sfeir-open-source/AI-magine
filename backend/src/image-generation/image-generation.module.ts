@@ -17,11 +17,10 @@ import { FirestoreClient } from '@/config/firestore-client';
 import { IMAGES_STORAGE } from '@/images/domain/images.storage';
 import { GCPBucketImagesStorage } from '@/images/gcp-bucket.images.storage';
 import { FakeImagesStorage } from '@/images/fake.images.storage';
-import { ConfigModule } from '@nestjs/config';
 import { ConfigurationService } from '@/configuration/configuration.service';
 
 @Module({
-  imports: [ImagesModule, ConfigModule],
+  imports: [ImagesModule],
   providers: [
     ImageGenerationService,
     ImagesService,

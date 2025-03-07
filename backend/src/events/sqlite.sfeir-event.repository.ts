@@ -18,19 +18,19 @@ export class SqliteSfeirEventRepository
   async onApplicationBootstrap() {
     await this.sqliteClient.run({
       sql: `CREATE TABLE IF NOT EXISTS events
-                  (
-                      id          TEXT PRIMARY KEY,
-                      name        TEXT    NOT NULL,
-                      startDateTs INTEGER NOT NULL,
-                      endDateTs   INTEGER NOT NULL
-                  );`,
+            (
+                id          TEXT PRIMARY KEY,
+                name        TEXT    NOT NULL,
+                startDateTs INTEGER NOT NULL,
+                endDateTs   INTEGER NOT NULL
+            );`,
     });
   }
 
   async getSfeirEvents(): Promise<SfeirEvent[]> {
     const storedEvents = await this.sqliteClient.all<SfeirEventRow>({
       sql: `SELECT id, name, startDateTs, endDateTs
-                  FROM events`,
+            FROM events`,
       params: {},
     });
     return storedEvents.map((storedEvent) =>
@@ -46,7 +46,7 @@ export class SqliteSfeirEventRepository
   async saveSfeirEvent(sfeirEvent: SfeirEvent): Promise<SfeirEvent> {
     await this.sqliteClient.run({
       sql: `INSERT INTO events (id, name, startDateTs, endDateTs)
-                  VALUES (?1, ?2, ?3, ?4);`,
+            VALUES (?1, ?2, ?3, ?4);`,
       params: {
         1: sfeirEvent.id,
         2: sfeirEvent.name,
@@ -60,8 +60,8 @@ export class SqliteSfeirEventRepository
   async deleteSfeirEvent(id: string): Promise<void> {
     await this.sqliteClient.run({
       sql: `DELETE
-                  FROM events
-                  WHERE id = ?1;`,
+            FROM events
+            WHERE id = ?1;`,
       params: { 1: id },
     });
   }
@@ -69,8 +69,8 @@ export class SqliteSfeirEventRepository
   async getSfeirEvent(id: string): Promise<SfeirEvent | undefined> {
     const row = await this.sqliteClient.get<SfeirEventRow>({
       sql: `SELECT id, name, startDateTs, endDateTs
-                  FROM events
-                  WHERE id = ?1;`,
+            FROM events
+            WHERE id = ?1;`,
       params: { 1: id },
     });
     if (!row) {

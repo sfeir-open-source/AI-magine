@@ -12,6 +12,14 @@ import { SqliteImageGenerationStatusRepository } from '@/image-generation/sqlite
 import { IMAGES_REPOSITORY } from '@/images/domain/images.repository';
 import { SqliteImagesRepository } from '@/images/sqlite.images.repository';
 import { ImagesModule } from '@/images/images.module';
+import { FirestoreImageGenerationStatusRepository } from '@/image-generation/firestore.image-generation-status.repository';
+import { FirestorePromptRepository } from '@/prompt/firestore.prompt.repository';
+import { FirestoreImagesRepository } from '@/images/firestore.images.repository';
+import { FirestoreClient } from '@/config/firestore-client';
+import { IMAGES_STORAGE } from '@/images/domain/images.storage';
+import { GCPBucketImagesStorage } from '@/images/gcp-bucket.images.storage';
+import { FakeImagesStorage } from '@/images/fake.images.storage';
+import { ConfigurationService } from '@/configuration/configuration.service';
 import { SfeirEventModule } from '@/events/sfeir-event.module';
 
 @Module({
@@ -20,18 +28,51 @@ import { SfeirEventModule } from '@/events/sfeir-event.module';
   providers: [
     PromptService,
     SQLiteClient,
+    FirestoreClient,
     ImageGenerationEngine,
     {
+      provide: IMAGES_STORAGE,
+      inject: [ConfigurationService],
+      useFactory: (configurationService: ConfigurationService) =>
+        configurationService.getBucketEnabled()
+          ? new GCPBucketImagesStorage(configurationService)
+          : new FakeImagesStorage(),
+    },
+    {
       provide: PROMPT_REPOSITORY,
-      useClass: SqlitePromptRepository,
+      inject: [ConfigurationService, FirestoreClient, SQLiteClient],
+      useFactory: (
+        configurationService: ConfigurationService,
+        firestoreClient: FirestoreClient,
+        sqliteClient: SQLiteClient
+      ) =>
+        configurationService.getFirestoreEnabled()
+          ? new FirestorePromptRepository(firestoreClient)
+          : new SqlitePromptRepository(sqliteClient),
     },
     {
       provide: IMAGE_GENERATION_STATUS_REPOSITORY,
-      useClass: SqliteImageGenerationStatusRepository,
+      inject: [ConfigurationService, FirestoreClient, SQLiteClient],
+      useFactory: (
+        configurationService: ConfigurationService,
+        firestoreClient: FirestoreClient,
+        sqliteClient: SQLiteClient
+      ) =>
+        configurationService.getFirestoreEnabled()
+          ? new FirestoreImageGenerationStatusRepository(firestoreClient)
+          : new SqliteImageGenerationStatusRepository(sqliteClient),
     },
     {
       provide: IMAGES_REPOSITORY,
-      useClass: SqliteImagesRepository,
+      inject: [ConfigurationService, FirestoreClient, SQLiteClient],
+      useFactory: (
+        configurationService: ConfigurationService,
+        firestoreClient: FirestoreClient,
+        sqliteClient: SQLiteClient
+      ) =>
+        configurationService.getFirestoreEnabled()
+          ? new FirestoreImagesRepository(firestoreClient)
+          : new SqliteImagesRepository(sqliteClient),
     },
   ],
 })

@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { Subject } from 'rxjs';
 import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
 import {
@@ -6,6 +7,7 @@ import {
 } from '@/image-generation/domain';
 import { ImageGenerationService } from '@/image-generation/image-generation.service';
 import { ImagesService } from '@/images/images.service';
+import { ImagesStorage } from '@/images/domain/images.storage';
 
 const mockImageGenerationService = {
   generateImageFromPrompt: vi.fn(),
@@ -20,6 +22,10 @@ const mockImagesService = {
   saveImage: vi.fn(),
 } as unknown as ImagesService;
 
+const mockImagesStorage = {
+  saveImage: vi.fn(),
+} as unknown as ImagesStorage;
+
 describe('ImageGenerationEngine', () => {
   let engine: ImageGenerationEngine;
 
@@ -27,25 +33,30 @@ describe('ImageGenerationEngine', () => {
     engine = new ImageGenerationEngine(
       mockImageGenerationService,
       mockImageGenerationStatusRepository,
-      mockImagesService
+      mockImagesService,
+      mockImagesStorage
     );
     vi.clearAllMocks();
   });
 
   describe('processPrompt', () => {
     it('should process prompt and emit correct events', async () => {
+      const eventId = 'test-event-id';
       const promptId = 'test-id';
       const prompt = 'test-prompt';
-      const generatedImage = 'test-image';
+      const generatedImageContent = 'generated-image-base64';
+      const imageUrl = 'http://test-url.com/image.png';
+
       mockImageGenerationService.generateImageFromPrompt = vi
         .fn()
-        .mockResolvedValue(generatedImage);
+        .mockResolvedValue(generatedImageContent);
+      mockImagesStorage.saveImage = vi.fn().mockResolvedValue(imageUrl);
       mockImagesService.saveImage = vi.fn().mockResolvedValue(undefined);
       mockImageGenerationStatusRepository.updatePromptGenerationStatus = vi
         .fn()
         .mockResolvedValue(undefined);
 
-      engine.processPrompt(promptId, prompt);
+      await engine.processPrompt(eventId, promptId, prompt);
 
       expect(
         mockImageGenerationStatusRepository.updatePromptGenerationStatus
@@ -53,6 +64,34 @@ describe('ImageGenerationEngine', () => {
       expect(
         mockImageGenerationService.generateImageFromPrompt
       ).toHaveBeenCalledWith(prompt);
+      expect(mockImagesStorage.saveImage).toHaveBeenCalledWith(
+        eventId,
+        promptId,
+        generatedImageContent
+      );
+      expect(mockImagesService.saveImage).toHaveBeenCalledWith(
+        promptId,
+        imageUrl
+      );
+      expect(
+        mockImageGenerationStatusRepository.updatePromptGenerationStatus
+      ).toHaveBeenCalledWith(promptId, 'done', '');
+    });
+
+    it('should emit error event if an error occurs in the process', async () => {
+      const eventId = 'test-event-id';
+      const promptId = 'test-id';
+      const prompt = 'test-prompt';
+      const error = new Error('Test Error');
+
+      mockImageGenerationService.generateImageFromPrompt = vi
+        .fn()
+        .mockRejectedValue(error);
+      const emitSpy = vi.spyOn(engine['emitter'], 'emit');
+
+      await engine.processPrompt(eventId, promptId, prompt);
+
+      expect(emitSpy).toHaveBeenCalledWith('error', { promptId, error });
     });
   });
 
@@ -86,7 +125,7 @@ describe('ImageGenerationEngine', () => {
       });
     });
 
-    it('should complete subject on error', () => {
+    it('should complete subject on error ', () => {
       const promptId = 'test-id';
       const subject = new Subject<ImageGenerationMessageEvent>();
       const mockObserver = vi.fn();
@@ -107,24 +146,53 @@ describe('ImageGenerationEngine', () => {
     it('should emit "image:generation-requested" and "image:generation-done"', async () => {
       const promptId = 'test-id';
       const prompt = 'test-prompt';
-      const imageContent = 'test-image';
+      const imageContent = 'test-generated-image';
 
+      const emitSpy = vi.spyOn(engine['emitter'], 'emit');
       mockImageGenerationService.generateImageFromPrompt = vi
         .fn()
-        .mockResolvedValue(imageContent);
-      mockImageGenerationStatusRepository.updatePromptGenerationStatus = vi
-        .fn()
-        .mockResolvedValue(undefined);
+        .mockResolvedValue({ imageContent });
 
       const result = await engine['generateImageFromPrompt'](promptId, prompt);
 
+      expect(emitSpy).toHaveBeenCalledWith('image:generation-requested', {
+        promptId,
+      });
       expect(
         mockImageGenerationService.generateImageFromPrompt
       ).toHaveBeenCalledWith(prompt);
-      expect(
-        mockImageGenerationStatusRepository.updatePromptGenerationStatus
-      ).toHaveBeenCalledWith(promptId, 'image:generation-done', imageContent);
-      expect(result).toEqual({ promptId, prompt, imageContent });
+      expect(result.imageContent).toStrictEqual({ imageContent });
+    });
+  });
+
+  describe('saveImage', () => {
+    it('should emit "storage:save-requested" and properly save the image', async () => {
+      const eventId = 'test-event-id';
+      const promptId = 'test-id';
+      const imageContent = 'test-image-content';
+      const imageUrl = 'http://test-url.com/image.png';
+
+      const emitSpy = vi.spyOn(engine['emitter'], 'emit');
+      mockImagesStorage.saveImage = vi
+        .fn()
+        .mockResolvedValue({ imageURL: imageUrl });
+
+      const result = await engine['saveImage'](eventId, promptId, imageContent);
+
+      expect(emitSpy).toHaveBeenCalledWith('storage:save-requested', {
+        promptId,
+        imageContent,
+      });
+      expect(mockImagesStorage.saveImage).toHaveBeenCalledWith(
+        eventId,
+        promptId,
+        imageContent
+      );
+      expect(emitSpy).toHaveBeenCalledWith('storage:save-requested', {
+        promptId,
+        imageContent,
+      });
+      expect(result.imageURL).toStrictEqual({ imageURL: imageUrl });
     });
   });
 });

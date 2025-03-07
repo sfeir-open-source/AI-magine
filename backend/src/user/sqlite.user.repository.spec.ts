@@ -1,6 +1,7 @@
 import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteUserRepository } from '@/user/sqlite.user.repository';
 import { User } from '@/user/domain';
+import { ConfigurationService } from '@/configuration/configuration.service';
 
 const mockUser = User.from({
   id: '2',
@@ -15,7 +16,9 @@ describe('SqliteUserRepository', () => {
   let repository: SqliteUserRepository;
 
   beforeEach(async () => {
-    sqliteClient = new SQLiteClient();
+    sqliteClient = new SQLiteClient({
+      getSqliteDBPath: vi.fn().mockReturnValue(':memory:'),
+    } as unknown as ConfigurationService);
     repository = new SqliteUserRepository(sqliteClient);
     await repository.onApplicationBootstrap();
   });

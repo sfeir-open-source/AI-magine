@@ -1,6 +1,7 @@
 import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteImagesRepository } from '@/images/sqlite.images.repository';
 import { Image } from '@/images/domain';
+import { ConfigurationService } from '@/configuration/configuration.service';
 
 const promptId = 'promptId1';
 const mockImage = Image.create('http://example.com/image.png', promptId);
@@ -10,7 +11,9 @@ describe('SqliteImagesRepository', () => {
   let repository: SqliteImagesRepository;
 
   beforeEach(async () => {
-    sqliteClient = new SQLiteClient();
+    sqliteClient = new SQLiteClient({
+      getSqliteDBPath: vi.fn().mockReturnValue(':memory:'),
+    } as unknown as ConfigurationService);
     repository = new SqliteImagesRepository(sqliteClient);
     await repository.onApplicationBootstrap();
   });

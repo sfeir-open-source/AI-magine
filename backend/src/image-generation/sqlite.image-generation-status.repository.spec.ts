@@ -1,6 +1,7 @@
 import { SQLiteClient } from '@/config/sqlite-client';
 import { SqliteImageGenerationStatusRepository } from '@/image-generation/sqlite.image-generation-status.repository';
 import { ImageGenerationStatus } from '@/image-generation/domain';
+import { ConfigurationService } from '@/configuration/configuration.service';
 
 const now = new Date();
 const promptId = 'PromptId1';
@@ -17,7 +18,9 @@ describe('SqliteImageGenerationStatusRepository', () => {
   let repository: SqliteImageGenerationStatusRepository;
 
   beforeEach(async () => {
-    sqliteClient = new SQLiteClient();
+    sqliteClient = new SQLiteClient({
+      getSqliteDBPath: () => ':memory:',
+    } as unknown as ConfigurationService);
     repository = new SqliteImageGenerationStatusRepository(sqliteClient);
     await repository.onApplicationBootstrap();
   });

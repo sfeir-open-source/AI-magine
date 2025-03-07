@@ -1,42 +1,73 @@
 import { useEventsProvider } from '@/src/providers/events/useEventsProvider';
-import { useNavigate, useParams } from 'react-router';
-import { useUserId } from '@/src/hooks/useUserId';
-import { toast } from 'sonner';
-import i18n from '@/src/config/i18n';
+import { useParams } from 'react-router';
+import { useCallback, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { getUserImagesQueryKey } from '@/src/hooks/useUserImages';
 
-export const useImageGenerationListener = () => {
-  const { eventId, promptId } = useParams<{
+export const useImageGenerationListener = (userId: string) => {
+  const { eventId } = useParams<{
     eventId: string;
-    promptId: string;
   }>();
 
-  const userId = useUserId();
-
-  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const eventsProvider = useEventsProvider();
 
-  if (!eventId || !promptId) {
-    throw new Error(
-      'Cannot listen for image generation event. Missing eventId or promptId.'
-    );
-  }
+  const [progress, setProgress] = useState<number>(0);
 
-  if (userId) {
-    const onEvent = (event: MessageEvent<string>) => {
-      const data = JSON.parse(event?.data ?? '{}');
-      if (data.type === 'done') {
-        navigate(`/events/${eventId}/users/${userId}/images`);
-      }
-    };
+  const listen = useCallback(
+    (promptId: string) => {
+      let isDone = false;
 
-    eventsProvider.listenForPromptGenerationEvent(eventId, promptId, onEvent);
-  } else {
-    toast.error(i18n.t('failed-authenticate-redirect'), {
-      duration: 3000,
-      onAutoClose: () => {
-        navigate(`/events/${eventId}`);
-      },
-    });
-  }
+      const onEvent = (event: MessageEvent<string>) => {
+        if (isDone) return;
+
+        const data = JSON.parse(event?.data ?? '{}');
+        const totalSteps = 5;
+
+        switch (data.type) {
+          case 'image:generation-requested':
+            setProgress(100 / totalSteps);
+            break;
+          case 'image:generation-done':
+            setProgress((100 / totalSteps) * 2);
+            break;
+          case 'storage:save-requested':
+            setProgress((100 / totalSteps) * 3);
+            break;
+          case 'storage:save-done':
+            setProgress((100 / totalSteps) * 4);
+            break;
+          case 'done':
+            isDone = true;
+            setProgress(100);
+
+            setTimeout(() => {
+              queryClient.invalidateQueries({
+                queryKey: getUserImagesQueryKey(eventId, userId),
+              });
+
+              setProgress(0);
+            }, 1000);
+            break;
+          default:
+            console.warn(`Unhandled image generation event : ${data.type}`);
+        }
+      };
+
+      setProgress(10);
+
+      eventsProvider.listenForPromptGenerationEvent(
+        eventId as string,
+        promptId,
+        onEvent
+      );
+    },
+    [eventId, eventsProvider, queryClient, userId]
+  );
+
+  return {
+    progress,
+    listen,
+  };
 };

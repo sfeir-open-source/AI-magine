@@ -12,9 +12,10 @@ import { SqliteImageGenerationStatusRepository } from '@/image-generation/sqlite
 import { IMAGES_REPOSITORY } from '@/images/domain/images.repository';
 import { SqliteImagesRepository } from '@/images/sqlite.images.repository';
 import { ImagesModule } from '@/images/images.module';
+import { SfeirEventModule } from '@/events/sfeir-event.module';
 
 @Module({
-  imports: [UserModule, ImageGenerationModule, ImagesModule],
+  imports: [UserModule, ImageGenerationModule, ImagesModule, SfeirEventModule],
   controllers: [PromptController],
   providers: [
     PromptService,

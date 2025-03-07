@@ -38,7 +38,7 @@ export const EventSelectionPage = () => {
   };
 
   return (
-    <Card>
+    <Card className="max-w-lg mx-auto">
       <CardHeader>
         <CardTitle>{t('participate-to-event')}</CardTitle>
         <CardDescription>

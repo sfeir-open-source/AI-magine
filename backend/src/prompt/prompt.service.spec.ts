@@ -4,11 +4,14 @@ import { UserService } from '@/user/user.service';
 import { Prompt } from '@/prompt/domain/prompt.domain';
 import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
 import { BadRequestException } from '@nestjs/common';
+import { SfeirEventService } from '@/events/sfeir-event.service';
+import { SfeirEvent } from '@/events/domain';
 
 describe('PromptService', () => {
   let promptService: PromptService;
   let promptRepositoryMock: PromptRepository;
   let userServiceMock: UserService;
+  let eventServiceMock: SfeirEventService;
   let imageGenerationEngineMock: ImageGenerationEngine;
 
   beforeEach(() => {
@@ -22,6 +25,10 @@ describe('PromptService', () => {
       checkIfExists: vi.fn(),
     } as unknown as UserService;
 
+    eventServiceMock = {
+      getSfeirEvent: vi.fn(),
+    } as unknown as SfeirEventService;
+
     imageGenerationEngineMock = {
       processPrompt: vi.fn(),
     } as unknown as ImageGenerationEngine;
@@ -29,13 +36,27 @@ describe('PromptService', () => {
     promptService = new PromptService(
       promptRepositoryMock,
       userServiceMock,
-      imageGenerationEngineMock
+      imageGenerationEngineMock,
+      eventServiceMock
     );
   });
 
   describe('createPrompt', () => {
     it('should throw BadRequestException if user does not exists', async () => {
       vi.mocked(userServiceMock.checkIfExists).mockResolvedValue(false);
+
+      await expect(() =>
+        promptService.createPrompt({
+          prompt: 'test',
+          eventId: 'test-event-id',
+          userId: 'unknown',
+        })
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should throw BadRequestException if event does not exists', async () => {
+      vi.mocked(userServiceMock.checkIfExists).mockResolvedValue(true);
+      vi.mocked(eventServiceMock.getSfeirEvent).mockResolvedValue(undefined);
 
       await expect(() =>
         promptService.createPrompt({
@@ -60,6 +81,9 @@ describe('PromptService', () => {
         'Sample Prompt'
       );
       vi.mocked(userServiceMock.checkIfExists).mockResolvedValue(true);
+      vi.mocked(eventServiceMock.getSfeirEvent).mockResolvedValue(
+        SfeirEvent.from('event1', 'event', new Date(), new Date())
+      );
       vi.mocked(promptRepositoryMock.countByEventIdAndUserId).mockResolvedValue(
         2
       );
@@ -69,6 +93,7 @@ describe('PromptService', () => {
 
       expect(result).toEqual(expectedPrompt);
       expect(userServiceMock.checkIfExists).toHaveBeenCalled();
+      expect(eventServiceMock.getSfeirEvent).toHaveBeenCalled();
       expect(promptRepositoryMock.countByEventIdAndUserId).toHaveBeenCalledWith(
         'existingUserId',
         'event1'
@@ -84,6 +109,9 @@ describe('PromptService', () => {
       };
 
       vi.mocked(userServiceMock.checkIfExists).mockResolvedValue(true);
+      vi.mocked(eventServiceMock.getSfeirEvent).mockResolvedValue(
+        SfeirEvent.from('event1', 'event', new Date(), new Date())
+      );
       vi.mocked(promptRepositoryMock.countByEventIdAndUserId).mockResolvedValue(
         3
       );
@@ -92,6 +120,7 @@ describe('PromptService', () => {
         'User has reached maximum number of prompts'
       );
       expect(userServiceMock.checkIfExists).toHaveBeenCalled();
+      expect(eventServiceMock.getSfeirEvent).toHaveBeenCalled();
       expect(promptRepositoryMock.countByEventIdAndUserId).toHaveBeenCalledWith(
         'existingUserId',
         'event1'

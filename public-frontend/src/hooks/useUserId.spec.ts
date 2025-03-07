@@ -1,22 +1,13 @@
-import { renderHook } from '@testing-library/react';
 import { STORAGE_USER_ID_KEY, useUserId } from '@/src/hooks/useUserId';
-
-vi.mock('js-cookie', () => ({
-  default: {
-    get: vi.fn(),
-  },
-}));
+import { renderHook } from '@testing-library/react';
 
 describe('useUserId', () => {
-  afterEach(() => {
-    localStorage.clear();
-  });
-
-  it('returns userId cookie value', () => {
-    localStorage.setItem(STORAGE_USER_ID_KEY, 'user-id');
+  it('returns userId from sessionStorage', () => {
+    const fakeUserId = 'fake-id';
+    sessionStorage.setItem(STORAGE_USER_ID_KEY, fakeUserId);
 
     const { result } = renderHook(() => useUserId());
 
-    expect(result.current).toEqual('user-id');
+    expect(result.current).toEqual(fakeUserId);
   });
 });

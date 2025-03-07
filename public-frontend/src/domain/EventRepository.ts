@@ -1,21 +1,29 @@
 import { Event } from '@/src/domain/Event';
 import { Image } from '@/src/domain/Image';
 
-export type NewEventPromptRequestBody = {
-  browserFingerprint: string;
+export type CreateEventPromptRequest = {
+  eventId: string;
+  userId: string;
+  prompt: string;
+};
+
+export type CreateEventUserRequest = {
   userEmail: string;
   userNickname: string;
+  browserFingerprint: string;
   allowContact: boolean;
-  prompt: string;
 };
 
 export interface EventRepository {
   getEventById(eventId: string): Promise<Event>;
 
+  createUserForEvent(
+    userPayload: CreateEventUserRequest
+  ): Promise<{ id: string }>;
+
   sendPromptForEvent(
-    eventId: string,
-    payload: NewEventPromptRequestBody
-  ): Promise<{ promptId: string; userId: string }>;
+    promptPayload: CreateEventPromptRequest
+  ): Promise<{ promptId: string }>;
 
   getImagesForUser(eventId: string, userId: string): Promise<Image[]>;
 

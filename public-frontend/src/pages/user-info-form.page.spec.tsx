@@ -1,6 +1,6 @@
 import { Mock } from 'vitest';
 import { useEventById } from '@/src/hooks/useEventById';
-import { EventPromptPage } from '@/src/pages/event-prompt.page';
+import { UserInfoFormPage } from '@/src/pages/user-info-form.page';
 import { render, screen } from '@testing-library/react';
 import { Event } from '@/src/domain/Event';
 import i18n from '@/src/config/i18n';
@@ -8,17 +8,17 @@ import { BrowserRouter } from 'react-router';
 
 vi.mock('@/src/hooks/useEventById');
 
-vi.mock('@/src/components/event-prompt-form/event-prompt-form', () => ({
-  EventPromptForm: () => <span>EventPromptForm</span>,
+vi.mock('@/src/components/user-info-form/user-info-form', () => ({
+  UserInfoForm: () => <span>UserInfoForm</span>,
 }));
 
 describe('EventPromptPage', () => {
   it('displays a loader if the event is loading', () => {
     (useEventById as Mock).mockReturnValue({ isFetching: true });
 
-    render(<EventPromptPage />);
+    render(<UserInfoFormPage />);
 
-    expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
+    expect(screen.getByTestId('loader-circle')).toBeInTheDocument();
   });
 
   it('displays the form when the event is loaded', () => {
@@ -32,9 +32,9 @@ describe('EventPromptPage', () => {
       isFetching: false,
     });
 
-    render(<EventPromptPage />);
+    render(<UserInfoFormPage />);
 
-    expect(screen.getByText('EventPromptForm')).toBeInTheDocument();
+    expect(screen.getByText('UserInfoForm')).toBeInTheDocument();
   });
 
   it('displays an error if the event failed to load', () => {
@@ -45,7 +45,7 @@ describe('EventPromptPage', () => {
 
     render(
       <BrowserRouter>
-        <EventPromptPage />
+        <UserInfoFormPage />
       </BrowserRouter>
     );
 
@@ -62,7 +62,7 @@ describe('EventPromptPage', () => {
 
     render(
       <BrowserRouter>
-        <EventPromptPage />
+        <UserInfoFormPage />
       </BrowserRouter>
     );
 

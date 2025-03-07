@@ -15,5 +15,6 @@ import { SqliteSfeirEventRepository } from '@/events/sqlite.sfeir-event.reposito
       useClass: SqliteSfeirEventRepository,
     },
   ],
+  exports: [SfeirEventService],
 })
 export class SfeirEventModule {}

@@ -1,7 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 import { Event } from '@/src/domain/Event';
 import {
-  NewEventPromptRequestBody,
+  CreateEventPromptRequest,
+  CreateEventUserRequest,
   EventRepository,
 } from '@/src/domain/EventRepository';
 import { Image } from '@/src/domain/Image';
@@ -14,6 +15,21 @@ class EventsApi implements EventRepository {
     this.http = axios.create({
       baseURL: this.baseURL,
     });
+  }
+
+  async createUserForEvent(
+    userPayload: CreateEventUserRequest
+  ): Promise<{ id: string }> {
+    try {
+      const response = await this.http.post<{ id: string }>(
+        '/users',
+        userPayload
+      );
+
+      return response.data;
+    } catch (error) {
+      throw new Error(`Failed to create user: ${(error as Error).message}`);
+    }
   }
 
   async getImagesForUser(eventId: string, userId: string): Promise<Image[]> {
@@ -34,7 +50,8 @@ class EventsApi implements EventRepository {
             backendImage.id,
             backendImage.prompt,
             backendImage.url,
-            backendImage.selected
+            backendImage.selected,
+            backendImage.createdAt
           )
       );
     } catch (e) {
@@ -60,8 +77,7 @@ class EventsApi implements EventRepository {
   }
 
   async sendPromptForEvent(
-    eventId: string,
-    payload: NewEventPromptRequestBody
+    payload: CreateEventPromptRequest
   ): Promise<{ promptId: string; userId: string }> {
     try {
       const response = await this.http.post<{
@@ -69,12 +85,12 @@ class EventsApi implements EventRepository {
         eventId: string;
         userId: string;
         prompt: string;
-      }>(`/events/${eventId}/prompts`, payload);
+      }>(`/events/${payload.eventId}/prompts`, payload);
 
       return { promptId: response.data.id, userId: response.data.userId };
     } catch (e) {
       throw new Error(
-        `Failed to send prompt for event with id ${eventId} : ${(e as Error).message}`
+        `Failed to send prompt for event with id ${payload.eventId} : ${(e as Error).message}`
       );
     }
   }

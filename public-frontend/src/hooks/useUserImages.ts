@@ -11,8 +11,8 @@ export const getUserImagesQueryKey = (eventId?: string, userId?: string) => [
   'images',
 ];
 
-export const useUserImages = () => {
-  const { eventId, userId } = useParams<{ eventId: string; userId: string }>();
+export const useUserImages = (userId: string) => {
+  const { eventId } = useParams<{ eventId: string }>();
 
   const eventsProvider = useEventsProvider();
 

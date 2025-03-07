@@ -11,17 +11,16 @@ vi.mock('react-router');
 
 describe('useUserImages', () => {
   it('calls backend to retrieve user images', async () => {
-    const fakeResult = [new Image('id', 'prompt', 'url', false)];
+    const fakeResult = [new Image('id', 'prompt', 'url', false, '')];
     const getImagesForUserMock = vi.fn().mockResolvedValue(fakeResult);
 
     const fakeUserId = 'user-id';
     const fakeEventId = 'event-id';
     (useParams as Mock).mockReturnValue({
-      userId: fakeUserId,
       eventId: fakeEventId,
     });
 
-    const { result } = renderHook(() => useUserImages(), {
+    const { result } = renderHook(() => useUserImages(fakeUserId), {
       wrapper: ({ children }) => (
         <QueryClientProvider client={new QueryClient()}>
           <EventsContext.Provider

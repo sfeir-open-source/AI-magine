@@ -1,13 +1,51 @@
 import nock from 'nock';
 import { eventsApi } from '@/src/providers/events/events.api';
 import { Event } from '@/src/domain/Event';
-import { NewEventPromptRequestBody } from '@/src/domain/EventRepository';
 import { Mock } from 'vitest';
 import { Image } from '@/src/domain/Image';
+import {
+  CreateEventPromptRequest,
+  CreateEventUserRequest,
+} from '@/src/domain/EventRepository';
 
 const apiMock = nock(import.meta.env.VITE_BACKEND_API_URL);
 
 describe('EventsApi', () => {
+  describe('createUserForEvent', () => {
+    it('calls backend api to create a user for an event', async () => {
+      const mockUserResponse = {
+        id: 'user-id',
+      };
+      const createUserPayload: CreateEventUserRequest = {
+        userEmail: 'email',
+        userNickname: 'nickname',
+        browserFingerprint: 'fp',
+        allowContact: false,
+      };
+
+      apiMock.post(`/users`).reply(200, mockUserResponse);
+
+      const result = await eventsApi.createUserForEvent(createUserPayload);
+
+      expect(result.id).toEqual(mockUserResponse.id);
+    });
+
+    it('throws an error if the call fails', async () => {
+      const createUserPayload: CreateEventUserRequest = {
+        userEmail: 'email',
+        userNickname: 'nickname',
+        browserFingerprint: 'fp',
+        allowContact: false,
+      };
+
+      apiMock.post(`/users`).reply(500);
+
+      await expect(() =>
+        eventsApi.createUserForEvent(createUserPayload)
+      ).rejects.toThrow();
+    });
+  });
+
   describe('getEventById', () => {
     it('calls backend api to get event and map it to an Event instance', async () => {
       const mockEventResponse = {
@@ -40,48 +78,39 @@ describe('EventsApi', () => {
     it('calls backend api to send a new prompt for an event', async () => {
       const fakeEventPromptResponse = {
         id: 'fake-prompt-id',
-        userId: 'fake-user-id',
       };
+
+      const fakeUserId = 'fake-user-id';
       const fakeEventId = 'identifier';
-      const fakePayload: NewEventPromptRequestBody = {
-        userEmail: 'email',
-        userName: 'name',
-        jobTitle: 'job',
-        allowContact: false,
+      const fakePayload: CreateEventPromptRequest = {
+        eventId: fakeEventId,
+        userId: fakeUserId,
         prompt: 'prompt',
-        browserFingerprint: 'fingerprint',
       };
 
       apiMock
         .post(`/events/${fakeEventId}/prompts`)
         .reply(200, fakeEventPromptResponse);
 
-      const result = await eventsApi.sendPromptForEvent(
-        fakeEventId,
-        fakePayload
-      );
+      const result = await eventsApi.sendPromptForEvent(fakePayload);
 
       expect(result).toEqual({
         promptId: fakeEventPromptResponse.id,
-        userId: fakeEventPromptResponse.userId,
       });
     });
 
     it('throws an error if the call fails', async () => {
       const fakeEventId = 'identifier';
-      const fakePayload: NewEventPromptRequestBody = {
-        userEmail: 'email',
-        userName: 'name',
-        jobTitle: 'job',
-        allowContact: false,
+      const fakePayload: CreateEventPromptRequest = {
+        userId: 'id',
         prompt: 'prompt',
-        browserFingerprint: 'fingerprint',
+        eventId: fakeEventId,
       };
 
       apiMock.post(`/events/${fakeEventId}/prompts`).reply(500);
 
       await expect(() =>
-        eventsApi.sendPromptForEvent(fakeEventId, fakePayload)
+        eventsApi.sendPromptForEvent(fakePayload)
       ).rejects.toThrow();
     });
   });

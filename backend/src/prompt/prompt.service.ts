@@ -9,6 +9,7 @@ import { Prompt } from '@/prompt/domain/prompt.domain';
 import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
 import { Subject } from 'rxjs';
 import { ImageGenerationMessageEvent } from '@/image-generation/domain';
+import { SfeirEventService } from '@/events/sfeir-event.service';
 
 @Injectable()
 export class PromptService {
@@ -16,7 +17,8 @@ export class PromptService {
     @Inject(PROMPT_REPOSITORY)
     private readonly promptRepository: PromptRepository,
     private readonly userService: UserService,
-    private readonly imageGenerationEngine: ImageGenerationEngine
+    private readonly imageGenerationEngine: ImageGenerationEngine,
+    private readonly eventService: SfeirEventService
   ) {}
 
   async createPrompt({
@@ -26,10 +28,16 @@ export class PromptService {
   }: CreatePromptBodyDto & { eventId: string }): Promise<Prompt> {
     const doesUserExists = await this.userService.checkIfExists(userId);
 
+    const doesEventExists = !!(await this.eventService.getSfeirEvent(eventId));
+
     if (!doesUserExists) {
       throw new BadRequestException(
         'User requesting prompt creation does not exist'
       );
+    }
+
+    if (!doesEventExists) {
+      throw new BadRequestException('Event does not exists');
     }
 
     const userPromptCountOnEvent =

@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react';
-import { useEventPromptMutation } from '@/src/hooks/useEventPromptMutation';
+import { useCreateEventPromptMutation } from '@/src/hooks/useCreateEventPromptMutation';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { EventsContext } from '@/src/providers/events/events.context';
 import { EventRepository } from '@/src/domain/EventRepository';
@@ -8,7 +8,7 @@ describe('useEventPromptMutation', () => {
   it('calls a method to send a new prompt', async () => {
     const sendPromptForEventMock = vi.fn().mockResolvedValue('prompt-id');
 
-    const { result } = renderHook(() => useEventPromptMutation(), {
+    const { result } = renderHook(() => useCreateEventPromptMutation(), {
       wrapper: ({ children }) => {
         return (
           <QueryClientProvider client={new QueryClient()}>
@@ -28,12 +28,8 @@ describe('useEventPromptMutation', () => {
 
     const promptId = await result.current.mutateAsync({
       eventId: 'event-id',
-      browserFingerprint: 'fp',
-      userName: 'name',
-      userEmail: 'email',
+      userId: 'user-id',
       prompt: 'prompt',
-      jobTitle: 'job',
-      allowContact: false,
     });
 
     expect(promptId).toEqual('prompt-id');

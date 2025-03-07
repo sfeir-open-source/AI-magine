@@ -1,13 +1,12 @@
 import { NavLink, useParams } from 'react-router';
 import { useEventById } from '@/src/hooks/useEventById';
-import { EventPromptForm } from '@/src/components/event-prompt-form/event-prompt-form';
-import { LoadingSpinner } from '@/src/components/loading-spinner/loading-spinner';
+import { UserInfoForm } from '@/src/components/user-info-form/user-info-form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, LoaderCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 
-export const EventPromptPage = () => {
+export const UserInfoFormPage = () => {
   const { t } = useTranslation();
   const { eventId } = useParams<{ eventId: string }>();
 
@@ -34,9 +33,14 @@ export const EventPromptPage = () => {
 
   return isFetching ? (
     <div className="flex justify-center mt-12">
-      <LoadingSpinner width={96} height={96} />
+      <LoaderCircle
+        width={96}
+        height={96}
+        className="animate-spin"
+        data-testid="loader-circle"
+      />
     </div>
   ) : (
-    event && <EventPromptForm event={event} />
+    event && <UserInfoForm event={event} />
   );
 };

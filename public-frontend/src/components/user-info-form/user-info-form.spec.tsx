@@ -1,19 +1,13 @@
 import { Mock } from 'vitest';
-import {
-  EventPromptForm,
-  STORAGE_ALLOW_CONTACT_KEY,
-  STORAGE_EMAIL_KEY,
-  STORAGE_NICKNAME_KEY,
-  STORAGE_PROMPT_KEY,
-} from '@/src/components/event-prompt-form/event-prompt-form';
+import { UserInfoForm } from '@/src/components/user-info-form/user-info-form';
 import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { useNavigate } from 'react-router';
 import i18n from 'i18next';
-import { useEventPromptMutation } from '@/src/hooks/useEventPromptMutation';
 import { useFingerprint } from '@/src/hooks/useFingerprint';
 import { Toaster } from '@/components/ui/sonner';
 import { STORAGE_USER_ID_KEY } from '@/src/hooks/useUserId';
+import { useCreateUserMutation } from '@/src/hooks/useCreateUserMutation';
 
 vi.mock('react-router', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -22,7 +16,7 @@ vi.mock('react-router', async (importOriginal) => ({
 
 vi.mock('@/src/hooks/useFingerprint');
 
-vi.mock('@/src/hooks/useEventPromptMutation');
+vi.mock('@/src/hooks/useCreateUserMutation');
 
 describe('EventPromptForm', () => {
   afterEach(() => {
@@ -31,10 +25,12 @@ describe('EventPromptForm', () => {
 
   it('displays title and end date of the event', () => {
     (useNavigate as Mock).mockReturnValue(vi.fn());
-    (useEventPromptMutation as Mock).mockReturnValue({ mutateAsync: vi.fn() });
+    (useCreateUserMutation as Mock).mockReturnValue({
+      mutateAsync: vi.fn(),
+    });
 
     render(
-      <EventPromptForm
+      <UserInfoForm
         event={{
           id: 'event-id',
           name: 'DevLille',
@@ -52,10 +48,12 @@ describe('EventPromptForm', () => {
     const navigateMock = vi.fn();
     (useNavigate as Mock).mockReturnValue(navigateMock);
 
-    (useEventPromptMutation as Mock).mockReturnValue({ mutateAsync: vi.fn() });
+    (useCreateUserMutation as Mock).mockReturnValue({
+      mutateAsync: vi.fn(),
+    });
 
     render(
-      <EventPromptForm
+      <UserInfoForm
         event={{
           id: 'event-id',
           name: 'DevLille',
@@ -65,7 +63,7 @@ describe('EventPromptForm', () => {
       />
     );
 
-    await userEvent.click(screen.getByText(i18n.t('generate-image')));
+    await userEvent.click(screen.getByText(i18n.t('go-to-image-generation')));
 
     expect(navigateMock).not.toHaveBeenCalled();
     expect(
@@ -75,19 +73,15 @@ describe('EventPromptForm', () => {
     expect(
       screen.getByText(i18n.t('empty-allow-contact-error'))
     ).toBeInTheDocument();
-    expect(screen.getByText(i18n.t('empty-prompt-error'))).toBeInTheDocument();
   });
 
   it('submits form if filled correctly', async () => {
     const navigateMock = vi.fn();
     (useNavigate as Mock).mockReturnValue(navigateMock);
 
-    const fakePromptId = 'fake-prompt-id';
     const fakeUserId = 'fake-user';
-    const mutateAsyncMock = vi
-      .fn()
-      .mockReturnValue({ promptId: fakePromptId, userId: fakeUserId });
-    (useEventPromptMutation as Mock).mockReturnValue({
+    const mutateAsyncMock = vi.fn().mockReturnValue({ id: fakeUserId });
+    (useCreateUserMutation as Mock).mockReturnValue({
       mutateAsync: mutateAsyncMock,
     });
 
@@ -96,17 +90,15 @@ describe('EventPromptForm', () => {
 
     const fakeEventId = 'event-id';
 
-    const fakePromptRequest = {
+    const fakeUserRequest = {
       browserFingerprint: fakeFingerprint,
-      eventId: fakeEventId,
       userNickname: 'test-name',
       userEmail: 'test-email@test.com',
       allowContact: false,
-      prompt: 'test-prompt',
     };
 
     render(
-      <EventPromptForm
+      <UserInfoForm
         event={{
           id: fakeEventId,
           name: 'DevLille',
@@ -118,34 +110,21 @@ describe('EventPromptForm', () => {
 
     await userEvent.type(
       screen.getByLabelText(i18n.t('nickname')),
-      fakePromptRequest.userNickname
+      fakeUserRequest.userNickname
     );
     await userEvent.type(
       screen.getByLabelText(i18n.t('email-address')),
-      fakePromptRequest.userEmail
+      fakeUserRequest.userEmail
     );
     await userEvent.click(screen.getByLabelText(i18n.t('no')));
-    await userEvent.type(
-      screen.getByLabelText(i18n.t('prompt')),
-      fakePromptRequest.prompt
-    );
-    await userEvent.click(screen.getByText(i18n.t('generate-image')));
 
-    expect(mutateAsyncMock).toHaveBeenCalledWith(fakePromptRequest);
+    await userEvent.click(screen.getByText(i18n.t('go-to-image-generation')));
+
+    expect(mutateAsyncMock).toHaveBeenCalledWith(fakeUserRequest);
     expect(navigateMock).toHaveBeenCalledWith(
-      `/events/event-id/prompts/${fakePromptId}/loading`
+      `/events/${fakeEventId}/image-generation`
     );
-    expect(localStorage.getItem(STORAGE_NICKNAME_KEY)).toEqual(
-      fakePromptRequest.userNickname
-    );
-    expect(localStorage.getItem(STORAGE_EMAIL_KEY)).toEqual(
-      fakePromptRequest.userEmail
-    );
-    expect(localStorage.getItem(STORAGE_ALLOW_CONTACT_KEY)).toEqual('false');
-    expect(localStorage.getItem(STORAGE_PROMPT_KEY)).toEqual(
-      fakePromptRequest.prompt
-    );
-    expect(localStorage.getItem(STORAGE_USER_ID_KEY)).toEqual(fakeUserId);
+    expect(sessionStorage.getItem(STORAGE_USER_ID_KEY)).toEqual(fakeUserId);
   });
 
   it('displays an error if call to create prompt failed', async () => {
@@ -155,7 +134,7 @@ describe('EventPromptForm', () => {
     const mutateAsyncMock = vi
       .fn()
       .mockRejectedValue(new Error('Unknown error'));
-    (useEventPromptMutation as Mock).mockReturnValue({
+    (useCreateUserMutation as Mock).mockReturnValue({
       mutateAsync: mutateAsyncMock,
     });
 
@@ -164,18 +143,16 @@ describe('EventPromptForm', () => {
 
     const fakeEventId = 'event-id';
 
-    const fakePromptRequest = {
+    const fakeUserRequest = {
       browserFingerprint: fakeFingerprint,
-      eventId: fakeEventId,
       userNickname: 'test-name',
       userEmail: 'test-email@test.com',
       allowContact: false,
-      prompt: 'test-prompt',
     };
 
     render(
       <>
-        <EventPromptForm
+        <UserInfoForm
           event={{
             id: fakeEventId,
             name: 'DevLille',
@@ -189,30 +166,27 @@ describe('EventPromptForm', () => {
 
     await userEvent.type(
       screen.getByLabelText(i18n.t('nickname')),
-      fakePromptRequest.userNickname
+      fakeUserRequest.userNickname
     );
     await userEvent.type(
       screen.getByLabelText(i18n.t('email-address')),
-      fakePromptRequest.userEmail
+      fakeUserRequest.userEmail
     );
     await userEvent.click(screen.getByLabelText(i18n.t('no')));
-    await userEvent.type(
-      screen.getByLabelText(i18n.t('prompt')),
-      fakePromptRequest.prompt
-    );
-    await userEvent.click(screen.getByText(i18n.t('generate-image')));
 
-    expect(mutateAsyncMock).toHaveBeenCalledWith(fakePromptRequest);
+    await userEvent.click(screen.getByText(i18n.t('go-to-image-generation')));
+
+    expect(mutateAsyncMock).toHaveBeenCalledWith(fakeUserRequest);
     expect(navigateMock).not.toHaveBeenCalled();
     expect(
-      screen.getByText(`${i18n.t('failed-create-prompt')}: Unknown error`)
+      screen.getByText('Failed to create user: Unknown error')
     ).toBeInTheDocument();
   });
 
   it('displays a spinner if call result is pending', async () => {
     (useNavigate as Mock).mockReturnValue(vi.fn());
 
-    (useEventPromptMutation as Mock).mockReturnValue({
+    (useCreateUserMutation as Mock).mockReturnValue({
       mutateAsync: vi.fn(),
       isPending: true,
     });
@@ -220,7 +194,7 @@ describe('EventPromptForm', () => {
     (useFingerprint as Mock).mockReturnValue('');
 
     render(
-      <EventPromptForm
+      <UserInfoForm
         event={{
           id: 'event-id',
           name: 'DevLille',
@@ -231,10 +205,6 @@ describe('EventPromptForm', () => {
     );
 
     expect(screen.queryByText('Go')).not.toBeInTheDocument();
-    expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
-  });
-
-  it('prevents submission if maximum tries reached', async () => {
-    // TODO
+    expect(screen.getByTestId('loader-circle')).toBeInTheDocument();
   });
 });

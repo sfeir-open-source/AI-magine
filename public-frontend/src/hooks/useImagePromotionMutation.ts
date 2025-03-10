@@ -2,10 +2,12 @@ import { useEventsProvider } from '@/src/providers/events/useEventsProvider';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router';
 import { getUserImagesQueryKey } from '@/src/hooks/useUserImages';
+import { useUserId } from '@/src/hooks/useUserId';
 
 export const useImagePromotionMutation = () => {
   const queryClient = useQueryClient();
-  const { eventId, userId } = useParams<{ eventId: string; userId: string }>();
+  const { eventId } = useParams<{ eventId: string }>();
+  const userId = useUserId();
 
   const eventsProvider = useEventsProvider();
 
@@ -18,7 +20,7 @@ export const useImagePromotionMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: getUserImagesQueryKey(eventId, userId),
+        queryKey: getUserImagesQueryKey(eventId, userId as string),
       });
     },
   });

@@ -23,7 +23,10 @@ describe('SfeirEventController', () => {
     it('should return a list of events', async () => {
       const startDate = new Date(2023, 1, 1);
       const endDate = new Date(2023, 1, 2);
-      const mockEvents = [SfeirEvent.from('1', 'Event 1', startDate, endDate)];
+      const allowedPrompts = 5;
+      const mockEvents = [
+        SfeirEvent.from('1', 'Event 1', allowedPrompts, startDate, endDate),
+      ];
       vi.spyOn(sfeirEventService, 'getSfeirEvents').mockResolvedValue(
         mockEvents
       );
@@ -34,6 +37,7 @@ describe('SfeirEventController', () => {
         {
           id: '1',
           name: 'Event 1',
+          allowedPrompts,
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
           isActive: false,
@@ -46,13 +50,21 @@ describe('SfeirEventController', () => {
     it('should return an event by id', async () => {
       const startDate = new Date(2023, 1, 1);
       const endDate = new Date(2023, 1, 2);
-      const mockEvent = SfeirEvent.from('1', 'Event 1', startDate, endDate);
+      const allowedPrompts = 5;
+      const mockEvent = SfeirEvent.from(
+        '1',
+        'Event 1',
+        allowedPrompts,
+        startDate,
+        endDate
+      );
       vi.spyOn(sfeirEventService, 'getSfeirEvent').mockResolvedValue(mockEvent);
 
       const result = await sfeirEventController.getSfeirEvent('1');
       expect(result).toEqual({
         id: '1',
         name: 'Event 1',
+        allowedPrompts,
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
         isActive: false,
@@ -80,6 +92,7 @@ describe('SfeirEventController', () => {
       const mockEvent = SfeirEvent.from(
         '1',
         'New Event',
+        5,
         new Date(2023, 1, 1),
         new Date(2023, 1, 2)
       );
@@ -91,6 +104,7 @@ describe('SfeirEventController', () => {
       expect(result).toEqual({
         id: '1',
         name: 'New Event',
+        allowedPrompts: 5,
         startDate: new Date(2023, 1, 1, 0, 0, 0).toISOString(),
         endDate: new Date(2023, 1, 2, 0, 0, 0).toISOString(),
         isActive: false,

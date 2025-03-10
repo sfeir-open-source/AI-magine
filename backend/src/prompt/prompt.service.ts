@@ -16,9 +16,9 @@ export class PromptService {
   constructor(
     @Inject(PROMPT_REPOSITORY)
     private readonly promptRepository: PromptRepository,
+    private readonly eventService: SfeirEventService,
     private readonly userService: UserService,
-    private readonly imageGenerationEngine: ImageGenerationEngine,
-    private readonly eventService: SfeirEventService
+    private readonly imageGenerationEngine: ImageGenerationEngine
   ) {}
 
   async createPrompt({
@@ -28,7 +28,7 @@ export class PromptService {
   }: CreatePromptBodyDto & { eventId: string }): Promise<Prompt> {
     const doesUserExists = await this.userService.checkIfExists(userId);
 
-    const doesEventExists = !!(await this.eventService.getSfeirEvent(eventId));
+    const event = await this.eventService.getSfeirEvent(eventId);
 
     if (!doesUserExists) {
       throw new BadRequestException(
@@ -36,15 +36,14 @@ export class PromptService {
       );
     }
 
-    if (!doesEventExists) {
+    if (!event) {
       throw new BadRequestException('Event does not exists');
     }
 
     const userPromptCountOnEvent =
       await this.promptRepository.countByEventIdAndUserId(userId, eventId);
 
-    // TODO: Check with @allienna if we need to define maximum prompt in the event definition
-    if (userPromptCountOnEvent >= 3) {
+    if (userPromptCountOnEvent >= event.allowedPrompts) {
       return Promise.reject('User has reached maximum number of prompts');
     }
 

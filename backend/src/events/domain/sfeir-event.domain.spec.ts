@@ -3,40 +3,60 @@ import { SfeirEvent } from '@/events/domain';
 describe('SfeirEvent', () => {
   const id = 'test-id';
   const name = 'test-event';
+  const allowedPrompts = 5;
   const validStartDate = new Date('2024-12-12T10:00:00Z');
   const validEndDate = new Date('2024-12-13T10:00:00Z');
 
   describe('from', () => {
     it('should create an instance of SfeirEvent from provided arguments', () => {
-      const event = SfeirEvent.from(id, name, validStartDate, validEndDate);
+      const event = SfeirEvent.from(
+        id,
+        name,
+        allowedPrompts,
+        validStartDate,
+        validEndDate
+      );
       expect(event).toBeInstanceOf(SfeirEvent);
       expect(event.id).toBe(id);
       expect(event.name).toBe(name);
+      expect(event.allowedPrompts).toBe(allowedPrompts);
       expect(event.startDate).toEqual(validStartDate);
       expect(event.endDate).toEqual(validEndDate);
     });
 
     it('should throw an error if name is missing', () => {
       expect(() =>
-        SfeirEvent.from(id, '', validStartDate, validEndDate)
+        SfeirEvent.from(id, '', allowedPrompts, validStartDate, validEndDate)
       ).toThrow('Name is required');
     });
 
     it('should throw an error if startDate is missing', () => {
       expect(() =>
-        SfeirEvent.from(id, name, null as unknown as Date, validEndDate)
+        SfeirEvent.from(
+          id,
+          name,
+          allowedPrompts,
+          null as unknown as Date,
+          validEndDate
+        )
       ).toThrow('Start date is required');
     });
 
     it('should throw an error if endDate is missing', () => {
       expect(() =>
-        SfeirEvent.from(id, name, validStartDate, null as unknown as Date)
+        SfeirEvent.from(
+          id,
+          name,
+          allowedPrompts,
+          validStartDate,
+          null as unknown as Date
+        )
       ).toThrow('End date is required');
     });
 
     it('should throw an error if startDate is after endDate', () => {
       expect(() =>
-        SfeirEvent.from(id, name, validEndDate, validStartDate)
+        SfeirEvent.from(id, name, allowedPrompts, validEndDate, validStartDate)
       ).toThrow('Start date must be before end date');
     });
   });
@@ -47,6 +67,7 @@ describe('SfeirEvent', () => {
       expect(event).toBeInstanceOf(SfeirEvent);
       expect(event.id).toHaveLength(8);
       expect(event.name).toBe(name);
+      expect(event.allowedPrompts).toBe(5);
       expect(event.startDate).toEqual(validStartDate);
       expect(event.endDate).toEqual(validEndDate);
     });

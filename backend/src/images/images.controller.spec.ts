@@ -1,6 +1,7 @@
 import { ImagesService } from '@/images/images.service';
 import { ImagesController } from '@/images/images.controller';
 import { Image } from '@/images/domain';
+import { Mock } from 'vitest';
 
 describe('ImagesController', () => {
   let imagesController: ImagesController;
@@ -9,6 +10,7 @@ describe('ImagesController', () => {
   beforeEach(() => {
     imagesService = {
       getImagesByEventAndUser: vi.fn(),
+      promoteImage: vi.fn(),
     } as unknown as ImagesService;
 
     imagesController = new ImagesController(imagesService);
@@ -48,6 +50,20 @@ describe('ImagesController', () => {
           createdAt,
         },
       ]);
+    });
+  });
+
+  describe('promoteImage', async () => {
+    it('should promote an image', async () => {
+      (imagesService.promoteImage as Mock).mockResolvedValue(undefined);
+
+      await imagesController.promoteImage('event123', 'user123', 'image123');
+
+      expect(imagesService.promoteImage).toHaveBeenCalledWith(
+        'event123',
+        'user123',
+        'image123'
+      );
     });
   });
 });

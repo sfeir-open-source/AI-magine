@@ -3,10 +3,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useState } from 'react';
 import {
   ArrowBigDown,
-  // Download,
   ImageOff,
   MoreHorizontal,
-  // Share2,
   Star,
   ZoomIn,
 } from 'lucide-react';
@@ -20,14 +18,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useImagePromotionMutation } from '@/src/hooks/useImagePromotionMutation';
 
 export function DisplayedImage({ image }: { image?: Image }) {
   const { t } = useTranslation();
+  const { mutateAsync: promoteImage } = useImagePromotionMutation();
 
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const onClickViewFull = () => {
     setLightboxOpen(true);
+  };
+
+  const onClickPromote = async (image: Image) => {
+    await promoteImage({ imageId: image?.id });
   };
 
   return (
@@ -46,6 +50,7 @@ export function DisplayedImage({ image }: { image?: Image }) {
                   size="sm"
                   variant="secondary"
                   className="absolute top-4 right-4 hover:bg-secondary-light"
+                  onClick={() => onClickPromote(image)}
                 >
                   <Star
                     className={cn(

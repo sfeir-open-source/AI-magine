@@ -1,4 +1,3 @@
-import { describe, expect } from 'vitest';
 import { uniq } from '@/utils';
 
 describe('utils', () => {

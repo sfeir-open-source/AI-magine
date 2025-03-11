@@ -1,5 +1,6 @@
 import { Event } from '@/src/domain/Event';
 import { Image } from '@/src/domain/Image';
+import { ImageWithPromptTextAndAuthorDto } from '@/src/providers/events/dto/ImageWithPromptTextAndAuthor.dto';
 
 export type CreateEventPromptRequest = {
   eventId: string;
@@ -32,6 +33,10 @@ export interface EventRepository {
     userId: string,
     imageId: string
   ): Promise<void>;
+
+  getPromotedImagesForEvent(
+    eventId: string
+  ): Promise<ImageWithPromptTextAndAuthorDto[]>;
 
   listenForPromptGenerationEvent(
     eventId: string,

@@ -7,6 +7,7 @@ import {
   CreateEventPromptRequest,
   CreateEventUserRequest,
 } from '@/src/domain/EventRepository';
+import { ImageWithPromptTextAndAuthorDto } from '@/src/providers/events/dto/ImageWithPromptTextAndAuthor.dto';
 
 const apiMock = nock(import.meta.env.VITE_BACKEND_API_URL);
 
@@ -148,6 +149,7 @@ describe('EventsApi', () => {
           url: 'http://foo',
           prompt: 'prompt',
           selected: false,
+          createdAt: new Date().toISOString(),
         },
       ];
 
@@ -158,7 +160,13 @@ describe('EventsApi', () => {
       const result = await eventsApi.getImagesForUser(fakeEventId, fakeUserId);
 
       expect(result).toEqual([
-        new Image('fake-image-id', 'prompt', 'http://foo', false),
+        new Image(
+          fakeResponse[0].id,
+          fakeResponse[0].prompt,
+          fakeResponse[0].url,
+          fakeResponse[0].selected,
+          fakeResponse[0].createdAt
+        ),
       ]);
     });
 
@@ -206,6 +214,43 @@ describe('EventsApi', () => {
 
       await expect(() =>
         eventsApi.promoteUserImage(fakeEventId, fakeUserId, fakeImageId)
+      ).rejects.toThrow();
+    });
+  });
+
+  describe('getPromotedImagesForEvent', () => {
+    it('calls backend api to get promoted images', async () => {
+      const fakeEventId = 'fake-event-id';
+      const fakeImage = {
+        id: 'fake-image-id',
+        prompt: 'test prompt',
+        url: 'url',
+        author: 'author',
+      };
+
+      apiMock
+        .get(`/events/${fakeEventId}/images/promoted`)
+        .reply(200, [fakeImage]);
+
+      const result = await eventsApi.getPromotedImagesForEvent(fakeEventId);
+
+      expect(result).toEqual([
+        new ImageWithPromptTextAndAuthorDto(
+          fakeImage.id,
+          fakeImage.url,
+          fakeImage.prompt,
+          fakeImage.author
+        ),
+      ]);
+    });
+
+    it('throws an error if the call fails', async () => {
+      const fakeEventId = 'fake-event-id';
+
+      apiMock.get(`/events/${fakeEventId}/images/promoted`).reply(500);
+
+      await expect(() =>
+        eventsApi.getPromotedImagesForEvent(fakeEventId)
       ).rejects.toThrow();
     });
   });

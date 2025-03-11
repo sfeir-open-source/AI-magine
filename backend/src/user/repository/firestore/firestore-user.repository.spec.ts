@@ -1,5 +1,4 @@
-import { expect, Mock, vi } from 'vitest';
-
+import { Mock } from 'vitest';
 import type { CollectionReference } from '@google-cloud/firestore';
 import { FirestoreClient } from '@/config/firestore-client';
 import { FirestoreUserRepository } from '@/user/repository/firestore/firestore-user.repository';

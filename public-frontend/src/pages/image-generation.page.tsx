@@ -35,7 +35,7 @@ export const ImageGenerationPage = () => {
   useEffect(() => {
     if (userImages) {
       setDisplayedImage(
-        userImages?.find((image) => image.selected) ?? userImages[0]
+        userImages?.find((image) => image.isPromoted()) ?? userImages[0]
       );
     }
   }, [userImages]);

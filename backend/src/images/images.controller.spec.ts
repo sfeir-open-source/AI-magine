@@ -1,7 +1,7 @@
 import { ImagesService } from '@/images/images.service';
 import { ImagesController } from '@/images/images.controller';
 import { Image } from '@/images/domain';
-import { expect, Mock } from 'vitest';
+import { Mock } from 'vitest';
 import { ImageWithPromptTextAndAuthorDto } from '@/images/dto/ImageWithPromptTextAndAuthor.dto';
 
 describe('ImagesController', () => {

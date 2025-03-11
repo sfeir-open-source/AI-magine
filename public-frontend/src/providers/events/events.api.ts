@@ -6,6 +6,7 @@ import {
   EventRepository,
 } from '@/src/domain/EventRepository';
 import { Image } from '@/src/domain/Image';
+import { ImageWithPromptTextAndAuthorDto } from '@/src/providers/events/dto/ImageWithPromptTextAndAuthor.dto';
 
 class EventsApi implements EventRepository {
   private http: AxiosInstance;
@@ -111,6 +112,26 @@ class EventsApi implements EventRepository {
       throw new Error(
         `Failed to retrieve event with id ${eventId} : ${(e as Error).message}`
       );
+    }
+  }
+
+  async getPromotedImagesForEvent(eventId: string) {
+    try {
+      const response = await this.http.get<
+        { id: string; prompt: string; url: string; author: string }[]
+      >(`/events/${eventId}/images/promoted`);
+
+      return response.data.map(
+        (element) =>
+          new ImageWithPromptTextAndAuthorDto(
+            element.id,
+            element.url,
+            element.prompt,
+            element.author
+          )
+      );
+    } catch {
+      throw new Error('Failed to get promoted images for event');
     }
   }
 

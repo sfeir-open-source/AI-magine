@@ -46,6 +46,8 @@ import { SqliteImagesModule } from '@/images/repository/sqlite/sqlite-images.mod
     SfeirEventService,
     PromptService,
     ImageGenerationEngine,
+    FirestoreClient,
+    SQLiteClient,
     {
       provide: IMAGES_STORAGE,
       inject: [ConfigurationService],

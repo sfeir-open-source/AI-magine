@@ -1,7 +1,7 @@
 import { FirestoreClient } from '@/config/firestore-client';
 import { CollectionReference } from '@google-cloud/firestore';
 import { FirestorePromptRepository } from '@/prompt/repository/firestore/firestore-prompt.repository';
-import { expect, Mock } from 'vitest';
+import { Mock } from 'vitest';
 import { Prompt } from '@/prompt/domain/prompt.domain';
 
 describe('FirestorePromptRepository', () => {

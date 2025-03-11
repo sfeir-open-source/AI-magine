@@ -54,6 +54,7 @@ jobs:
           service: "aimagine-sfeirlille-backend"
           region: ${{ env.REGION }}
           image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-backend:${{ github.sha }}
+          flags: '--service-acount="aimagine-sfeirlille@lil-onboard-gcp.iam.gserviceaccount.com"'            
           env_vars: |
             HOST=${{ vars.BACKEND_HOST }}
             SWAGGER_BASE_PATH=${{ vars.BACKEND_SWAGGER_BASE_PATH }}

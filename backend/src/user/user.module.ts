@@ -1,31 +1,32 @@
 import { Module } from '@nestjs/common';
 import { UserService } from '@/user/user.service';
-import { SQLiteClient } from '@/config/sqlite-client';
 import { USER_REPOSITORY } from '@/user/domain';
-import { SqliteUserRepository } from '@/user/sqlite.user.repository';
-import { FirestoreUserRepository } from '@/user/firestore.user.repository';
-import { FirestoreClient } from '@/config/firestore-client';
+import { SqliteUserRepository } from '@/user/repository/sqlite/sqlite-user.repository';
+import { FirestoreUserRepository } from '@/user/repository/firestore/firestore-user.repository';
 import { ConfigurationService } from '@/configuration/configuration.service';
 import { UserController } from '@/user/user.controller';
 import { EncryptionService } from './encryption/encryption.service';
+import { FirestoreUserModule } from '@/user/repository/firestore/firestore-user.module';
+import { SqliteUserModule } from '@/user/repository/sqlite/sqlite-user.module';
 
 @Module({
+  imports: [FirestoreUserModule, SqliteUserModule],
   providers: [
     EncryptionService,
     UserService,
-    SQLiteClient,
-    FirestoreClient,
     {
       provide: USER_REPOSITORY,
-      inject: [ConfigurationService, FirestoreClient, SQLiteClient],
+      inject: [
+        ConfigurationService,
+        FirestoreUserRepository,
+        SqliteUserRepository,
+      ],
       useFactory: (
         configurationService: ConfigurationService,
-        firestoreClient: FirestoreClient,
-        sqliteClient: SQLiteClient
+        firestoreRepo: FirestoreUserRepository,
+        sqliteRepo: SqliteUserRepository
       ) =>
-        configurationService.getFirestoreEnabled()
-          ? new FirestoreUserRepository(firestoreClient)
-          : new SqliteUserRepository(sqliteClient),
+        configurationService.getFirestoreEnabled() ? firestoreRepo : sqliteRepo,
     },
   ],
   exports: [UserService],

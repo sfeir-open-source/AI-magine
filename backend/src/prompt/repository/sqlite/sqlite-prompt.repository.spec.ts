@@ -1,5 +1,5 @@
 import { SQLiteClient } from '@/config/sqlite-client';
-import { SqlitePromptRepository } from '@/prompt/sqlite.prompt.repository';
+import { SqlitePromptRepository } from '@/prompt/repository/sqlite/sqlite-prompt.repository';
 import { Prompt } from '@/prompt/domain/prompt.domain';
 import { ConfigurationService } from '@/configuration/configuration.service';
 

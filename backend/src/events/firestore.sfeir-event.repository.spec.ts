@@ -38,8 +38,8 @@ describe('FirestoreSfeirEventRepository', () => {
   it('should retrieve all Sfeir events', async () => {
     const mockData = {
       name: 'Event1',
-      startDate: '2023-10-10T10:00:00Z',
-      endDate: '2023-10-11T10:00:00Z',
+      startDate: { _seconds: 1696540800 },
+      endDate: { _seconds: 1696627200 },
     };
     const mockDocs = [
       {
@@ -58,8 +58,8 @@ describe('FirestoreSfeirEventRepository', () => {
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe('1');
     expect(result[0].name).toBe('Event1');
-    expect(result[0].startDate).toEqual(new Date('2023-10-10T10:00:00Z'));
-    expect(result[0].endDate).toEqual(new Date('2023-10-11T10:00:00Z'));
+    expect(result[0].startDate).toEqual(new Date('2023-10-05T21:20:00.000Z'));
+    expect(result[0].endDate).toEqual(new Date('2023-10-06T21:20:00.000Z'));
   });
 
   it('should save a Sfeir event', async () => {

@@ -2,56 +2,54 @@ import { ImagesService } from '@/images/images.service';
 import { ImagesRepository } from '@/images/domain/images.repository';
 import { Image } from '@/images/domain';
 import { Mock } from 'vitest';
+import { ImageWithPromptTextAndAuthorDto } from '@/images/dto/ImageWithPromptTextAndAuthor.dto';
 
-const mockImageRepository = {
-  getImageByPromptId: vi.fn(),
-  saveImage: vi.fn(),
-  getImageByEventIdAndUserId: vi.fn(),
-};
 vi.mock('nanoid', () => ({
   nanoid: () => 'mocked-nanoid',
 }));
 
 describe('ImagesService', () => {
   let imagesService: ImagesService;
+  let mockImageRepository: ImagesRepository;
 
   beforeEach(() => {
-    vi.resetAllMocks();
+    mockImageRepository = {
+      saveImage: vi.fn(),
+      getImageByEventIdAndUserId: vi.fn(),
+      getEventPromotedImages: vi.fn(),
+    };
+
     imagesService = new ImagesService(
       mockImageRepository as unknown as ImagesRepository
     );
   });
 
-  describe('getImageByPromptId', () => {
-    it('should return an image by promptId', async () => {
-      const promptId = 'prompt123';
-      const mockImage = Image.from(
-        'id123',
-        'http://example.com/image.png',
-        promptId,
-        new Date(),
-        false
+  describe('getEventPromotedImages', () => {
+    it('should return event promoted images', async () => {
+      const eventId = 'event-id';
+
+      const fakePromotedImages = [
+        new ImageWithPromptTextAndAuthorDto({
+          id: '1',
+          author: 'test',
+          createdAt: new Date(),
+          prompt: 'test prompt',
+          promptId: '1',
+          selected: false,
+          url: '',
+        }),
+      ];
+
+      (mockImageRepository.getEventPromotedImages as Mock).mockResolvedValue(
+        fakePromotedImages
       );
-      mockImageRepository.getImageByPromptId.mockResolvedValue(mockImage);
 
-      const result = await imagesService.getImageByPromptId(promptId);
+      const result = await imagesService.getEventPromotedImages(eventId);
 
-      expect(mockImageRepository.getImageByPromptId).toHaveBeenCalledWith(
-        promptId
+      expect(mockImageRepository.getEventPromotedImages).toHaveBeenCalledWith(
+        eventId
       );
-      expect(result).toEqual(mockImage);
-    });
-
-    it('should return undefined if no image is found', async () => {
-      const promptId = 'nonexistent';
-      mockImageRepository.getImageByPromptId.mockResolvedValue(undefined);
-
-      const result = await imagesService.getImageByPromptId(promptId);
-
-      expect(mockImageRepository.getImageByPromptId).toHaveBeenCalledWith(
-        promptId
-      );
-      expect(result).toBeUndefined();
+      expect(result).toEqual(fakePromotedImages);
     });
   });
 
@@ -61,7 +59,7 @@ describe('ImagesService', () => {
       const imageUrl = 'http://example.com/image2.png';
 
       const mockSavedImage = Image.create(imageUrl, promptId);
-      mockImageRepository.saveImage.mockResolvedValue(mockSavedImage);
+      (mockImageRepository.saveImage as Mock).mockResolvedValue(mockSavedImage);
 
       const result = await imagesService.saveImage(promptId, imageUrl);
 

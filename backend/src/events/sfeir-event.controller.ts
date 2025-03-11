@@ -31,6 +31,7 @@ export class SfeirEventController {
   })
   async getSfeirEvents(): Promise<GetSfeirEventDto[]> {
     const storedEvents = await this.sfeirEventService.getSfeirEvents();
+
     return storedEvents.map((storedEvent) =>
       SfeirEventMappers.fromDomainToDTO(storedEvent)
     );

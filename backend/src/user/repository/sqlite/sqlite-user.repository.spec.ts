@@ -1,5 +1,5 @@
 import { SQLiteClient } from '@/config/sqlite-client';
-import { SqliteUserRepository } from '@/user/sqlite.user.repository';
+import { SqliteUserRepository } from '@/user/repository/sqlite/sqlite-user.repository';
 import { User } from '@/user/domain';
 import { ConfigurationService } from '@/configuration/configuration.service';
 

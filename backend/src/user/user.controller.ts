@@ -1,9 +1,18 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from '@/user/dto/create-user.dto';
 import { User } from '@/user/domain';
 import { UserService } from '@/user/user.service';
 import { Response } from 'express';
+import { RemainingPromptsDto } from '@/user/dto/remaining-prompts.dto';
 
 @Controller('v1/users')
 @ApiTags('users')
@@ -38,5 +47,21 @@ export class UserController {
     }
 
     return response.status(HttpStatus.OK).json(existingUser);
+  }
+
+  @Get(':userId/events/:eventId/prompts/remaining')
+  @ApiOperation({
+    summary: 'Get the remaining number of prompts for a user and an event',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'The remaining number of prompts for a user and an event',
+    type: RemainingPromptsDto,
+  })
+  async getRemainingPrompts(
+    @Param('userId') userId: string,
+    @Param('eventId') eventId: string
+  ) {
+    return this.userService.getUserRemainingPromptsByEvent(userId, eventId);
   }
 }

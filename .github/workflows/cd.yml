@@ -2,9 +2,10 @@ name: CD
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   PROJECT_ID: ${{ vars.CI_GCP_PROJECT_ID }}
@@ -43,18 +44,13 @@ jobs:
           docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-backend:${{ github.sha }} -f backend/Dockerfile ./backend
           docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-backend:${{ github.sha }}
 
-#      - name: Build and Push Public Frontend
-#        run: |
-#          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:${{ github.sha }} -f public-frontend/Dockerfile .
-#          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:${{ github.sha }}
-
       - name: Deploy Backend to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: "aimagine-sfeirlille-backend"
           region: ${{ env.REGION }}
           image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-backend:${{ github.sha }}
-          flags: '--service-account="aimagine-sfeirlille@lil-onboard-gcp.iam.gserviceaccount.com"'            
+          flags: '--service-account="aimagine-sfeirlille@lil-onboard-gcp.iam.gserviceaccount.com"'
           env_vars: |
             HOST=${{ vars.BACKEND_HOST }}
             SWAGGER_BASE_PATH=${{ vars.BACKEND_SWAGGER_BASE_PATH }}
@@ -69,12 +65,17 @@ jobs:
             BUCKET_GCP_PROJECT_ID=${{ vars.BACKEND_BUCKET_GCP_PROJECT_ID }}
             BUCKET_ENABLED=${{ vars.BACKEND_BUCKET_ENABLED }}
 
+      - name: Build Frontend
+        run: |
+          echo "VITE_BACKEND_API_URL=${{ vars.PUBLIC_FRONTEND_VITE_BACKEND_API_URL }}" >> ./public-frontend/.env.production
+          npm i
+          npm run build -w public-frontend
+          rm ./public-frontend/.env.production
 
-#      - name: Deploy Frontend to Cloud Run
-#        uses: google-github-actions/deploy-cloudrun@v2
-#        with:
-#          service: frontend
-#          region: ${{ env.REGION }}
-#          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:${{ github.sha }}
-#          env_vars:
-#            VITE_BACKEND_API_URL=${{ vars.PUBLIC_FRONTEND_VITE_BACKEND_API_URL }}
+      - name: Deploy Public Frontend to Cloud Storage
+        uses: google-github-actions/upload-cloud-storage@v2
+        with:
+          path: ./public-frontend/dist
+          project_id: ${{ env.PROJECT_ID }}
+          destination: 'aimagine-public-frontend'
+          parent: false

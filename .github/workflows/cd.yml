@@ -1,0 +1,81 @@
+name: CD
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PROJECT_ID: ${{ vars.CI_GCP_PROJECT_ID }}
+  REGION: ${{ vars.CI_GCP_PROJECT_REGION }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.CI_SERVICE_ACCOUNT_CONTENT }}
+          service_account: ${{ vars.CI_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+      - name: Create credentials
+        run: echo ${{ secrets.BACKEND_SERVICE_ACCOUNT_CONTENT }} >> ./backend/credentials.json
+
+      - name: Build and Push Backend
+        run: |
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-backend:${{ github.sha }} -f backend/Dockerfile ./backend
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-backend:${{ github.sha }}
+
+      - name: Deploy Backend to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: "aimagine-sfeirlille-backend"
+          region: ${{ env.REGION }}
+          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-backend:${{ github.sha }}
+          flags: '--service-account="aimagine-sfeirlille@lil-onboard-gcp.iam.gserviceaccount.com"'
+          env_vars: |
+            HOST=${{ vars.BACKEND_HOST }}
+            SWAGGER_BASE_PATH=${{ vars.BACKEND_SWAGGER_BASE_PATH }}
+            CORS_ALLOWED_ORIGINS=${{ vars.BACKEND_CORS_ALLOWED_ORIGINS }}
+            SQLITE_DB_PATH=${{ vars.BACKEND_SQLITE_DB_PATH }}
+            EMAIL_HASH_SECRET=${{ secrets.BACKEND_EMAIL_HASH_SECRET }}
+            IMAGEN_GCP_PROJECT_ID=${{ vars.BACKEND_IMAGEN_GCP_PROJECT_ID }}
+            IMAGEN_REGION=${{ vars.BACKEND_IMAGEN_REGION }}
+            IMAGEN_ENABLED=${{ vars.BACKEND_IMAGEN_ENABLED }}
+            FIRESTORE_GCP_PROJECT_ID=${{ vars.BACKEND_FIRESTORE_GCP_PROJECT_ID }}
+            FIRESTORE_ENABLED=${{ vars.BACKEND_FIRESTORE_ENABLED }}
+            BUCKET_GCP_PROJECT_ID=${{ vars.BACKEND_BUCKET_GCP_PROJECT_ID }}
+            BUCKET_ENABLED=${{ vars.BACKEND_BUCKET_ENABLED }}
+
+      - name: Build Frontend
+        run: |
+          echo "VITE_BACKEND_API_URL=${{ vars.PUBLIC_FRONTEND_VITE_BACKEND_API_URL }}" >> ./public-frontend/.env.production
+          npm i
+          npm run build -w public-frontend
+          rm ./public-frontend/.env.production
+
+      - name: Deploy Public Frontend to Cloud Storage
+        uses: google-github-actions/upload-cloud-storage@v2
+        with:
+          path: ./public-frontend/dist
+          project_id: ${{ env.PROJECT_ID }}
+          destination: 'aimagine-public-frontend'
+          parent: false

@@ -1,8 +1,17 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { useEventPromotedImages } from '@/src/hooks/useEventPromotedImages';
+import { useEffect } from 'react';
 
 export function EventImageGallery() {
-  const { data: galleryItems } = useEventPromotedImages();
+  const { data: galleryItems, refetch } = useEventPromotedImages();
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      refetch();
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [refetch]);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

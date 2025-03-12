@@ -69,7 +69,7 @@ jobs:
         run: |
           echo "VITE_BACKEND_API_URL=${{ vars.PUBLIC_FRONTEND_VITE_BACKEND_API_URL }}" >> ./public-frontend/.env.production
           npm i
-          npm run build -w public-frontend
+          npm run build -w public-frontend -- --mode production
           rm ./public-frontend/.env.production
 
       - name: Build and Push Frontend

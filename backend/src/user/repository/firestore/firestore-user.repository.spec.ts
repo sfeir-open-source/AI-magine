@@ -190,6 +190,12 @@ describe('FirestoreUserRepository', () => {
   });
 
   describe('getUsersById', () => {
+    it('returns empty array if no user ids provided', async () => {
+      const result = await firestoreUserRepository.getUsersById([]);
+
+      expect(result).toEqual([]);
+    });
+
     it('returns empty array if no users found', async () => {
       (mockFirestoreClient.getAll as Mock).mockResolvedValue([]);
 

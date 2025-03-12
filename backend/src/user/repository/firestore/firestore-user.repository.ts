@@ -65,6 +65,8 @@ export class FirestoreUserRepository implements IFirestoreUserRepository {
   }
 
   async getUsersById(userIds: string[]): Promise<User[]> {
+    if (userIds.length === 0) return [];
+
     const docs = userIds.map((id) => this.userCollection.doc(id));
     const userDocuments = await this.firestoreClient.getAll(docs);
 

@@ -7,7 +7,7 @@ import { userEvent } from '@testing-library/user-event';
 describe('UserImages', () => {
   const fakeImages = [
     new Image('1', 'test prompt', 'http://foo.com', false, ''),
-    new Image('2', 'test prompt 2', 'http://foo.com', false, ''),
+    new Image('2', 'test prompt 2', 'http://foo.com', true, ''),
   ];
 
   it('displays the number of user images', () => {
@@ -29,6 +29,12 @@ describe('UserImages', () => {
     expect(
       screen.getByText(i18n.t('no-images-to-display'))
     ).toBeInTheDocument();
+  });
+
+  it('displays promote icon if image is promoted', () => {
+    render(<UserImages images={fakeImages} onSelect={vi.fn()} />);
+
+    expect(screen.getByTestId('promote-icon')).toBeInTheDocument();
   });
 
   it('calls onSelect when clicking on an image', async () => {

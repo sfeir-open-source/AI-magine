@@ -1,16 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useState } from 'react';
-import {
-  ArrowBigDown,
-  ImageOff,
-  MoreHorizontal,
-  Star,
-  ZoomIn,
-} from 'lucide-react';
+import { ArrowBigDown, ImageOff, MoreHorizontal, ZoomIn } from 'lucide-react';
 import { Lightbox } from '@/src/components/lightbox/lightbox';
 import { Image } from '@/src/domain/Image';
-import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import {
   DropdownMenu,
@@ -19,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useImagePromotionMutation } from '@/src/hooks/useImagePromotionMutation';
+import { PromoteIcon } from '@/src/components/promote-icon/promote-icon';
 
 export function DisplayedImage({ image }: { image?: Image }) {
   const { t } = useTranslation();
@@ -52,12 +46,7 @@ export function DisplayedImage({ image }: { image?: Image }) {
                   className="absolute top-4 right-4 hover:bg-secondary-light"
                   onClick={() => onClickPromote(image)}
                 >
-                  <Star
-                    className={cn(
-                      'h-4 w-4 mr-2',
-                      image.isPromoted() && 'fill-yellow-300 text-yellow-300'
-                    )}
-                  />
+                  <PromoteIcon selected={image?.isPromoted()} />
                   {t('promote')}
                 </Button>
               </>

@@ -65,16 +65,9 @@ jobs:
             BUCKET_GCP_PROJECT_ID=${{ vars.BACKEND_BUCKET_GCP_PROJECT_ID }}
             BUCKET_ENABLED=${{ vars.BACKEND_BUCKET_ENABLED }}
 
-      - name: Build Public Frontend
-        run: |
-          echo "VITE_BACKEND_API_URL=${{ vars.PUBLIC_FRONTEND_VITE_BACKEND_API_URL }}" >> ./public-frontend/.env.production
-          npm i
-          npm run build -w public-frontend -- --mode production
-          rm ./public-frontend/.env.production
-
       - name: Build and Push Frontend
         run: |
-          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:${{ github.sha }} -f public-frontend/Dockerfile .
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:${{ github.sha }} -f public-frontend/Dockerfile --build-arg VITE_BACKEND_API_URL=${{ vars.PUBLIC_FRONTEND_VITE_BACKEND_API_URL }} .
           docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:${{ github.sha }}
 
       - name: Deploy Public Frontend to Cloud Run

@@ -65,17 +65,22 @@ jobs:
             BUCKET_GCP_PROJECT_ID=${{ vars.BACKEND_BUCKET_GCP_PROJECT_ID }}
             BUCKET_ENABLED=${{ vars.BACKEND_BUCKET_ENABLED }}
 
-      - name: Build Frontend
+      - name: Build Public Frontend
         run: |
           echo "VITE_BACKEND_API_URL=${{ vars.PUBLIC_FRONTEND_VITE_BACKEND_API_URL }}" >> ./public-frontend/.env.production
           npm i
           npm run build -w public-frontend
           rm ./public-frontend/.env.production
 
-      - name: Deploy Public Frontend to Cloud Storage
-        uses: google-github-actions/upload-cloud-storage@v2
+      - name: Build and Push Frontend
+        run: |
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:${{ github.sha }} -f public-frontend/Dockerfile .
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:${{ github.sha }}
+
+      - name: Deploy Public Frontend to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
         with:
-          path: ./public-frontend/dist
-          project_id: ${{ env.PROJECT_ID }}
-          destination: 'aimagine-public-frontend'
-          parent: false
+          service: "aimagine-sfeirlille-public-frontend"
+          region: ${{ env.REGION }}
+          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:${{ github.sha }}
+          flags: '--service-account="aimagine-sfeirlille@lil-onboard-gcp.iam.gserviceaccount.com" --allow-unauthenticated'

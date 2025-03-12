@@ -120,8 +120,8 @@ describe('PromptService', () => {
       expect(userServiceMock.checkIfExists).toHaveBeenCalled();
       expect(eventServiceMock.getSfeirEvent).toHaveBeenCalled();
       expect(promptRepositoryMock.countByEventIdAndUserId).toHaveBeenCalledWith(
-        'existingUserId',
-        'event1'
+        'event1',
+        'existingUserId'
       );
       expect(promptRepositoryMock.save).toHaveBeenCalledWith(expectedPrompt);
     });
@@ -147,8 +147,8 @@ describe('PromptService', () => {
       expect(userServiceMock.checkIfExists).toHaveBeenCalled();
       expect(eventServiceMock.getSfeirEvent).toHaveBeenCalled();
       expect(promptRepositoryMock.countByEventIdAndUserId).toHaveBeenCalledWith(
-        'existingUserId',
-        'event1'
+        'event1',
+        'existingUserId'
       );
     });
   });

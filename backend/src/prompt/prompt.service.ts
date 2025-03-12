@@ -45,10 +45,12 @@ export class PromptService {
     }
 
     const userPromptCountOnEvent =
-      await this.promptRepository.countByEventIdAndUserId(userId, eventId);
+      await this.promptRepository.countByEventIdAndUserId(eventId, userId);
 
     if (userPromptCountOnEvent >= event.allowedPrompts) {
-      return Promise.reject('User has reached maximum number of prompts');
+      throw new BadRequestException(
+        'User has reached maximum number of prompts'
+      );
     }
 
     const newPrompt = await this.promptRepository.save(

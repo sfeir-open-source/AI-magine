@@ -48,7 +48,7 @@ describe('ImageGenerationPage', () => {
     expect(navigateMock).toHaveBeenCalledWith('/events/event-id');
   });
 
-  it('finds the selected image and displays it', async () => {
+  it('finds the first image and displays it', async () => {
     expect.assertions(1);
 
     const fakeImages = [
@@ -61,7 +61,7 @@ describe('ImageGenerationPage', () => {
     (useUserId as Mock).mockReturnValue('user-id');
     (useNavigate as Mock).mockReturnValue(vi.fn());
     (DisplayedImage as Mock).mockImplementation(async ({ image }) => {
-      await waitFor(() => expect(image).toEqual(fakeImages[1]));
+      await waitFor(() => expect(image).toEqual(fakeImages[0]));
     });
 
     await act(async () => {

@@ -14,7 +14,7 @@ export class SqliteUserRepository
                   (
                       id                 TEXT PRIMARY KEY,
                       nickname           TEXT    NOT NULL,
-                      email              TEXT    NOT NULL,
+                      hashedEmail              TEXT    NOT NULL,
                       browserFingerprint TEXT    NOT NULL,
                       allowContact       BOOLEAN NOT NULL DEFAULT 1
                   );`,
@@ -30,12 +30,12 @@ export class SqliteUserRepository
   async getUserByEmail(email: string): Promise<User | undefined> {
     const storedUser = await this.sqliteClient.get<{
       id: string;
-      email: string;
+      hashedEmail: string;
       nickname: string;
       browserFingerprint: string;
       allowContact: boolean;
     }>({
-      sql: `SELECT id, email, nickname, browserFingerprint, allowContact
+      sql: `SELECT id, hashedEmail, nickname, browserFingerprint, allowContact
             FROM users
             WHERE email = ?1;`,
       params: {
@@ -47,7 +47,7 @@ export class SqliteUserRepository
 
     return User.from({
       id: storedUser.id,
-      email: storedUser.email,
+      email: storedUser.hashedEmail,
       nickname: storedUser.nickname,
       browserFingerprint: storedUser.browserFingerprint,
       allowContact: storedUser.allowContact,
@@ -56,7 +56,7 @@ export class SqliteUserRepository
 
   async save(user: User): Promise<User> {
     await this.sqliteClient.run({
-      sql: `INSERT INTO users (id, nickname, email, browserFingerprint, allowContact)
+      sql: `INSERT INTO users (id, nickname, hashedEmail, browserFingerprint, allowContact)
             VALUES (?1, ?2, ?3, ?4, ?5);`,
       params: {
         1: user.id,

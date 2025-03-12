@@ -27,7 +27,7 @@ describe('SqliteUserRepository', () => {
     it('should return the user ID when the email exists in the database', async () => {
       vi.spyOn(sqliteClient, 'get').mockResolvedValue({
         id: mockUser.id,
-        email: mockUser.email,
+        hashedEmail: mockUser.email,
         nickname: mockUser.email,
         browserFingerprint: mockUser.browserFingerprint,
         allowContact: mockUser.allowContact,
@@ -86,7 +86,7 @@ describe('SqliteUserRepository', () => {
     it('should return the user when the email exists in the database', async () => {
       vi.spyOn(sqliteClient, 'get').mockResolvedValue({
         id: mockUser.id,
-        email: mockUser.email,
+        hashedEmail: mockUser.email,
         nickname: mockUser.nickname,
         browserFingerprint: mockUser.browserFingerprint,
         allowContact: mockUser.allowContact,

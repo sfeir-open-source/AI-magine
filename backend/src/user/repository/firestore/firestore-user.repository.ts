@@ -50,7 +50,12 @@ export class FirestoreUserRepository implements IFirestoreUserRepository {
 
   async save(user: User): Promise<User> {
     const { id, ...data } = user;
-    await this.userCollection.doc(id).set(data);
+    await this.userCollection.doc(id).set({
+      nickname: data.nickname,
+      hashedEmail: data.email,
+      allowContact: data.allowContact,
+      browserFingerprint: data.browserFingerprint,
+    });
     return user;
   }
 

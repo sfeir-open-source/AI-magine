@@ -3,6 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router';
 import { Image } from '@/src/domain/Image';
 
+export const byDateSelector = (data: Image[]) => {
+  return data.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+};
+
 export const getUserImagesQueryKey = (eventId?: string, userId?: string) => [
   'events',
   eventId,
@@ -11,7 +17,12 @@ export const getUserImagesQueryKey = (eventId?: string, userId?: string) => [
   'images',
 ];
 
-export const useUserImages = (userId: string) => {
+type UseUserImagesOptions = { select?: (data: Image[]) => Image[] };
+
+export const useUserImages = (
+  userId: string,
+  options?: UseUserImagesOptions
+) => {
   const { eventId } = useParams<{ eventId: string }>();
 
   const eventsProvider = useEventsProvider();
@@ -24,5 +35,6 @@ export const useUserImages = (userId: string) => {
       return eventsProvider.getImagesForUser(eventId, userId);
     },
     enabled: !!eventId && !!userId,
+    select: options?.select,
   });
 };

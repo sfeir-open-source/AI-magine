@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { DisplayedImage } from '@/src/components/displayed-image/displayed-image';
 import { UserImages } from '@/src/components/user-images/user-images';
 import { PromptEditor } from '@/src/components/prompt-editor/prompt-editor';
-import { useUserImages } from '@/src/hooks/useUserImages';
+import { byDateSelector, useUserImages } from '@/src/hooks/useUserImages';
 import { Image } from '@/src/domain/Image';
 import { useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
@@ -28,15 +28,15 @@ export const ImageGenerationPage = () => {
     }
   }, [navigate, eventId, userId, t]);
 
-  const { data: userImages } = useUserImages(userId ?? '');
+  const { data: userImages } = useUserImages(userId ?? '', {
+    select: byDateSelector,
+  });
 
   const [displayedImage, setDisplayedImage] = useState<Image | undefined>();
 
   useEffect(() => {
     if (userImages) {
-      setDisplayedImage(
-        userImages?.find((image) => image.isPromoted()) ?? userImages[0]
-      );
+      setDisplayedImage(userImages[0]);
     }
   }, [userImages]);
 

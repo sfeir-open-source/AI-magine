@@ -2,6 +2,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
 import { Image } from '@/src/domain/Image';
 import { useTranslation } from 'react-i18next';
+import { PromoteIcon } from '@/src/components/promote-icon/promote-icon';
 
 type UserImagesProps = {
   images: Image[];
@@ -41,9 +42,15 @@ export function UserImages({
                     <img
                       src={image.url || '/placeholder.svg'}
                       alt={image.prompt}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full absolute inset-0 object-cover"
                       style={{ objectPosition: 'center' }}
                     />
+                    {image.isPromoted() && (
+                      <PromoteIcon
+                        selected={image.isPromoted()}
+                        className="absolute top-3 right-1"
+                      />
+                    )}
                   </div>
                 </CardContent>
               </Card>

@@ -72,6 +72,26 @@ describe('PromptService', () => {
       ).rejects.toThrow(BadRequestException);
     });
 
+    it('should throw BadRequestException if event is not active', async () => {
+      const mockedEvent = SfeirEvent.from(
+        'event1',
+        'event',
+        3,
+        new Date(Date.now() + 1000),
+        new Date(Date.now() + 2000)
+      );
+      vi.mocked(userServiceMock.checkIfExists).mockResolvedValue(true);
+      vi.mocked(eventServiceMock.getSfeirEvent).mockResolvedValue(mockedEvent);
+
+      await expect(() =>
+        promptService.createPrompt({
+          prompt: 'test',
+          eventId: 'test-event-id',
+          userId: 'unknown',
+        })
+      ).rejects.toThrow(BadRequestException);
+    });
+
     it('should create a new prompt if all conditions are met', async () => {
       const dto: CreatePromptBodyDto & { eventId: string } = {
         eventId: 'event1',

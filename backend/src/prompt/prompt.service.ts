@@ -40,6 +40,10 @@ export class PromptService {
       throw new BadRequestException('Event does not exists');
     }
 
+    if (!event.isActive()) {
+      throw new BadRequestException('Event is not active');
+    }
+
     const userPromptCountOnEvent =
       await this.promptRepository.countByEventIdAndUserId(userId, eventId);
 

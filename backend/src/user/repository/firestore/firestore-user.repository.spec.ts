@@ -84,7 +84,7 @@ describe('FirestoreUserRepository', () => {
 
       expect(mockUserCollection.doc).toHaveBeenCalledWith(user.id);
       expect(mockSet).toHaveBeenCalledWith({
-        email: user.email,
+        hashedEmail: user.email,
         browserFingerprint: user.browserFingerprint,
         nickname: user.nickname,
         allowContact: user.allowContact,

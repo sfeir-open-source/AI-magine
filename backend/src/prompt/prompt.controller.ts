@@ -28,6 +28,10 @@ export class PromptController {
     description: 'The prompt has been successfully created.',
     type: CreatePromptBodyDto,
   })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'The prompt could not be created.',
+  })
   async createPrompt(
     @Param('eventId') eventId: string,
     @Body() createDto: CreatePromptBodyDto

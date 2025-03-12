@@ -19,8 +19,8 @@ export class FirestoreSfeirEventRepository implements SfeirEventRepository {
         storedEvent.id,
         storedEvent.get('name'),
         storedEvent.get('allowedPrompts'),
-        new Date(storedEvent.get('startDate')),
-        new Date(storedEvent.get('endDate'))
+        new Date(storedEvent.get('startDate')._seconds * 1000),
+        new Date(storedEvent.get('endDate')._seconds * 1000)
       )
     );
   }

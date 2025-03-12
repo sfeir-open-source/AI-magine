@@ -1,4 +1,3 @@
-import { vi } from 'vitest';
 import { CreatePromptBodyDto, PromptRepository } from '@/prompt/domain';
 import { UserService } from '@/user/user.service';
 import { Prompt } from '@/prompt/domain/prompt.domain';

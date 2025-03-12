@@ -16,7 +16,7 @@
   --foreground: hsl(246.3 11.2% 33.1%);
   --card: hsl(0 0% 100%);
   --card-foreground: hsl(246.3 11.2% 33.1%);
-  --popover: hsl(0 0% 100%;);
+  --popover: hsl(0 0% 100%);
   --popover-foreground: hsl(246.3 11.2% 33.1%);
   --primary: hsl(238.5 50.6% 31.8%);
   --primary-foreground: hsl(0 0% 98%);
@@ -109,4 +109,15 @@ html,
 body,
 #root {
   @apply w-full h-full;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }

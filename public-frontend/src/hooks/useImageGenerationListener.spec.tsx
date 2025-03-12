@@ -3,6 +3,14 @@ import { useImageGenerationListener } from '@/src/hooks/useImageGenerationListen
 import { EventsContext } from '@/src/providers/events/events.context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { EventRepository } from '@/src/domain/EventRepository';
+import { toast } from 'sonner';
+
+vi.mock('sonner', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
 
 describe('useImageGenerationListener', () => {
   const fakeUserId = 'fake-user';
@@ -209,8 +217,51 @@ describe('useImageGenerationListener', () => {
     result.current.listen('prompt-id');
 
     await waitFor(() => expect(result.current.progress).toEqual(100));
-
     await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalled());
     await waitFor(() => expect(result.current.progress).toEqual(0));
+    expect(toast.success).toHaveBeenCalled();
+  });
+
+  it('returns a listen function that updates progress for error event', async () => {
+    const listenForPromptGenerationEventMock = vi
+      .fn()
+      .mockImplementation(
+        (
+          _eventId: string,
+          _promptId: string,
+          onEvent: (evt: MessageEvent<string>) => void
+        ) => {
+          onEvent({
+            data: JSON.stringify({ type: 'error' }),
+          } as MessageEvent<string>);
+        }
+      );
+
+    const queryClient = new QueryClient();
+
+    const { result } = renderHook(
+      () => useImageGenerationListener(fakeUserId),
+      {
+        wrapper: ({ children }) => (
+          <EventsContext.Provider
+            value={
+              {
+                listenForPromptGenerationEvent:
+                  listenForPromptGenerationEventMock,
+              } as unknown as EventRepository
+            }
+          >
+            <QueryClientProvider client={queryClient}>
+              {children}
+            </QueryClientProvider>
+          </EventsContext.Provider>
+        ),
+      }
+    );
+
+    result.current.listen('prompt-id');
+
+    await waitFor(() => expect(result.current.progress).toEqual(0));
+    expect(toast.error).toHaveBeenCalled();
   });
 });

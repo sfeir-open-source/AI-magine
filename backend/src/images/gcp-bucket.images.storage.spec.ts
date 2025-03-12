@@ -1,4 +1,3 @@
-import { vi } from 'vitest';
 import { GCPBucketImagesStorage } from '@/images/gcp-bucket.images.storage';
 import { ConfigurationService } from '@/configuration/configuration.service';
 import { Bucket, Storage } from '@google-cloud/storage';

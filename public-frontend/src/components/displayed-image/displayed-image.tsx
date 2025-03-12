@@ -55,7 +55,7 @@ export function DisplayedImage({ image }: { image?: Image }) {
                   <Star
                     className={cn(
                       'h-4 w-4 mr-2',
-                      image?.selected && 'fill-yellow-300 text-yellow-300'
+                      image.isPromoted() && 'fill-yellow-300 text-yellow-300'
                     )}
                   />
                   {t('promote')}

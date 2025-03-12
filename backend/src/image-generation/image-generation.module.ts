@@ -7,20 +7,22 @@ import { SqliteImageGenerationStatusRepository } from '@/image-generation/sqlite
 import { SQLiteClient } from '@/config/sqlite-client';
 import { ImagesModule } from '@/images/images.module';
 import { IMAGES_REPOSITORY } from '@/images/domain/images.repository';
-import { SqliteImagesRepository } from '@/images/sqlite.images.repository';
+import { SqliteImagesRepository } from '@/images/repository/sqlite/sqlite-images.repository';
 import { ImagesService } from '@/images/images.service';
 import { ImagenImageGenerationClient } from '@/image-generation/imagen.image-generation-client';
 import { PicsumImageGenerationClient } from '@/image-generation/picsum.image-generation.client';
 import { FirestoreImageGenerationStatusRepository } from '@/image-generation/firestore.image-generation-status.repository';
-import { FirestoreImagesRepository } from '@/images/firestore.images.repository';
+import { FirestoreImagesRepository } from '@/images/repository/firestore/firestore-images.repository';
 import { FirestoreClient } from '@/config/firestore-client';
 import { IMAGES_STORAGE } from '@/images/domain/images.storage';
 import { GCPBucketImagesStorage } from '@/images/gcp-bucket.images.storage';
 import { FakeImagesStorage } from '@/images/fake.images.storage';
 import { ConfigurationService } from '@/configuration/configuration.service';
+import { FirestoreImagesModule } from '@/images/repository/firestore/firestore-images.module';
+import { SqliteImagesModule } from '@/images/repository/sqlite/sqlite-images.module';
 
 @Module({
-  imports: [ImagesModule],
+  imports: [ImagesModule, FirestoreImagesModule, SqliteImagesModule],
   providers: [
     ImageGenerationService,
     ImagesService,
@@ -56,15 +58,17 @@ import { ConfigurationService } from '@/configuration/configuration.service';
     },
     {
       provide: IMAGES_REPOSITORY,
-      inject: [ConfigurationService, FirestoreClient, SQLiteClient],
+      inject: [
+        ConfigurationService,
+        FirestoreImagesRepository,
+        SqliteImagesRepository,
+      ],
       useFactory: (
         configurationService: ConfigurationService,
-        firestoreClient: FirestoreClient,
-        sqliteClient: SQLiteClient
+        firestoreRepo: FirestoreImagesRepository,
+        sqliteRepo: SqliteImagesRepository
       ) =>
-        configurationService.getFirestoreEnabled()
-          ? new FirestoreImagesRepository(firestoreClient)
-          : new SqliteImagesRepository(sqliteClient),
+        configurationService.getFirestoreEnabled() ? firestoreRepo : sqliteRepo,
     },
     ImageGenerationEngine,
   ],

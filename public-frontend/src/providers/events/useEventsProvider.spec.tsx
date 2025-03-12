@@ -9,7 +9,9 @@ describe('useEventsProvider', () => {
 
     const { result } = renderHook(() => useEventsProvider(), {
       wrapper: ({ children }) => (
-        <EventsContext.Provider value={fakeProvider as EventRepository}>
+        <EventsContext.Provider
+          value={fakeProvider as unknown as EventRepository}
+        >
           {children}
         </EventsContext.Provider>
       ),

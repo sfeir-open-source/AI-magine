@@ -36,5 +36,7 @@
   "no-images-to-display": "No images to display",
   "write-prompt": "Write a new prompt",
   "edit-prompt": "Edit prompt",
-  "write-a-prompt-hint": "Write a prompt to generate an image"
+  "write-a-prompt-hint": "Write a prompt to generate an image",
+  "successfully-generated-image": "Image successfully generated !",
+  "failed-to-generate-image": "Failed to generate image"
 }

@@ -1,8 +1,7 @@
-import { Mock, vi } from 'vitest';
-
+import { Mock } from 'vitest';
 import type { CollectionReference } from '@google-cloud/firestore';
 import { FirestoreClient } from '@/config/firestore-client';
-import { FirestoreUserRepository } from '@/user/firestore.user.repository';
+import { FirestoreUserRepository } from '@/user/repository/firestore/firestore-user.repository';
 import { User } from '@/user/domain';
 
 vi.mock('@google-cloud/firestore', async () => ({
@@ -24,12 +23,13 @@ describe('FirestoreUserRepository', () => {
 
     mockFirestoreClient = {
       getCollection: vi.fn().mockReturnValue(mockUserCollection),
+      getAll: vi.fn(),
     } as unknown as FirestoreClient;
 
     firestoreUserRepository = new FirestoreUserRepository(mockFirestoreClient);
   });
 
-  describe('checkExists', () => {
+  describe('checkExistsById', () => {
     it('should return true if user exists in the collection', async () => {
       const mockDoc = { exists: true };
       (mockUserCollection.doc as Mock).mockReturnValueOnce({
@@ -125,6 +125,131 @@ describe('FirestoreUserRepository', () => {
         email
       );
       expect(userId).toBeUndefined();
+    });
+  });
+
+  describe('getUserByEmail', () => {
+    it('returns undefined if no user with the specified email exists', async () => {
+      (mockUserCollection.get as Mock).mockResolvedValue({
+        empty: true,
+      });
+
+      const fakeEmail = 'test@example.com';
+      const result = await firestoreUserRepository.getUserByEmail(fakeEmail);
+
+      expect(result).toBeUndefined();
+      expect(mockUserCollection.where).toHaveBeenCalledWith(
+        'email',
+        '==',
+        fakeEmail
+      );
+    });
+
+    it('returns found user for email', async () => {
+      const fakeEmail = 'test@example.com';
+
+      (mockUserCollection.get as Mock).mockResolvedValue({
+        empty: false,
+        docs: [
+          {
+            id: '1',
+            get: vi.fn((property: string) => {
+              switch (property) {
+                case 'email':
+                  return fakeEmail;
+                case 'nickname':
+                  return 'nickname';
+                case 'browserFingerprint':
+                  return 'fp';
+                case 'allowContact':
+                  return false;
+              }
+            }),
+          },
+        ],
+      });
+
+      const result = await firestoreUserRepository.getUserByEmail(fakeEmail);
+
+      expect(result).toEqual(
+        User.from({
+          id: '1',
+          email: fakeEmail,
+          nickname: 'nickname',
+          browserFingerprint: 'fp',
+          allowContact: false,
+        })
+      );
+
+      expect(mockUserCollection.where).toHaveBeenCalledWith(
+        'email',
+        '==',
+        fakeEmail
+      );
+    });
+  });
+
+  describe('getUsersById', () => {
+    it('returns empty array if no users found', async () => {
+      (mockFirestoreClient.getAll as Mock).mockResolvedValue([]);
+
+      const result = await firestoreUserRepository.getUsersById([
+        'user-id-1',
+        'user-id-2',
+      ]);
+
+      expect(mockUserCollection.doc).toHaveBeenCalledTimes(2);
+      expect(result).toEqual([]);
+    });
+
+    it('returns found users', async () => {
+      const getMock = (userId: string) =>
+        vi.fn((property: string) => {
+          switch (property) {
+            case 'hashedEmail':
+              return 'hashedEmail-' + userId;
+            case 'browserFingerprint':
+              return 'fp-' + userId;
+            case 'allowContact':
+              return false;
+            case 'nickname':
+              return 'nickname-' + userId;
+          }
+        });
+
+      (mockFirestoreClient.getAll as Mock).mockResolvedValue([
+        {
+          id: 'user-id-1',
+          get: getMock('user-id-1'),
+        },
+        {
+          id: 'user-id-2',
+          get: getMock('user-id-2'),
+        },
+      ]);
+
+      const result = await firestoreUserRepository.getUsersById([
+        'user-id-1',
+        'user-id-2',
+      ]);
+
+      expect(mockUserCollection.doc).toHaveBeenCalledTimes(2);
+      expect(result).toEqual([
+        User.from({
+          id: 'user-id-1',
+          browserFingerprint: 'fp-user-id-1',
+          email: 'hashedEmail-user-id-1',
+          allowContact: false,
+          nickname: 'nickname-user-id-1',
+        }),
+        User.from({
+          id: 'user-id-2',
+          browserFingerprint: 'fp-user-id-2',
+          email: 'hashedEmail-user-id-2',
+          allowContact: false,
+          nickname: 'nickname-user-id-2',
+        }),
+      ]);
     });
   });
 });

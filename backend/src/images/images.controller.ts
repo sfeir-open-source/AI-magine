@@ -2,13 +2,20 @@ import { Controller, Get, Param, Patch } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ImagesService } from '@/images/images.service';
 
-@Controller('/v1/events/:eventId/users/:userId/images')
+@Controller('/v1/events/:eventId')
 @ApiTags('images')
 export class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
 
-  @Get()
-  @ApiTags('images')
+  @Get('/images/promoted')
+  @ApiOperation({
+    summary: 'Get promoted images on specific event',
+  })
+  async getEventPromotedImages(@Param('eventId') eventId: string) {
+    return this.imagesService.getEventPromotedImages(eventId);
+  }
+
+  @Get('/users/:userId/images')
   @ApiOperation({
     summary: 'Get user images on specific event',
   })
@@ -19,7 +26,7 @@ export class ImagesController {
     return this.imagesService.getImagesByEventAndUser(eventId, userId);
   }
 
-  @Patch(':imageId/promote')
+  @Patch('/users/:userId/images/:imageId/promote')
   @ApiTags('images')
   @ApiOperation({
     summary: 'Promote image',

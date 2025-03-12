@@ -3,8 +3,12 @@ import { useParams } from 'react-router';
 import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { getUserImagesQueryKey } from '@/src/hooks/useUserImages';
+import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export const useImageGenerationListener = (userId: string) => {
+  const { t } = useTranslation();
+
   const { eventId } = useParams<{
     eventId: string;
   }>();
@@ -47,8 +51,15 @@ export const useImageGenerationListener = (userId: string) => {
                 queryKey: getUserImagesQueryKey(eventId, userId),
               });
 
+              toast.success(t('successfully-generated-image'));
+
               setProgress(0);
             }, 1000);
+            break;
+          case 'error':
+            setProgress(0);
+            isDone = true;
+            toast.error(t('failed-to-generate-image'));
             break;
           default:
             console.warn(`Unhandled image generation event : ${data.type}`);

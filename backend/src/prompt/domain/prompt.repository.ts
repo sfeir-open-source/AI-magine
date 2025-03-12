@@ -7,3 +7,9 @@ export interface PromptRepository {
 
   countByEventIdAndUserId(eventId: string, userId: string): Promise<number>;
 }
+
+export interface IFirestorePromptRepository extends PromptRepository {
+  getEventPrompts(eventId: string): Promise<Prompt[]>;
+
+  getEventPromptsForUser(eventId: string, userId: string): Promise<Prompt[]>;
+}

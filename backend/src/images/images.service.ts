@@ -12,8 +12,8 @@ export class ImagesService {
     private readonly imageRepository: ImagesRepository
   ) {}
 
-  getImageByPromptId(promptId: string): Promise<Image | undefined> {
-    return this.imageRepository.getImageByPromptId(promptId);
+  getEventPromotedImages(eventId: string) {
+    return this.imageRepository.getEventPromotedImages(eventId);
   }
 
   saveImage(promptId: string, imageUrl: string): Promise<Image> {
@@ -29,6 +29,7 @@ export class ImagesService {
       eventId,
       userId
     );
+
     if (!images) {
       throw new NotFoundException(
         'No images found for this user on this event'

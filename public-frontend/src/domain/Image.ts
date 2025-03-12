@@ -6,4 +6,8 @@ export class Image {
     public selected: boolean,
     public createdAt: string
   ) {}
+
+  isPromoted(): boolean {
+    return this.selected;
+  }
 }

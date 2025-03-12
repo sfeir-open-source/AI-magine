@@ -11,3 +11,7 @@ export interface UserRepository {
 
   getUserByEmail(email: string): Promise<User | undefined>;
 }
+
+export interface IFirestoreUserRepository extends UserRepository {
+  getUsersById(userIds: string[]): Promise<User[]>;
+}

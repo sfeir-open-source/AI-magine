@@ -2,6 +2,7 @@ import { ImagesService } from '@/images/images.service';
 import { ImagesController } from '@/images/images.controller';
 import { Image } from '@/images/domain';
 import { Mock } from 'vitest';
+import { ImageWithPromptTextAndAuthorDto } from '@/images/dto/ImageWithPromptTextAndAuthor.dto';
 
 describe('ImagesController', () => {
   let imagesController: ImagesController;
@@ -11,6 +12,7 @@ describe('ImagesController', () => {
     imagesService = {
       getImagesByEventAndUser: vi.fn(),
       promoteImage: vi.fn(),
+      getEventPromotedImages: vi.fn(),
     } as unknown as ImagesService;
 
     imagesController = new ImagesController(imagesService);
@@ -64,6 +66,33 @@ describe('ImagesController', () => {
         'user123',
         'image123'
       );
+    });
+  });
+
+  describe('getEventPromotedImages', () => {
+    it('should return promoted images for an event', async () => {
+      const fakePromotedImages = [
+        new ImageWithPromptTextAndAuthorDto({
+          id: '1',
+          author: 'test',
+          createdAt: new Date(),
+          prompt: 'test prompt',
+          promptId: '1',
+          selected: false,
+          url: '',
+        }),
+      ];
+
+      (imagesService.getEventPromotedImages as Mock).mockResolvedValue(
+        fakePromotedImages
+      );
+
+      const result = await imagesController.getEventPromotedImages('event123');
+
+      expect(imagesService.getEventPromotedImages).toHaveBeenCalledWith(
+        'event123'
+      );
+      expect(result).toEqual(fakePromotedImages);
     });
   });
 });

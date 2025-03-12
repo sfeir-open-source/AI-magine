@@ -75,7 +75,9 @@ jobs:
         run: |
           echo "VITE_BACKEND_API_URL=${{ vars.PUBLIC_FRONTEND_VITE_BACKEND_API_URL }}" >> ./public-frontend/.env.production
           cat ./public-frontend/.env.production
-          npm run build -w public-frontend
+          npm i
+          npm run build -w public-frontend -- --mode production
+          grep -o "${{ vars.PUBLIC_FRONTEND_VITE_BACKEND_API_URL }}" ./public-frontend/dist/assets/index-*.js
 #          rm ./public-frontend/.env.production
 
 #      - name: Build and Push Frontend

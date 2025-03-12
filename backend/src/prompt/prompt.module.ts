@@ -12,10 +12,9 @@ import { SqliteImageGenerationStatusRepository } from '@/image-generation/sqlite
 import { IMAGES_REPOSITORY } from '@/images/domain/images.repository';
 import { SqliteImagesRepository } from '@/images/repository/sqlite/sqlite-images.repository';
 import { ImagesModule } from '@/images/images.module';
-import { SfeirEventModule } from '@/events/sfeir-event.module';
 import { SfeirEventService } from '@/events/sfeir-event.service';
 import { SFEIR_EVENT_REPOSITORY } from '@/events/domain';
-import { SqliteSfeirEventRepository } from '@/events/sqlite.sfeir-event.repository';
+import { SQLiteEventsRepository } from '@/events/repository/sqlite/sqlite-events.repository';
 import { FirestoreImageGenerationStatusRepository } from '@/image-generation/firestore.image-generation-status.repository';
 import { FirestorePromptRepository } from '@/prompt/repository/firestore/firestore-prompt.repository';
 import { FirestoreImagesRepository } from '@/images/repository/firestore/firestore-images.repository';
@@ -24,11 +23,13 @@ import { IMAGES_STORAGE } from '@/images/domain/images.storage';
 import { GCPBucketImagesStorage } from '@/images/gcp-bucket.images.storage';
 import { FakeImagesStorage } from '@/images/fake.images.storage';
 import { ConfigurationService } from '@/configuration/configuration.service';
-import { FirestoreSfeirEventRepository } from '@/events/firestore.sfeir-event.repository';
+import { FirestoreEventsRepository } from '@/events/repository/firestore/firestore-events.repository';
 import { SqlitePromptModule } from '@/prompt/repository/sqlite/sqlite-prompt.module';
 import { FirestorePromptModule } from '@/prompt/repository/firestore/firestore-prompt.module';
 import { FirestoreImagesModule } from '@/images/repository/firestore/firestore-images.module';
 import { SqliteImagesModule } from '@/images/repository/sqlite/sqlite-images.module';
+import { FirestoreEventsModule } from '@/events/repository/firestore/firestore-events.module';
+import { SQLiteEventsModule } from '@/events/repository/sqlite/sqlite-events.module';
 
 @Module({
   imports: [
@@ -37,7 +38,8 @@ import { SqliteImagesModule } from '@/images/repository/sqlite/sqlite-images.mod
     ImagesModule,
     FirestoreImagesModule,
     SqliteImagesModule,
-    SfeirEventModule,
+    FirestoreEventsModule,
+    SQLiteEventsModule,
     SqlitePromptModule,
     FirestorePromptModule,
   ],
@@ -98,15 +100,19 @@ import { SqliteImagesModule } from '@/images/repository/sqlite/sqlite-images.mod
     },
     {
       provide: SFEIR_EVENT_REPOSITORY,
-      inject: [ConfigurationService, FirestoreClient, SQLiteClient],
+      inject: [
+        ConfigurationService,
+        FirestoreEventsRepository,
+        SQLiteEventsRepository,
+      ],
       useFactory: (
         configurationService: ConfigurationService,
-        firestoreClient: FirestoreClient,
-        sqliteClient: SQLiteClient
+        firestoreRepo: FirestoreEventsRepository,
+        sqliteRepo: SQLiteEventsRepository
       ) => {
         return configurationService.getFirestoreEnabled()
-          ? new FirestoreSfeirEventRepository(firestoreClient)
-          : new SqliteSfeirEventRepository(sqliteClient);
+          ? firestoreRepo
+          : sqliteRepo;
       },
     },
   ],

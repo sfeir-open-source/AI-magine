@@ -4,7 +4,7 @@ import {
   DocumentSnapshot,
   QuerySnapshot,
 } from '@google-cloud/firestore';
-import { FirestoreSfeirEventRepository } from '@/events/firestore.sfeir-event.repository';
+import { FirestoreEventsRepository } from '@/events/repository/firestore/firestore-events.repository';
 import { FirestoreClient } from '@/config/firestore-client';
 import { SfeirEvent } from '@/events/domain';
 
@@ -13,7 +13,7 @@ vi.mock('@google-cloud/firestore', async () => ({
 }));
 
 describe('FirestoreSfeirEventRepository', () => {
-  let repository: FirestoreSfeirEventRepository;
+  let repository: FirestoreEventsRepository;
   let firestoreClientMock: FirestoreClient;
   let collectionMock: CollectionReference;
 
@@ -31,7 +31,7 @@ describe('FirestoreSfeirEventRepository', () => {
       getCollection: vi.fn().mockReturnValue(collectionMock),
     } as unknown as FirestoreClient;
 
-    repository = new FirestoreSfeirEventRepository(firestoreClientMock);
+    repository = new FirestoreEventsRepository(firestoreClientMock);
   });
 
   it('should retrieve all Sfeir events', async () => {

@@ -4,7 +4,7 @@ import { FirestoreClient } from '@/config/firestore-client';
 import { CollectionReference } from '@google-cloud/firestore';
 
 @Injectable()
-export class FirestoreSfeirEventRepository implements SfeirEventRepository {
+export class FirestoreEventsRepository implements SfeirEventRepository {
   private readonly sfeirEventsCollection: CollectionReference;
 
   constructor(@Inject() private firestoreClient: FirestoreClient) {

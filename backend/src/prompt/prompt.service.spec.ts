@@ -141,8 +141,8 @@ describe('PromptService', () => {
         3
       );
 
-      await expect(promptService.createPrompt(dto)).rejects.toBe(
-        'User has reached maximum number of prompts'
+      await expect(promptService.createPrompt(dto)).rejects.toThrow(
+        new BadRequestException('User has reached maximum number of prompts')
       );
       expect(userServiceMock.checkIfExists).toHaveBeenCalled();
       expect(eventServiceMock.getSfeirEvent).toHaveBeenCalled();

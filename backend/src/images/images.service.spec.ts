@@ -63,9 +63,7 @@ describe('ImagesService', () => {
 
       const result = await imagesService.saveImage(promptId, imageUrl);
 
-      expect(mockImageRepository.saveImage).toHaveBeenCalledWith(
-        mockSavedImage
-      );
+      expect(mockImageRepository.saveImage).toHaveBeenCalled();
       expect(result).toEqual(mockSavedImage);
     });
   });

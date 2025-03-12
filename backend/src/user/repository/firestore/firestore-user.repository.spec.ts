@@ -104,7 +104,7 @@ describe('FirestoreUserRepository', () => {
       const userId = await firestoreUserRepository.getUserIdByEmail(email);
 
       expect(mockUserCollection.where).toHaveBeenCalledWith(
-        'email',
+        'hashedEmail',
         '==',
         email
       );
@@ -120,7 +120,7 @@ describe('FirestoreUserRepository', () => {
       const userId = await firestoreUserRepository.getUserIdByEmail(email);
 
       expect(mockUserCollection.where).toHaveBeenCalledWith(
-        'email',
+        'hashedEmail',
         '==',
         email
       );
@@ -139,7 +139,7 @@ describe('FirestoreUserRepository', () => {
 
       expect(result).toBeUndefined();
       expect(mockUserCollection.where).toHaveBeenCalledWith(
-        'email',
+        'hashedEmail',
         '==',
         fakeEmail
       );
@@ -155,7 +155,7 @@ describe('FirestoreUserRepository', () => {
             id: '1',
             get: vi.fn((property: string) => {
               switch (property) {
-                case 'email':
+                case 'hashedEmail':
                   return fakeEmail;
                 case 'nickname':
                   return 'nickname';
@@ -182,7 +182,7 @@ describe('FirestoreUserRepository', () => {
       );
 
       expect(mockUserCollection.where).toHaveBeenCalledWith(
-        'email',
+        'hashedEmail',
         '==',
         fakeEmail
       );

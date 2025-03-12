@@ -3,12 +3,15 @@ import { SfeirEventController } from '@/events/sfeir-event.controller';
 import { SfeirEventService } from '@/events/sfeir-event.service';
 import { SFEIR_EVENT_REPOSITORY } from '@/events/domain';
 import { SQLiteClient } from '@/config/sqlite-client';
-import { FirestoreSfeirEventRepository } from '@/events/firestore.sfeir-event.repository';
+import { FirestoreEventsRepository } from '@/events/repository/firestore/firestore-events.repository';
 import { FirestoreClient } from '@/config/firestore-client';
 import { ConfigurationService } from '@/configuration/configuration.service';
-import { SqliteSfeirEventRepository } from '@/events/sqlite.sfeir-event.repository';
+import { SQLiteEventsRepository } from '@/events/repository/sqlite/sqlite-events.repository';
+import { FirestoreEventsModule } from '@/events/repository/firestore/firestore-events.module';
+import { SQLiteEventsModule } from '@/events/repository/sqlite/sqlite-events.module';
 
 @Module({
+  imports: [FirestoreEventsModule, SQLiteEventsModule],
   controllers: [SfeirEventController],
   providers: [
     SfeirEventService,
@@ -16,15 +19,19 @@ import { SqliteSfeirEventRepository } from '@/events/sqlite.sfeir-event.reposito
     FirestoreClient,
     {
       provide: SFEIR_EVENT_REPOSITORY,
-      inject: [ConfigurationService, FirestoreClient, SQLiteClient],
+      inject: [
+        ConfigurationService,
+        FirestoreEventsRepository,
+        SQLiteEventsRepository,
+      ],
       useFactory: (
         configurationService: ConfigurationService,
-        firestoreClient: FirestoreClient,
-        sqliteClient: SQLiteClient
+        firestoreRepo: FirestoreEventsRepository,
+        sqliteRepo: SQLiteEventsRepository
       ) => {
         return configurationService.getFirestoreEnabled()
-          ? new FirestoreSfeirEventRepository(firestoreClient)
-          : new SqliteSfeirEventRepository(sqliteClient);
+          ? firestoreRepo
+          : sqliteRepo;
       },
     },
   ],

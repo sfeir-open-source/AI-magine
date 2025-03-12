@@ -1,7 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IFirestoreUserRepository, User } from '@/user/domain';
 import { FirestoreClient } from '@/config/firestore-client';
-import { CollectionReference } from '@google-cloud/firestore';
+import {
+  CollectionReference,
+  QueryDocumentSnapshot,
+} from '@google-cloud/firestore';
 
 @Injectable()
 export class FirestoreUserRepository implements IFirestoreUserRepository {
@@ -14,14 +17,26 @@ export class FirestoreUserRepository implements IFirestoreUserRepository {
     this.userCollection = firestoreClient.getCollection('users');
   }
 
+  private fromQueryDocumentSnapshotToUser(
+    queryDocumentSnapshot: QueryDocumentSnapshot
+  ): User {
+    return User.from({
+      id: queryDocumentSnapshot.id,
+      email: queryDocumentSnapshot.get('hashedEmail'),
+      browserFingerprint: queryDocumentSnapshot.get('browserFingerprint'),
+      allowContact: queryDocumentSnapshot.get('allowContact') as boolean,
+      nickname: queryDocumentSnapshot.get('nickname'),
+    });
+  }
+
   async checkExistsById(userId: string): Promise<boolean> {
     const searchedUser = await this.userCollection.doc(userId).get();
     return searchedUser.exists;
   }
 
-  async getUserByEmail(email: string): Promise<User | undefined> {
+  async getUserByEmail(hashedEmail: string): Promise<User | undefined> {
     const searchedUser = await this.userCollection
-      .where('email', '==', email)
+      .where('hashedEmail', '==', hashedEmail)
       .get();
 
     if (searchedUser.empty) {
@@ -30,13 +45,7 @@ export class FirestoreUserRepository implements IFirestoreUserRepository {
 
     const doc = searchedUser.docs[0];
 
-    return User.from({
-      id: doc.id,
-      email: doc.get('email'),
-      nickname: doc.get('nickname'),
-      browserFingerprint: doc.get('browserFingerprint'),
-      allowContact: doc.get('allowContact'),
-    });
+    return this.fromQueryDocumentSnapshotToUser(doc);
   }
 
   async save(user: User): Promise<User> {
@@ -45,9 +54,9 @@ export class FirestoreUserRepository implements IFirestoreUserRepository {
     return user;
   }
 
-  async getUserIdByEmail(email: string): Promise<string | undefined> {
+  async getUserIdByEmail(hashedEmail: string): Promise<string | undefined> {
     const searchedUser = await this.userCollection
-      .where('email', '==', email)
+      .where('hashedEmail', '==', hashedEmail)
       .get();
     if (searchedUser.empty) {
       return undefined;
@@ -63,14 +72,6 @@ export class FirestoreUserRepository implements IFirestoreUserRepository {
       return [];
     }
 
-    return userDocuments.map((doc) =>
-      User.from({
-        id: doc.id,
-        email: doc.get('hashedEmail'),
-        browserFingerprint: doc.get('browserFingerprint'),
-        allowContact: doc.get('allowContact') as boolean,
-        nickname: doc.get('nickname'),
-      })
-    );
+    return userDocuments.map(this.fromQueryDocumentSnapshotToUser);
   }
 }

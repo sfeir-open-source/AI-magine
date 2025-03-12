@@ -35,7 +35,7 @@ export class FirestoreImagesRepository implements ImagesRepository {
 
     const users = await this.userRepository.getUsersById(userIds);
 
-    const images = await this.getImagesFromPromptIds(promptIds);
+    const images = await this.getImagesFromPromptIds(promptIds, true);
 
     return images.map((image) => {
       const prompt = prompts.find((prompt) => prompt.id === image.promptId);
@@ -79,17 +79,23 @@ export class FirestoreImagesRepository implements ImagesRepository {
     return image;
   }
 
-  private async getImagesFromPromptIds(promptIds: string[]): Promise<Image[]> {
+  private async getImagesFromPromptIds(
+    promptIds: string[],
+    filterOnSelected: boolean = false
+  ): Promise<Image[]> {
     const chunkSize = 30; // Firestore cannot handle more than 30 values with "IN"
 
     const imagesSnapshot: QueryDocumentSnapshot[] = [];
 
     for (let i = 0; i < promptIds.length; i += chunkSize) {
       const chunk = promptIds.slice(i, i + chunkSize);
-      const querySnapshot = await this.imagesCollection
-        .where('promptId', 'in', chunk)
-        .where('selected', '==', true)
-        .get();
+      const query = this.imagesCollection.where('promptId', 'in', chunk);
+
+      if (filterOnSelected) {
+        query.where('selected', '==', true);
+      }
+
+      const querySnapshot = await query.get();
 
       querySnapshot.forEach((doc) => {
         imagesSnapshot.push(doc);

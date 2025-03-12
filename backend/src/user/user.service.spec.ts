@@ -1,6 +1,9 @@
 import { UserService } from '@/user/user.service';
 import { User, UserRepository } from '@/user/domain';
 import { EncryptionService } from '@/user/encryption/encryption.service';
+import { Image } from '@/images/domain';
+import { SfeirEvent, SfeirEventRepository } from '@/events/domain';
+import { ImagesRepository } from '@/images/domain/images.repository';
 
 const mockUser = User.from({
   id: '1',
@@ -19,15 +22,47 @@ const mockUserRepository = {
 describe('UserService', () => {
   let userService: UserService;
   let encryptionServiceMock: EncryptionService;
+  let imagesRepositoryMock: ImagesRepository;
+  let eventRepositoryMock: SfeirEventRepository;
 
   beforeEach(() => {
     encryptionServiceMock = {
       encryptEmail: vi.fn().mockReturnValue('encrypted'),
     };
 
+    imagesRepositoryMock = {
+      getImageByEventIdAndUserId: vi
+        .fn()
+        .mockResolvedValue([
+          Image.from(
+            'image-id',
+            'https://example.org',
+            'prompt-id',
+            new Date(),
+            false
+          ),
+        ]),
+    } as unknown as ImagesRepository;
+
+    eventRepositoryMock = {
+      getSfeirEvent: vi
+        .fn()
+        .mockResolvedValue(
+          SfeirEvent.from(
+            'event-id',
+            'event-name',
+            3,
+            new Date(Date.now() - 10000),
+            new Date(Date.now() + 10000)
+          )
+        ),
+    } as unknown as SfeirEventRepository;
+
     userService = new UserService(
       mockUserRepository as unknown as UserRepository,
-      encryptionServiceMock
+      encryptionServiceMock as unknown as EncryptionService,
+      imagesRepositoryMock,
+      eventRepositoryMock
     );
     vi.clearAllMocks();
   });
@@ -101,7 +136,28 @@ describe('UserService', () => {
       expect(mockUserRepository.checkExistsById).toHaveBeenCalledWith(
         mockUser.id
       );
-      expect(result).toBe(false);
+      expect(result).toEqual(false);
+    });
+  });
+
+  describe('getUserRemainingPromptsByEvent', () => {
+    it('should return the number of remaining prompts', async () => {
+      const result = await userService.getUserRemainingPromptsByEvent(
+        'event-id',
+        'user-id'
+      );
+
+      expect(eventRepositoryMock.getSfeirEvent).toHaveBeenCalledWith(
+        'event-id'
+      );
+      expect(
+        imagesRepositoryMock.getImageByEventIdAndUserId
+      ).toHaveBeenCalledWith('event-id', 'user-id');
+      expect(result).toEqual({
+        allowed: 3,
+        spent: 1,
+        remaining: 2,
+      });
     });
   });
 });

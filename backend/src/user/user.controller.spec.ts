@@ -13,6 +13,7 @@ describe('UserController', () => {
     userService = {
       getUserByEmail: vi.fn(),
       create: vi.fn(),
+      getUserRemainingPromptsByEvent: vi.fn(),
     } as unknown as UserService;
 
     response = {
@@ -71,6 +72,31 @@ describe('UserController', () => {
 
       expect(response.status).toHaveBeenCalledWith(HttpStatus.OK);
       expect(response.json).toHaveBeenCalledWith(mockExistingUser);
+    });
+  });
+
+  describe('remainingPrompts', () => {
+    it('should return the remaining prompts', async () => {
+      vi.mocked(userService.getUserRemainingPromptsByEvent).mockResolvedValue({
+        allowed: 3,
+        spent: 2,
+        remaining: 1,
+      });
+
+      const remainingPrompt = await controller.getRemainingPrompts(
+        'event-id',
+        'user-id'
+      );
+
+      expect(userService.getUserRemainingPromptsByEvent).toHaveBeenCalledWith(
+        'event-id',
+        'user-id'
+      );
+      expect(remainingPrompt).toEqual({
+        allowed: 3,
+        spent: 2,
+        remaining: 1,
+      });
     });
   });
 });

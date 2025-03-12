@@ -11,7 +11,7 @@ type SfeirEventRow = {
 };
 
 @Injectable()
-export class SqliteSfeirEventRepository
+export class SQLiteEventsRepository
   implements SfeirEventRepository, OnApplicationBootstrap
 {
   constructor(@Inject() private sqliteClient: SQLiteClient) {}

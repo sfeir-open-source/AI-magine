@@ -1,5 +1,5 @@
 import { SQLiteClient } from '@/config/sqlite-client';
-import { SqliteSfeirEventRepository } from '@/events/sqlite.sfeir-event.repository';
+import { SQLiteEventsRepository } from '@/events/repository/sqlite/sqlite-events.repository';
 import { SfeirEvent } from '@/events/domain';
 import { ConfigurationService } from '@/configuration/configuration.service';
 
@@ -16,13 +16,13 @@ const mockEvent = SfeirEvent.from(
 
 describe('SqliteSfeirEventRepository', () => {
   let sqliteClient: SQLiteClient;
-  let repository: SqliteSfeirEventRepository;
+  let repository: SQLiteEventsRepository;
 
   beforeEach(async () => {
     sqliteClient = new SQLiteClient({
       getSqliteDBPath: vi.fn().mockReturnValue(':memory:'),
     } as unknown as ConfigurationService);
-    repository = new SqliteSfeirEventRepository(sqliteClient);
+    repository = new SQLiteEventsRepository(sqliteClient);
     await repository.onApplicationBootstrap();
   });
 

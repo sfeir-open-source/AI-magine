@@ -95,6 +95,7 @@ export class ImageGenerationEngine {
 
       this.emitter.emit('done', { promptId, imageURL });
     } catch (error) {
+      console.error(error);
       this.emitter.emit('error', { promptId, error });
     }
   }

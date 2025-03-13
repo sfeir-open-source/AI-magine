@@ -1,22 +1,18 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-
-import { nanoid } from 'nanoid';
-import { PromptService } from '@/prompt/prompt.service';
-import { CreatePromptDto, PromptRepository } from '@/prompt/prompt-types';
+import { CreatePromptBodyDto, PromptRepository } from '@/prompt/domain';
 import { UserService } from '@/user/user.service';
-import { Prompt } from '@/prompt/prompt-types/prompt.domain';
-import { User } from '@/user/user-types';
-
-vi.mock('nanoid', () => {
-  return {
-    nanoid: vi.fn(),
-  };
-});
+import { Prompt } from '@/prompt/domain/prompt.domain';
+import { ImageGenerationEngine } from '@/image-generation/image-generation.engine';
+import { BadRequestException } from '@nestjs/common';
+import { PromptService } from '@/prompt/prompt.service';
+import { SfeirEventService } from '@/events/sfeir-event.service';
+import { SfeirEvent } from '@/events/domain';
 
 describe('PromptService', () => {
   let promptService: PromptService;
   let promptRepositoryMock: PromptRepository;
   let userServiceMock: UserService;
+  let eventServiceMock: SfeirEventService;
+  let imageGenerationEngineMock: ImageGenerationEngine;
 
   beforeEach(() => {
     promptRepositoryMock = {
@@ -24,167 +20,136 @@ describe('PromptService', () => {
       countByEventIdAndUserId: vi.fn(),
     };
 
+    eventServiceMock = {
+      getAllowedEventPrompts: vi.fn().mockResolvedValue(3),
+    } as unknown as SfeirEventService;
+
     userServiceMock = {
       create: vi.fn(),
-      getUserIdByEmail: vi.fn(),
+      checkIfExists: vi.fn(),
     } as unknown as UserService;
 
-    promptService = new PromptService(promptRepositoryMock, userServiceMock);
-  });
+    eventServiceMock = {
+      getSfeirEvent: vi.fn(),
+      getAllowedEventPrompts: vi.fn().mockResolvedValue(3),
+    } as unknown as SfeirEventService;
 
-  it('should create a new prompt if all conditions are met', async () => {
-    const dto: CreatePromptDto & { eventId: string } = {
-      eventId: 'event1',
-      prompt: 'Sample Prompt',
-      browserFingerprint: 'fingerprint123',
-      userEmail: 'email@example.com',
-      userName: 'John Doe',
-      jobTitle: 'Engineer',
-      allowContact: true,
-    };
+    imageGenerationEngineMock = {
+      processPrompt: vi.fn(),
+    } as unknown as ImageGenerationEngine;
 
-    vi.mocked(nanoid)
-      .mockReturnValueOnce('generatedPromptId')
-      .mockReturnValueOnce('generatedUserId');
-
-    const expectedPrompt = Prompt.from(
-      'generatedPromptId',
-      'event1',
-      'existingUserId',
-      'Sample Prompt'
-    );
-    vi.mocked(userServiceMock.getUserIdByEmail).mockResolvedValue(
-      'existingUserId'
-    );
-    vi.mocked(promptRepositoryMock.countByEventIdAndUserId).mockResolvedValue(
-      2
-    );
-    vi.mocked(promptRepositoryMock.save).mockResolvedValue(expectedPrompt);
-
-    const result = await promptService.createPrompt(dto);
-
-    expect(result).toEqual(expectedPrompt);
-    expect(userServiceMock.getUserIdByEmail).toHaveBeenCalledWith(
-      'email@example.com'
-    );
-    expect(promptRepositoryMock.countByEventIdAndUserId).toHaveBeenCalledWith(
-      'existingUserId',
-      'event1'
-    );
-    expect(promptRepositoryMock.save).toHaveBeenCalledWith(expectedPrompt);
-  });
-
-  it('should create a new user if the user email does not exist', async () => {
-    const dto: CreatePromptDto & { eventId: string } = {
-      eventId: 'event1',
-      prompt: 'Sample Prompt',
-      browserFingerprint: 'fingerprint123',
-      userEmail: 'email@example.com',
-      userName: 'John Doe',
-      jobTitle: 'Engineer',
-      allowContact: true,
-    };
-
-    vi.mocked(nanoid)
-      .mockReturnValueOnce('generatedPromptId')
-      .mockReturnValueOnce('generatedPromptId');
-    vi.mocked(nanoid)
-      .mockReturnValueOnce('generatedUserId')
-      .mockReturnValueOnce('generatedUserId');
-
-    const createdUser = User.from(
-      'generatedUserId',
-      'email@example.com',
-      'fingerprint123',
-      true,
-      'John Doe',
-      'Engineer'
-    );
-    const expectedPrompt = Prompt.from(
-      'generatedPromptId',
-      'event1',
-      'generatedUserId',
-      'Sample Prompt'
-    );
-
-    vi.mocked(userServiceMock.getUserIdByEmail).mockResolvedValue(undefined);
-    vi.mocked(userServiceMock.create).mockResolvedValue(createdUser);
-    vi.mocked(promptRepositoryMock.countByEventIdAndUserId).mockResolvedValue(
-      0
-    );
-    vi.mocked(promptRepositoryMock.save).mockResolvedValue(expectedPrompt);
-
-    const result = await promptService.createPrompt(dto);
-
-    expect(result).toEqual(expectedPrompt);
-    expect(userServiceMock.getUserIdByEmail).toHaveBeenCalledWith(
-      'email@example.com'
-    );
-    expect(userServiceMock.create).toHaveBeenCalledWith(createdUser);
-    expect(promptRepositoryMock.countByEventIdAndUserId).toHaveBeenCalledWith(
-      'generatedUserId',
-      'event1'
-    );
-    expect(promptRepositoryMock.save).toHaveBeenCalledWith(expectedPrompt);
-  });
-
-  it('should throw an error if the user has reached the maximum number of prompts for an event', async () => {
-    const dto: CreatePromptDto & { eventId: string } = {
-      eventId: 'event1',
-      prompt: 'Sample Prompt',
-      browserFingerprint: 'fingerprint123',
-      userEmail: 'email@example.com',
-      userName: 'John Doe',
-      jobTitle: 'Engineer',
-      allowContact: true,
-    };
-
-    vi.mocked(userServiceMock.getUserIdByEmail).mockResolvedValue(
-      'existingUserId'
-    );
-    vi.mocked(promptRepositoryMock.countByEventIdAndUserId).mockResolvedValue(
-      3
-    );
-
-    await expect(promptService.createPrompt(dto)).rejects.toBe(
-      'User has reached maximum number of prompts'
-    );
-    expect(userServiceMock.getUserIdByEmail).toHaveBeenCalledWith(
-      'email@example.com'
-    );
-    expect(promptRepositoryMock.countByEventIdAndUserId).toHaveBeenCalledWith(
-      'existingUserId',
-      'event1'
+    promptService = new PromptService(
+      promptRepositoryMock,
+      eventServiceMock,
+      userServiceMock,
+      imageGenerationEngineMock
     );
   });
 
-  it('should throw an error if user creation fails and userId is not found', async () => {
-    const dto: CreatePromptDto & { eventId: string } = {
-      eventId: 'event1',
-      prompt: 'Sample Prompt',
-      browserFingerprint: 'fingerprint123',
-      userEmail: 'email@example.com',
-      userName: 'John Doe',
-      jobTitle: 'Engineer',
-      allowContact: true,
-    };
+  describe('createPrompt', () => {
+    it('should throw BadRequestException if user does not exists', async () => {
+      vi.mocked(userServiceMock.checkIfExists).mockResolvedValue(false);
 
-    vi.mocked(userServiceMock.getUserIdByEmail).mockResolvedValue(undefined);
-    vi.mocked(userServiceMock.create).mockResolvedValue({
-      id: '',
-      hashedEmail: '',
-      name: '',
-      jobTitle: '',
-      browserFingerprint: '',
-      allowContact: false,
+      await expect(() =>
+        promptService.createPrompt({
+          prompt: 'test',
+          eventId: 'test-event-id',
+          userId: 'unknown',
+        })
+      ).rejects.toThrow(BadRequestException);
     });
 
-    await expect(promptService.createPrompt(dto)).rejects.toBe(
-      'User not found'
-    );
-    expect(userServiceMock.getUserIdByEmail).toHaveBeenCalledWith(
-      'email@example.com'
-    );
-    expect(userServiceMock.create).toHaveBeenCalled();
+    it('should throw BadRequestException if event does not exists', async () => {
+      vi.mocked(userServiceMock.checkIfExists).mockResolvedValue(true);
+      vi.mocked(eventServiceMock.getSfeirEvent).mockResolvedValue(undefined);
+
+      await expect(() =>
+        promptService.createPrompt({
+          prompt: 'test',
+          eventId: 'test-event-id',
+          userId: 'unknown',
+        })
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should throw BadRequestException if event is not active', async () => {
+      const mockedEvent = SfeirEvent.from(
+        'event1',
+        'event',
+        3,
+        new Date(Date.now() + 1000),
+        new Date(Date.now() + 2000)
+      );
+      vi.mocked(userServiceMock.checkIfExists).mockResolvedValue(true);
+      vi.mocked(eventServiceMock.getSfeirEvent).mockResolvedValue(mockedEvent);
+
+      await expect(() =>
+        promptService.createPrompt({
+          prompt: 'test',
+          eventId: 'test-event-id',
+          userId: 'unknown',
+        })
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should create a new prompt if all conditions are met', async () => {
+      const dto: CreatePromptBodyDto & { eventId: string } = {
+        eventId: 'event1',
+        prompt: 'Sample Prompt',
+        userId: 'existingUserId',
+      };
+
+      const expectedPrompt = Prompt.from(
+        expect.any(String),
+        'event1',
+        'existingUserId',
+        'Sample Prompt'
+      );
+      vi.mocked(userServiceMock.checkIfExists).mockResolvedValue(true);
+      vi.mocked(eventServiceMock.getSfeirEvent).mockResolvedValue(
+        SfeirEvent.from('event1', 'event', 3, new Date(), new Date())
+      );
+      vi.mocked(promptRepositoryMock.countByEventIdAndUserId).mockResolvedValue(
+        2
+      );
+      vi.mocked(promptRepositoryMock.save).mockResolvedValue(expectedPrompt);
+
+      const result = await promptService.createPrompt(dto);
+
+      expect(result).toEqual(expectedPrompt);
+      expect(userServiceMock.checkIfExists).toHaveBeenCalled();
+      expect(eventServiceMock.getSfeirEvent).toHaveBeenCalled();
+      expect(promptRepositoryMock.countByEventIdAndUserId).toHaveBeenCalledWith(
+        'event1',
+        'existingUserId'
+      );
+      expect(promptRepositoryMock.save).toHaveBeenCalledWith(expectedPrompt);
+    });
+
+    it('should throw an error if the user has reached the maximum number of prompts for an event', async () => {
+      const dto: CreatePromptBodyDto & { eventId: string } = {
+        eventId: 'event1',
+        prompt: 'Sample Prompt',
+        userId: 'existingUserId',
+      };
+
+      vi.mocked(userServiceMock.checkIfExists).mockResolvedValue(true);
+      vi.mocked(eventServiceMock.getSfeirEvent).mockResolvedValue(
+        SfeirEvent.from('event1', 'event', 3, new Date(), new Date())
+      );
+      vi.mocked(promptRepositoryMock.countByEventIdAndUserId).mockResolvedValue(
+        3
+      );
+
+      await expect(promptService.createPrompt(dto)).rejects.toThrow(
+        new BadRequestException('User has reached maximum number of prompts')
+      );
+      expect(userServiceMock.checkIfExists).toHaveBeenCalled();
+      expect(eventServiceMock.getSfeirEvent).toHaveBeenCalled();
+      expect(promptRepositoryMock.countByEventIdAndUserId).toHaveBeenCalledWith(
+        'event1',
+        'existingUserId'
+      );
+    });
   });
 });

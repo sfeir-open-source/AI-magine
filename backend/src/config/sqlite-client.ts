@@ -1,16 +1,18 @@
-import { verbose, Database } from 'sqlite3';
-import { Injectable } from '@nestjs/common';
+import { Database, verbose } from 'sqlite3';
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigurationService } from '@/configuration/configuration.service';
 
 @Injectable()
 export class SQLiteClient {
   private client: Database;
   private isReady = false;
 
-  constructor() {
+  constructor(
+    @Inject()
+    private readonly configurationService: ConfigurationService
+  ) {
     const SQLITE3 = verbose();
-    this.client = new SQLITE3.Database(
-      process.env.SQLITE_DB_PATH ?? ':memory:'
-    );
+    this.client = new SQLITE3.Database(configurationService.getSqliteDBPath());
   }
 
   async serialize() {

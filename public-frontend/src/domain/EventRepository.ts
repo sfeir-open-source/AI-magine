@@ -1,22 +1,30 @@
 import { Event } from '@/src/domain/Event';
 import { Image } from '@/src/domain/Image';
+import { ImageWithPromptTextAndAuthorDto } from '@/src/providers/events/dto/ImageWithPromptTextAndAuthor.dto';
 
-export type NewEventPromptRequestBody = {
-  browserFingerprint: string;
-  userEmail: string;
-  userName?: string;
-  jobTitle?: string;
-  allowContact: boolean;
+export type CreateEventPromptRequest = {
+  eventId: string;
+  userId: string;
   prompt: string;
+};
+
+export type CreateEventUserRequest = {
+  userEmail: string;
+  userNickname: string;
+  browserFingerprint: string;
+  allowContact: boolean;
 };
 
 export interface EventRepository {
   getEventById(eventId: string): Promise<Event>;
 
+  createUserForEvent(
+    userPayload: CreateEventUserRequest
+  ): Promise<{ id: string }>;
+
   sendPromptForEvent(
-    eventId: string,
-    payload: NewEventPromptRequestBody
-  ): Promise<{ promptId: string; userId: string }>;
+    promptPayload: CreateEventPromptRequest
+  ): Promise<{ promptId: string }>;
 
   getImagesForUser(eventId: string, userId: string): Promise<Image[]>;
 
@@ -25,6 +33,10 @@ export interface EventRepository {
     userId: string,
     imageId: string
   ): Promise<void>;
+
+  getPromotedImagesForEvent(
+    eventId: string
+  ): Promise<ImageWithPromptTextAndAuthorDto[]>;
 
   listenForPromptGenerationEvent(
     eventId: string,

@@ -5,12 +5,13 @@ import {
   QueryClientProvider,
   useQueryClient,
 } from '@tanstack/react-query';
-import { expect, Mock } from 'vitest';
+import { Mock } from 'vitest';
 import { PropsWithChildren } from 'react';
 import { EventsContext } from '@/src/providers/events/events.context';
 import { EventRepository } from '@/src/domain/EventRepository';
 import { useParams } from 'react-router';
 import { getUserImagesQueryKey } from '@/src/hooks/useUserImages';
+import { useUserId } from '@/src/hooks/useUserId';
 
 vi.mock('@tanstack/react-query', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -18,9 +19,12 @@ vi.mock('@tanstack/react-query', async (importOriginal) => ({
 }));
 
 vi.mock('react-router');
+vi.mock('@/src/hooks/useUserId');
 
 describe('useImagePromotionMutation', () => {
   it('calls backend to promote user image and invalidate userImages query', async () => {
+    (useUserId as Mock).mockReturnValue('user-id');
+
     const invalidateQueriesMock = vi.fn();
     (useQueryClient as Mock).mockReturnValue({
       invalidateQueries: invalidateQueriesMock,

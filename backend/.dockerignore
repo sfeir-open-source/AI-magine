@@ -1,0 +1,8 @@
+coverage
+dist
+logs
+node_modules
+.env
+*.sqlite
+.dockerignore
+Dockerfile

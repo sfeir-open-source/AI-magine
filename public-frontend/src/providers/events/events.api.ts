@@ -1,10 +1,12 @@
 import axios, { AxiosInstance } from 'axios';
 import { Event } from '@/src/domain/Event';
 import {
-  NewEventPromptRequestBody,
+  CreateEventPromptRequest,
+  CreateEventUserRequest,
   EventRepository,
 } from '@/src/domain/EventRepository';
 import { Image } from '@/src/domain/Image';
+import { ImageWithPromptTextAndAuthorDto } from '@/src/providers/events/dto/ImageWithPromptTextAndAuthor.dto';
 
 class EventsApi implements EventRepository {
   private http: AxiosInstance;
@@ -16,12 +18,27 @@ class EventsApi implements EventRepository {
     });
   }
 
+  async createUserForEvent(
+    userPayload: CreateEventUserRequest
+  ): Promise<{ id: string }> {
+    try {
+      const response = await this.http.post<{ id: string }>(
+        '/users',
+        userPayload
+      );
+
+      return response.data;
+    } catch (error) {
+      throw new Error(`Failed to create user: ${(error as Error).message}`);
+    }
+  }
+
   async getImagesForUser(eventId: string, userId: string): Promise<Image[]> {
     try {
       const response = await this.http.get<
         {
-          imageId: string;
-          imageUrl: string;
+          id: string;
+          url: string;
           prompt: string;
           createdAt: string;
           selected: boolean;
@@ -31,10 +48,11 @@ class EventsApi implements EventRepository {
       return response.data.map(
         (backendImage) =>
           new Image(
-            backendImage.imageId,
+            backendImage.id,
             backendImage.prompt,
-            backendImage.imageUrl,
-            backendImage.selected
+            backendImage.url,
+            backendImage.selected,
+            backendImage.createdAt
           )
       );
     } catch (e) {
@@ -60,8 +78,7 @@ class EventsApi implements EventRepository {
   }
 
   async sendPromptForEvent(
-    eventId: string,
-    payload: NewEventPromptRequestBody
+    payload: CreateEventPromptRequest
   ): Promise<{ promptId: string; userId: string }> {
     try {
       const response = await this.http.post<{
@@ -69,12 +86,12 @@ class EventsApi implements EventRepository {
         eventId: string;
         userId: string;
         prompt: string;
-      }>(`/events/${eventId}/prompts`, payload);
+      }>(`/events/${payload.eventId}/prompts`, payload);
 
       return { promptId: response.data.id, userId: response.data.userId };
     } catch (e) {
       throw new Error(
-        `Failed to send prompt for event with id ${eventId} : ${(e as Error).message}`
+        `Failed to send prompt for event with id ${payload.eventId} : ${(e as Error).message}`
       );
     }
   }
@@ -95,6 +112,26 @@ class EventsApi implements EventRepository {
       throw new Error(
         `Failed to retrieve event with id ${eventId} : ${(e as Error).message}`
       );
+    }
+  }
+
+  async getPromotedImagesForEvent(eventId: string) {
+    try {
+      const response = await this.http.get<
+        { id: string; prompt: string; url: string; author: string }[]
+      >(`/events/${eventId}/images/promoted`);
+
+      return response.data.map(
+        (element) =>
+          new ImageWithPromptTextAndAuthorDto(
+            element.id,
+            element.url,
+            element.prompt,
+            element.author
+          )
+      );
+    } catch {
+      throw new Error('Failed to get promoted images for event');
     }
   }
 

@@ -1,18 +1,20 @@
 # Use a Node.js image to build the React app
 FROM node:22-alpine AS builder
 
+ARG VITE_BACKEND_API_URL
+
 WORKDIR /app
 
 # Copy the entire workspace to allow dependencies resolution
 COPY ./ ./
-
-RUN ls -la
 
 # Install dependencies from the workspace root
 RUN npm install
 
 # Move into the React app directory
 WORKDIR /app/public-frontend
+
+RUN echo "VITE_BACKEND_API_URL=$VITE_BACKEND_API_URL" >> .env.production
 
 # Build the React app
 RUN npm run build

@@ -1,13 +1,52 @@
 import nock from 'nock';
 import { eventsApi } from '@/src/providers/events/events.api';
 import { Event } from '@/src/domain/Event';
-import { NewEventPromptRequestBody } from '@/src/domain/EventRepository';
-import { expect, Mock } from 'vitest';
+import { Mock } from 'vitest';
 import { Image } from '@/src/domain/Image';
+import {
+  CreateEventPromptRequest,
+  CreateEventUserRequest,
+} from '@/src/domain/EventRepository';
+import { ImageWithPromptTextAndAuthorDto } from '@/src/providers/events/dto/ImageWithPromptTextAndAuthor.dto';
 
 const apiMock = nock(import.meta.env.VITE_BACKEND_API_URL);
 
 describe('EventsApi', () => {
+  describe('createUserForEvent', () => {
+    it('calls backend api to create a user for an event', async () => {
+      const mockUserResponse = {
+        id: 'user-id',
+      };
+      const createUserPayload: CreateEventUserRequest = {
+        userEmail: 'email',
+        userNickname: 'nickname',
+        browserFingerprint: 'fp',
+        allowContact: false,
+      };
+
+      apiMock.post(`/users`).reply(200, mockUserResponse);
+
+      const result = await eventsApi.createUserForEvent(createUserPayload);
+
+      expect(result.id).toEqual(mockUserResponse.id);
+    });
+
+    it('throws an error if the call fails', async () => {
+      const createUserPayload: CreateEventUserRequest = {
+        userEmail: 'email',
+        userNickname: 'nickname',
+        browserFingerprint: 'fp',
+        allowContact: false,
+      };
+
+      apiMock.post(`/users`).reply(500);
+
+      await expect(() =>
+        eventsApi.createUserForEvent(createUserPayload)
+      ).rejects.toThrow();
+    });
+  });
+
   describe('getEventById', () => {
     it('calls backend api to get event and map it to an Event instance', async () => {
       const mockEventResponse = {
@@ -40,48 +79,39 @@ describe('EventsApi', () => {
     it('calls backend api to send a new prompt for an event', async () => {
       const fakeEventPromptResponse = {
         id: 'fake-prompt-id',
-        userId: 'fake-user-id',
       };
+
+      const fakeUserId = 'fake-user-id';
       const fakeEventId = 'identifier';
-      const fakePayload: NewEventPromptRequestBody = {
-        userEmail: 'email',
-        userName: 'name',
-        jobTitle: 'job',
-        allowContact: false,
+      const fakePayload: CreateEventPromptRequest = {
+        eventId: fakeEventId,
+        userId: fakeUserId,
         prompt: 'prompt',
-        browserFingerprint: 'fingerprint',
       };
 
       apiMock
         .post(`/events/${fakeEventId}/prompts`)
         .reply(200, fakeEventPromptResponse);
 
-      const result = await eventsApi.sendPromptForEvent(
-        fakeEventId,
-        fakePayload
-      );
+      const result = await eventsApi.sendPromptForEvent(fakePayload);
 
       expect(result).toEqual({
         promptId: fakeEventPromptResponse.id,
-        userId: fakeEventPromptResponse.userId,
       });
     });
 
     it('throws an error if the call fails', async () => {
       const fakeEventId = 'identifier';
-      const fakePayload: NewEventPromptRequestBody = {
-        userEmail: 'email',
-        userName: 'name',
-        jobTitle: 'job',
-        allowContact: false,
+      const fakePayload: CreateEventPromptRequest = {
+        userId: 'id',
         prompt: 'prompt',
-        browserFingerprint: 'fingerprint',
+        eventId: fakeEventId,
       };
 
       apiMock.post(`/events/${fakeEventId}/prompts`).reply(500);
 
       await expect(() =>
-        eventsApi.sendPromptForEvent(fakeEventId, fakePayload)
+        eventsApi.sendPromptForEvent(fakePayload)
       ).rejects.toThrow();
     });
   });
@@ -115,10 +145,11 @@ describe('EventsApi', () => {
 
       const fakeResponse = [
         {
-          imageId: 'fake-image-id',
-          imageUrl: 'http://foo',
+          id: 'fake-image-id',
+          url: 'http://foo',
           prompt: 'prompt',
           selected: false,
+          createdAt: new Date().toISOString(),
         },
       ];
 
@@ -129,7 +160,13 @@ describe('EventsApi', () => {
       const result = await eventsApi.getImagesForUser(fakeEventId, fakeUserId);
 
       expect(result).toEqual([
-        new Image('fake-image-id', 'prompt', 'http://foo', false),
+        new Image(
+          fakeResponse[0].id,
+          fakeResponse[0].prompt,
+          fakeResponse[0].url,
+          fakeResponse[0].selected,
+          fakeResponse[0].createdAt
+        ),
       ]);
     });
 
@@ -177,6 +214,43 @@ describe('EventsApi', () => {
 
       await expect(() =>
         eventsApi.promoteUserImage(fakeEventId, fakeUserId, fakeImageId)
+      ).rejects.toThrow();
+    });
+  });
+
+  describe('getPromotedImagesForEvent', () => {
+    it('calls backend api to get promoted images', async () => {
+      const fakeEventId = 'fake-event-id';
+      const fakeImage = {
+        id: 'fake-image-id',
+        prompt: 'test prompt',
+        url: 'url',
+        author: 'author',
+      };
+
+      apiMock
+        .get(`/events/${fakeEventId}/images/promoted`)
+        .reply(200, [fakeImage]);
+
+      const result = await eventsApi.getPromotedImagesForEvent(fakeEventId);
+
+      expect(result).toEqual([
+        new ImageWithPromptTextAndAuthorDto(
+          fakeImage.id,
+          fakeImage.url,
+          fakeImage.prompt,
+          fakeImage.author
+        ),
+      ]);
+    });
+
+    it('throws an error if the call fails', async () => {
+      const fakeEventId = 'fake-event-id';
+
+      apiMock.get(`/events/${fakeEventId}/images/promoted`).reply(500);
+
+      await expect(() =>
+        eventsApi.getPromotedImagesForEvent(fakeEventId)
       ).rejects.toThrow();
     });
   });

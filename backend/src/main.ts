@@ -1,10 +1,21 @@
 import { NestFactory } from '@nestjs/core';
 import { config } from 'dotenv';
 import { AppModule } from './app.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
-config();
+config({
+  override: true,
+});
+
+if (!process.env.EMAIL_HASH_SECRET)
+  throw new Error('Missing EMAIL_HASH_SECRET env var');
+if (process.env.IMAGEN_ENABLED && !process.env.IMAGEN_GCP_PROJECT_ID)
+  throw new Error('Missing IMAGEN_GCP_PROJECT_ID env var');
+if (process.env.IMAGEN_ENABLED && !process.env.IMAGEN_REGION)
+  throw new Error('Missing IMAGEN_REGION env var');
+if (process.env.FIRESTORE_ENABLED && !process.env.FIRESTORE_GCP_PROJECT_ID)
+  throw new Error('Missing FIRESTORE_GCP_PROJECT_ID env var');
 
 (async function bootstrap() {
   const app = (await NestFactory.create(AppModule)) as NestExpressApplication;

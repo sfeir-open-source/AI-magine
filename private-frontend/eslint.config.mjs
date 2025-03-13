@@ -11,6 +11,7 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   pluginReact.configs.flat['jsx-runtime'],
+  { ignores: ['dist', 'coverage'] },
   {
     plugins: {
       'react-hooks': pluginReactHooks,

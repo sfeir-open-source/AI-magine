@@ -3,12 +3,21 @@ import { Button } from '@/components/ui/button';
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { LogIn } from 'lucide-react';
 
 export const EventSelectionPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const [eventId, setEventId] = useState<string>();
+  const [eventId, setEventId] = useState<string>('');
 
   const onChangeEventId = (e: ChangeEvent<HTMLInputElement>) => {
     setEventId(e.currentTarget.value);
@@ -24,19 +33,40 @@ export const EventSelectionPage = () => {
     if (event.key === 'Enter') onValidateEventId();
   };
 
+  const onClear = () => {
+    setEventId('');
+  };
+
   return (
-    <>
-      <p className="mb-16 mt-32 text-center">{t('enter-event-id')}</p>
-      <div className="flex gap-4">
+    <Card className="max-w-lg mx-auto">
+      <CardHeader>
+        <CardTitle>{t('participate-to-event')}</CardTitle>
+        <CardDescription>
+          {t('participate-to-event-description')}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex gap-2">
         <Input
           placeholder={t('event-identifier')}
           onChange={onChangeEventId}
           onKeyUp={onKeyUpEventSelectionInput}
+          value={eventId}
+          id="event-id"
         />
-        <Button disabled={!eventId} onClick={onValidateEventId}>
-          Go
+        <Button variant="outline" onClick={onClear}>
+          {t('clear')}
         </Button>
-      </div>
-    </>
+      </CardContent>
+      <CardFooter>
+        <Button
+          disabled={!eventId}
+          onClick={onValidateEventId}
+          className="w-full"
+        >
+          <span>{t('enter-event')}</span>
+          <LogIn />
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };

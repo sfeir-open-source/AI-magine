@@ -1,9 +1,9 @@
 import { Navigate, Route, Routes } from 'react-router';
 import { EventSelectionPage } from '@/src/pages/event-selection.page';
-import { EventPromptPage } from '@/src/pages/event-prompt.page';
+import { UserInfoFormPage } from '@/src/pages/user-info-form.page';
 import { AppLayout } from '@/src/components/app-layout/app-layout';
-import { PromptLoadingPage } from '@/src/pages/prompt-loading.page';
-import { UserImagesPage } from '@/src/pages/user-images.page';
+import { ImageGenerationPage } from '@/src/pages/image-generation.page';
+import { EventGalleryPage } from '@/src/pages/event-gallery.page';
 
 export const ReactRouterConfig = () => {
   return (
@@ -11,14 +11,11 @@ export const ReactRouterConfig = () => {
       <Routes>
         <Route path="/" element={<Navigate to="/events" replace />} />
         <Route path="/events" Component={EventSelectionPage} />
-        <Route path="/events/:eventId" Component={EventPromptPage} />
+        <Route path="/events/:eventId" Component={UserInfoFormPage} />
+        <Route path="/events/:eventId/gallery" Component={EventGalleryPage} />
         <Route
-          path="/events/:eventId/prompts/:promptId/loading"
-          Component={PromptLoadingPage}
-        />
-        <Route
-          path="/events/:eventId/users/:userId/images"
-          Component={UserImagesPage}
+          path="/events/:eventId/image-generation"
+          Component={ImageGenerationPage}
         />
       </Routes>
     </AppLayout>

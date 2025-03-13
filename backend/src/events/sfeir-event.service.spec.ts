@@ -1,11 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SfeirEventService } from './sfeir-event.service';
-
-import { vi } from 'vitest';
-import {
-  SFEIR_EVENT_REPOSITORY,
-  SfeirEventRepository,
-} from '@/events/events-types';
+import { SFEIR_EVENT_REPOSITORY, SfeirEventRepository } from '@/events/domain';
 
 describe('SfeirEventService', () => {
   let service: SfeirEventService;

@@ -1,86 +1,267 @@
-import { useNavigate, useParams } from 'react-router';
-import { expect, Mock } from 'vitest';
-import { renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useImageGenerationListener } from '@/src/hooks/useImageGenerationListener';
-import i18n from '@/src/config/i18n';
+import { EventsContext } from '@/src/providers/events/events.context';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { EventRepository } from '@/src/domain/EventRepository';
 import { toast } from 'sonner';
-import { useUserId } from '@/src/hooks/useUserId';
 
-vi.mock('react-router');
-vi.mock('@/src/providers/events/useEventsProvider', () => ({
-  useEventsProvider: () => ({
-    listenForPromptGenerationEvent: (
-      _eventId: string,
-      _promptId: string,
-      onEvent: (evt: { data: string }) => void
-    ) => {
-      onEvent({ data: JSON.stringify({ type: 'done' }) });
-    },
-  }),
-}));
 vi.mock('sonner', () => ({
   toast: {
-    error: vi
-      .fn()
-      .mockImplementation((_text, options: { onAutoClose: () => void }) => {
-        options.onAutoClose();
-      }),
+    success: vi.fn(),
+    error: vi.fn(),
   },
 }));
-vi.mock('@/src/hooks/useUserId');
 
 describe('useImageGenerationListener', () => {
-  it('throws an error if eventId is empty', () => {
-    (useParams as Mock).mockReturnValue({
-      promptId: 'prompt-id',
-      eventId: undefined,
-    });
+  const fakeUserId = 'fake-user';
 
-    expect(() => renderHook(() => useImageGenerationListener())).toThrow();
-  });
+  it('returns a listen function that updates progress for image:generation-requested event', async () => {
+    const listenForPromptGenerationEventMock = vi
+      .fn()
+      .mockImplementation(
+        (
+          _eventId: string,
+          _promptId: string,
+          onEvent: (evt: MessageEvent<string>) => void
+        ) => {
+          onEvent({
+            data: JSON.stringify({ type: 'image:generation-requested' }),
+          } as MessageEvent<string>);
+        }
+      );
 
-  it('throws an error if promptId is empty', () => {
-    (useParams as Mock).mockReturnValue({
-      promptId: undefined,
-      eventId: 'event-id',
-    });
-
-    expect(() => renderHook(() => useImageGenerationListener())).toThrow();
-  });
-
-  it('displays an error message if userId is empty and redirects to event form page', async () => {
-    (useParams as Mock).mockReturnValue({
-      promptId: 'prompt-id',
-      eventId: 'event-id',
-    });
-
-    const navigateMock = vi.fn();
-    (useNavigate as Mock).mockReturnValue(navigateMock);
-
-    renderHook(() => useImageGenerationListener());
-
-    expect(toast.error).toHaveBeenCalledWith(
-      i18n.t('failed-authenticate-redirect'),
-      expect.any(Object)
+    const { result } = renderHook(
+      () => useImageGenerationListener(fakeUserId),
+      {
+        wrapper: ({ children }) => (
+          <EventsContext.Provider
+            value={
+              {
+                listenForPromptGenerationEvent:
+                  listenForPromptGenerationEventMock,
+              } as unknown as EventRepository
+            }
+          >
+            <QueryClientProvider client={new QueryClient()}>
+              {children}
+            </QueryClientProvider>
+          </EventsContext.Provider>
+        ),
+      }
     );
-    expect(navigateMock).toHaveBeenCalledWith(`/events/event-id`);
+
+    result.current.listen('prompt-id');
+
+    await waitFor(() => expect(result.current.progress).toEqual(20));
   });
 
-  it('waits for events until "done" event and then redirects to images page', () => {
-    (useParams as Mock).mockReturnValue({
-      promptId: 'prompt-id',
-      eventId: 'event-id',
-    });
+  it('returns a listen function that updates progress for image:generation-done event', async () => {
+    const listenForPromptGenerationEventMock = vi
+      .fn()
+      .mockImplementation(
+        (
+          _eventId: string,
+          _promptId: string,
+          onEvent: (evt: MessageEvent<string>) => void
+        ) => {
+          onEvent({
+            data: JSON.stringify({ type: 'image:generation-done' }),
+          } as MessageEvent<string>);
+        }
+      );
 
-    (useUserId as Mock).mockReturnValue('user-id');
-
-    const navigateMock = vi.fn();
-    (useNavigate as Mock).mockReturnValue(navigateMock);
-
-    renderHook(() => useImageGenerationListener());
-
-    expect(navigateMock).toHaveBeenCalledWith(
-      `/events/event-id/users/user-id/images`
+    const { result } = renderHook(
+      () => useImageGenerationListener(fakeUserId),
+      {
+        wrapper: ({ children }) => (
+          <EventsContext.Provider
+            value={
+              {
+                listenForPromptGenerationEvent:
+                  listenForPromptGenerationEventMock,
+              } as unknown as EventRepository
+            }
+          >
+            <QueryClientProvider client={new QueryClient()}>
+              {children}
+            </QueryClientProvider>
+          </EventsContext.Provider>
+        ),
+      }
     );
+
+    result.current.listen('prompt-id');
+
+    await waitFor(() => expect(result.current.progress).toEqual(40));
+  });
+
+  it('returns a listen function that updates progress for storage:save-requested event', async () => {
+    const listenForPromptGenerationEventMock = vi
+      .fn()
+      .mockImplementation(
+        (
+          _eventId: string,
+          _promptId: string,
+          onEvent: (evt: MessageEvent<string>) => void
+        ) => {
+          onEvent({
+            data: JSON.stringify({ type: 'storage:save-requested' }),
+          } as MessageEvent<string>);
+        }
+      );
+
+    const { result } = renderHook(
+      () => useImageGenerationListener(fakeUserId),
+      {
+        wrapper: ({ children }) => (
+          <EventsContext.Provider
+            value={
+              {
+                listenForPromptGenerationEvent:
+                  listenForPromptGenerationEventMock,
+              } as unknown as EventRepository
+            }
+          >
+            <QueryClientProvider client={new QueryClient()}>
+              {children}
+            </QueryClientProvider>
+          </EventsContext.Provider>
+        ),
+      }
+    );
+
+    result.current.listen('prompt-id');
+
+    await waitFor(() => expect(result.current.progress).toEqual(60));
+  });
+
+  it('returns a listen function that updates progress for storage:save-done event', async () => {
+    const listenForPromptGenerationEventMock = vi
+      .fn()
+      .mockImplementation(
+        (
+          _eventId: string,
+          _promptId: string,
+          onEvent: (evt: MessageEvent<string>) => void
+        ) => {
+          onEvent({
+            data: JSON.stringify({ type: 'storage:save-done' }),
+          } as MessageEvent<string>);
+        }
+      );
+
+    const { result } = renderHook(
+      () => useImageGenerationListener(fakeUserId),
+      {
+        wrapper: ({ children }) => (
+          <EventsContext.Provider
+            value={
+              {
+                listenForPromptGenerationEvent:
+                  listenForPromptGenerationEventMock,
+              } as unknown as EventRepository
+            }
+          >
+            <QueryClientProvider client={new QueryClient()}>
+              {children}
+            </QueryClientProvider>
+          </EventsContext.Provider>
+        ),
+      }
+    );
+
+    result.current.listen('prompt-id');
+
+    await waitFor(() => expect(result.current.progress).toEqual(80));
+  });
+
+  it('returns a listen function that updates progress for done event', async () => {
+    const listenForPromptGenerationEventMock = vi
+      .fn()
+      .mockImplementation(
+        (
+          _eventId: string,
+          _promptId: string,
+          onEvent: (evt: MessageEvent<string>) => void
+        ) => {
+          onEvent({
+            data: JSON.stringify({ type: 'done' }),
+          } as MessageEvent<string>);
+        }
+      );
+
+    const queryClient = new QueryClient();
+
+    const invalidateQueriesSpy = vi.spyOn(queryClient, 'invalidateQueries');
+
+    const { result } = renderHook(
+      () => useImageGenerationListener(fakeUserId),
+      {
+        wrapper: ({ children }) => (
+          <EventsContext.Provider
+            value={
+              {
+                listenForPromptGenerationEvent:
+                  listenForPromptGenerationEventMock,
+              } as unknown as EventRepository
+            }
+          >
+            <QueryClientProvider client={queryClient}>
+              {children}
+            </QueryClientProvider>
+          </EventsContext.Provider>
+        ),
+      }
+    );
+
+    result.current.listen('prompt-id');
+
+    await waitFor(() => expect(result.current.progress).toEqual(100));
+    await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalled());
+    await waitFor(() => expect(result.current.progress).toEqual(0));
+    expect(toast.success).toHaveBeenCalled();
+  });
+
+  it('returns a listen function that updates progress for error event', async () => {
+    const listenForPromptGenerationEventMock = vi
+      .fn()
+      .mockImplementation(
+        (
+          _eventId: string,
+          _promptId: string,
+          onEvent: (evt: MessageEvent<string>) => void
+        ) => {
+          onEvent({
+            data: JSON.stringify({ type: 'error' }),
+          } as MessageEvent<string>);
+        }
+      );
+
+    const queryClient = new QueryClient();
+
+    const { result } = renderHook(
+      () => useImageGenerationListener(fakeUserId),
+      {
+        wrapper: ({ children }) => (
+          <EventsContext.Provider
+            value={
+              {
+                listenForPromptGenerationEvent:
+                  listenForPromptGenerationEventMock,
+              } as unknown as EventRepository
+            }
+          >
+            <QueryClientProvider client={queryClient}>
+              {children}
+            </QueryClientProvider>
+          </EventsContext.Provider>
+        ),
+      }
+    );
+
+    result.current.listen('prompt-id');
+
+    await waitFor(() => expect(result.current.progress).toEqual(0));
+    expect(toast.error).toHaveBeenCalled();
   });
 });

@@ -30,13 +30,7 @@ export class ImagenImageGenerationClient implements ImageGenerationClient {
 
   private DEFAULT_IMAGE_REQUEST_PARAMS = {
     sampleCount: 1,
-    addWatermark: true,
-    watermarkText: 'SFEIR',
     aspectRatio: '16:9',
-    safetySettings: {
-      categoryAllowList: ['hate', 'harassment', 'sexualContent'],
-      filterStrength: 'HIGH',
-    },
   };
 
   async generateImageFromPrompt(prompt: string): Promise<string> {

@@ -1,8 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EncryptionService } from './encryption.service';
+import * as process from 'node:process';
 
 describe('EncryptionService', () => {
   let service: EncryptionService;
+  const encryptedEmail = 'a2faea01f6de2bf326183529934d3d2b';
+  const clearEmail = 'email@test.com';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -13,14 +16,13 @@ describe('EncryptionService', () => {
   });
 
   describe('encryptEmail', () => {
-    const email = 'email@test.com';
-
     it('should return a non-empty encrypted string given valid input and key', () => {
-      const result = service.encryptEmail(email);
+      const result = service.encryptEmail(clearEmail);
 
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
       expect(result.length).toBeGreaterThan(0);
+      expect(result).toBe(encryptedEmail);
     });
 
     it('should throw an error if the input is empty', async () => {
@@ -29,15 +31,59 @@ describe('EncryptionService', () => {
       );
     });
 
-    it('should throw an error if the key is empty', () => {
-      const oldKey = process.env.EMAIL_HASH_SECRET;
-      process.env.EMAIL_HASH_SECRET = '';
+    it('should throw an error if the key or iv are empty', () => {
+      const oldKey = process.env.EMAIL_ENCRYPTION_KEY;
+      process.env.EMAIL_ENCRYPTION_KEY = '';
 
-      expect(() => service.encryptEmail(email)).toThrowError(
-        new ReferenceError("Can't encrypt without key")
+      expect(() => service.encryptEmail(clearEmail)).toThrowError(
+        new ReferenceError('Encryption key and IV must be set')
       );
 
-      process.env.EMAIL_HASH_SECRET = oldKey;
+      process.env.EMAIL_ENCRYPTION_KEY = oldKey;
+      const oldIv = process.env.EMAIL_ENCRYPTION_IV;
+      process.env.EMAIL_ENCRYPTION_IV = '';
+
+      expect(() => service.encryptEmail(clearEmail)).toThrowError(
+        new ReferenceError('Encryption key and IV must be set')
+      );
+
+      process.env.EMAIL_ENCRYPTION_IV = oldIv;
+    });
+  });
+
+  describe('decryptEmail', () => {
+    it('should return a non-empty decrypted string given valid input and key', () => {
+      const result = service.decryptEmail(encryptedEmail);
+
+      expect(result).toBeDefined();
+      expect(typeof result).toBe('string');
+      expect(result.length).toBeGreaterThan(0);
+      expect(result).toBe(clearEmail);
+    });
+
+    it('should throw an error if the input is empty', async () => {
+      expect(() => service.decryptEmail('')).toThrowError(
+        new ReferenceError("Can't decrypt empty string")
+      );
+    });
+
+    it('should throw an error if the key or iv are empty', () => {
+      const oldKey = process.env.EMAIL_ENCRYPTION_KEY;
+      process.env.EMAIL_ENCRYPTION_KEY = '';
+
+      expect(() => service.decryptEmail(clearEmail)).toThrowError(
+        new ReferenceError('Encryption key and IV must be set')
+      );
+
+      process.env.EMAIL_ENCRYPTION_KEY = oldKey;
+      const oldIv = process.env.EMAIL_ENCRYPTION_IV;
+      process.env.EMAIL_ENCRYPTION_IV = '';
+
+      expect(() => service.decryptEmail(clearEmail)).toThrowError(
+        new ReferenceError('Encryption key and IV must be set')
+      );
+
+      process.env.EMAIL_ENCRYPTION_IV = oldIv;
     });
   });
 });

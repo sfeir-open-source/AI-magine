@@ -5,8 +5,12 @@ import { ConfigService } from '@nestjs/config';
 export class ConfigurationService {
   constructor(private configService: ConfigService) {}
 
-  getEmailHashSecret() {
-    return this.configService.get('EMAIL_HASH_SECRET');
+  getEmailEncryptionKey() {
+    return this.configService.get('EMAIL_ENCRYPTION_KEY');
+  }
+
+  getEmailEncryptionIV() {
+    return this.configService.get('EMAIL_ENCRYPTION_IV');
   }
 
   getImagenGcpProjectID() {

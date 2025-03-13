@@ -22,7 +22,9 @@ export default defineConfig({
     },
     env: {
       ...process.env,
-      EMAIL_HASH_SECRET: 'X5EoRg!Fgqpwbik2a&b6yki48VQgyiCt',
+      EMAIL_ENCRYPTION_KEY:
+        '24a387402a0ba46cc561179b103a08a5debc701dfab6ba0f24d3e9c40bd61f1d',
+      EMAIL_ENCRYPTION_IV: '726c2b9ff0d5643bbe0b167a13e2366f',
       SQLITE_DB_PATH: ':memory:',
     },
   },

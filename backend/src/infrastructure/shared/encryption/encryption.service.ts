@@ -1,17 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import * as crypto from 'node:crypto';
+import { ConfigurationService } from '@/configuration/configuration.service';
 
 @Injectable()
 export class EncryptionService {
   private ALGORITHM = 'aes-256-cbc';
 
+  constructor(
+    @Inject() private readonly configurationService: ConfigurationService
+  ) {}
+
   private getKeyAndIv() {
-    if (!process.env.EMAIL_ENCRYPTION_KEY || !process.env.EMAIL_ENCRYPTION_IV) {
+    const key = this.configurationService.getEmailEncryptionKey();
+    const iv = this.configurationService.getEmailEncryptionIV();
+    if (!key || !iv) {
       throw new ReferenceError('Encryption key and IV must be set');
     }
     return {
-      key: Buffer.from(process.env.EMAIL_ENCRYPTION_KEY, 'hex'),
-      iv: Buffer.from(process.env.EMAIL_ENCRYPTION_IV, 'hex'),
+      key: Buffer.from(key, 'hex'),
+      iv: Buffer.from(iv, 'hex'),
     };
   }
 

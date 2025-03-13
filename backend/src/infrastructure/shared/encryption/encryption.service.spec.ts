@@ -1,6 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { EncryptionService } from './encryption.service';
-import * as process from 'node:process';
+import { ConfigurationService } from '@/configuration/configuration.service';
+import { ConfigService } from '@nestjs/config';
 
 describe('EncryptionService', () => {
   let service: EncryptionService;
@@ -8,11 +8,11 @@ describe('EncryptionService', () => {
   const clearEmail = 'email@test.com';
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [EncryptionService],
-    }).compile();
-
-    service = module.get<EncryptionService>(EncryptionService);
+    service = new EncryptionService(
+      new ConfigurationService({
+        get: (key: string) => process.env[key],
+      } as unknown as ConfigService)
+    );
   });
 
   describe('encryptEmail', () => {

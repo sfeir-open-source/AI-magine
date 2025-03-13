@@ -89,10 +89,10 @@ export class FirestoreImagesRepository implements ImagesRepository {
 
     for (let i = 0; i < promptIds.length; i += chunkSize) {
       const chunk = promptIds.slice(i, i + chunkSize);
-      const query = this.imagesCollection.where('promptId', 'in', chunk);
+      let query = this.imagesCollection.where('promptId', 'in', chunk);
 
       if (filterOnSelected) {
-        query.where('selected', '==', true);
+        query = query.where('selected', '==', true);
       }
 
       const querySnapshot = await query.get();

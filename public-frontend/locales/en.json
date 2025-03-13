@@ -23,6 +23,8 @@
   "failed-promote": "Failed to promote image",
   "promote": "Promote",
   "generate-new-image": "Generate a new image",
+  "remaining_one": "({{ count }} remaining)",
+  "remaining_other": "({{ count }} remaining)",
   "generating-your-image": "Generating your image",
   "enter-event": "Enter event",
   "clear": "Clear",

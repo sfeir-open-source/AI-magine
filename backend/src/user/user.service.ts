@@ -44,8 +44,8 @@ export class UserService {
   }
 
   async getUserRemainingPromptsByEvent(
-    eventId: string,
-    userId: string
+    userId: string,
+    eventId: string
   ): Promise<RemainingPromptsDto> {
     const event = await this.eventRepository.getSfeirEvent(eventId);
     const images = await this.imagesRepository.getImageByEventIdAndUserId(

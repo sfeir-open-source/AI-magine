@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { useImageGenerationListener } from '@/src/hooks/useImageGenerationListener';
 import { EventsContext } from '@/src/providers/events/events.context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -50,7 +50,7 @@ describe('useImageGenerationListener', () => {
       }
     );
 
-    result.current.listen('prompt-id');
+    act(() => result.current.listen('prompt-id'));
 
     await waitFor(() => expect(result.current.progress).toEqual(20));
   });
@@ -90,7 +90,7 @@ describe('useImageGenerationListener', () => {
       }
     );
 
-    result.current.listen('prompt-id');
+    act(() => result.current.listen('prompt-id'));
 
     await waitFor(() => expect(result.current.progress).toEqual(40));
   });
@@ -130,7 +130,7 @@ describe('useImageGenerationListener', () => {
       }
     );
 
-    result.current.listen('prompt-id');
+    act(() => result.current.listen('prompt-id'));
 
     await waitFor(() => expect(result.current.progress).toEqual(60));
   });
@@ -170,7 +170,7 @@ describe('useImageGenerationListener', () => {
       }
     );
 
-    result.current.listen('prompt-id');
+    act(() => result.current.listen('prompt-id'));
 
     await waitFor(() => expect(result.current.progress).toEqual(80));
   });
@@ -214,10 +214,27 @@ describe('useImageGenerationListener', () => {
       }
     );
 
-    result.current.listen('prompt-id');
+    act(() => result.current.listen('prompt-id'));
 
     await waitFor(() => expect(result.current.progress).toEqual(100));
-    await waitFor(() => expect(invalidateQueriesSpy).toHaveBeenCalled());
+    await waitFor(
+      () =>
+        expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+          queryKey: ['events', undefined, 'users', 'fake-user', 'images'],
+        }),
+      { timeout: 2000 }
+    );
+    await waitFor(() =>
+      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+        queryKey: [
+          'users',
+          'fake-user',
+          'events',
+          undefined,
+          'remaining-prompts',
+        ],
+      })
+    );
     await waitFor(() => expect(result.current.progress).toEqual(0));
     expect(toast.success).toHaveBeenCalled();
   });
@@ -259,7 +276,7 @@ describe('useImageGenerationListener', () => {
       }
     );
 
-    result.current.listen('prompt-id');
+    act(() => result.current.listen('prompt-id'));
 
     await waitFor(() => expect(result.current.progress).toEqual(0));
     expect(toast.error).toHaveBeenCalled();

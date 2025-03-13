@@ -143,8 +143,8 @@ describe('UserService', () => {
   describe('getUserRemainingPromptsByEvent', () => {
     it('should return the number of remaining prompts', async () => {
       const result = await userService.getUserRemainingPromptsByEvent(
-        'event-id',
-        'user-id'
+        'user-id',
+        'event-id'
       );
 
       expect(eventRepositoryMock.getSfeirEvent).toHaveBeenCalledWith(

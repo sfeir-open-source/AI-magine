@@ -20,7 +20,10 @@ import {
   IMAGE_GENERATION_SERVICE,
   ImageGenerationService,
 } from '@/core/application/image-generation/image-generation.service';
-import { ImageService } from '@/core/application/image/image.service';
+import {
+  IMAGE_SERVICE,
+  ImageService,
+} from '@/core/application/image/image.service';
 
 @Injectable()
 export class PromptServiceImpl implements PromptService {
@@ -31,6 +34,7 @@ export class PromptServiceImpl implements PromptService {
     private readonly eventService: SfeirEventService,
     @Inject(USER_SERVICE)
     private readonly userService: UserService,
+    @Inject(IMAGE_SERVICE)
     private readonly imagesService: ImageService,
     @Inject(IMAGE_GENERATION_SERVICE)
     private readonly imageGenerationService: ImageGenerationService

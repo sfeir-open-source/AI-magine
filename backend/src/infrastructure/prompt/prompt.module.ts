@@ -6,12 +6,14 @@ import { PersistenceModule } from '@/infrastructure/shared/persistence/persisten
 import { SfeirEventModule } from '@/infrastructure/sfeir-event/sfeir-event.module';
 import { UserModule } from '@/infrastructure/user/user.module';
 import { ImageGenerationModule } from '@/infrastructure/shared/image-generation/image-generation.module';
+import { ImageModule } from '@/infrastructure/image/image.module';
 
 @Module({
   imports: [
     PersistenceModule,
     SfeirEventModule,
     UserModule,
+    ImageModule,
     ImageGenerationModule,
   ],
   controllers: [PromptController],

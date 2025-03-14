@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Subject } from 'rxjs';
 import { ImageGenerationEventEmitter } from '@/infrastructure/shared/image-generation/event-emitter/image-generation-event-emitter';
 import {
@@ -18,6 +18,7 @@ import {
   IMAGE_SERVICE,
   ImageService,
 } from '@/core/application/image/image.service';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class ImageGenerationEngine {
@@ -31,7 +32,9 @@ export class ImageGenerationEngine {
     @Inject(IMAGE_GENERATION_CLIENT)
     private readonly imageGenerationClient: ImageGenerationClient,
     @Inject(IMAGES_STORAGE)
-    private readonly imagesStorage: ImagesStorage
+    private readonly imagesStorage: ImagesStorage,
+    @Inject(WINSTON_MODULE_PROVIDER)
+    private readonly logger: Logger
   ) {
     this.emitter = new ImageGenerationEventEmitter();
     this.emitter.on('image:generation-requested', async (payload) => {
@@ -95,7 +98,7 @@ export class ImageGenerationEngine {
 
       this.emitter.emit('done', { promptId, imageURL });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       this.emitter.emit('error', { promptId, error });
     }
   }

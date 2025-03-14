@@ -18,11 +18,11 @@ import {
   IMAGE_SERVICE,
   ImageService,
 } from '@/core/application/image/image.service';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class ImageGenerationEngine {
   private emitter: ImageGenerationEventEmitter;
+  private readonly logger = new Logger(ImageGenerationEngine.name);
 
   constructor(
     @Inject(IMAGE_GENERATION_STATUS_REPOSITORY)
@@ -32,9 +32,7 @@ export class ImageGenerationEngine {
     @Inject(IMAGE_GENERATION_CLIENT)
     private readonly imageGenerationClient: ImageGenerationClient,
     @Inject(IMAGES_STORAGE)
-    private readonly imagesStorage: ImagesStorage,
-    @Inject(WINSTON_MODULE_PROVIDER)
-    private readonly logger: Logger
+    private readonly imagesStorage: ImagesStorage
   ) {
     this.emitter = new ImageGenerationEventEmitter();
     this.emitter.on('image:generation-requested', async (payload) => {

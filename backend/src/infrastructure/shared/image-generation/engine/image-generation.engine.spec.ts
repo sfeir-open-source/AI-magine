@@ -5,7 +5,6 @@ import { ImageGenerationMessageEvent } from '@/core/application/image-generation
 import { ImageGenerationStatusRepository } from '@/core/domain/image-generation/image-generation-status.repository';
 import { ImageService } from '@/core/application/image/image.service';
 import { ImageGenerationClient } from '@/core/domain/image-generation/image-generation.client';
-import { Logger } from '@nestjs/common';
 
 const mockImageGenerationClient = {
   generateImageFromPrompt: vi.fn(),
@@ -32,10 +31,7 @@ describe('ImageGenerationEngine', () => {
       mockImageGenerationStatusRepository,
       mockImagesService,
       mockImageGenerationClient,
-      mockImagesStorage,
-      {
-        error: vi.fn(),
-      } as unknown as Logger
+      mockImagesStorage
     );
     vi.clearAllMocks();
   });

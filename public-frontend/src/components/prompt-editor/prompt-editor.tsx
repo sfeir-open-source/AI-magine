@@ -15,6 +15,7 @@ import { useParams } from 'react-router';
 import { ProgressButton } from '@/src/components/progress-button/progress-button';
 import { toast } from 'sonner';
 import { useUserId } from '@/src/hooks/useUserId';
+import { useRemainingPromptsCount } from '@/src/hooks/useRemainingPromptsCount';
 
 type PromptEditorProps = {
   displayedImagePrompt?: string;
@@ -22,10 +23,13 @@ type PromptEditorProps = {
 
 export function PromptEditor({ displayedImagePrompt }: PromptEditorProps) {
   const { t } = useTranslation();
-
   const { eventId } = useParams<{ eventId: string }>();
-
   const userId = useUserId();
+
+  const {
+    data: remainingPrompts,
+    isFetching: isFetchingRemainingPromptsCount,
+  } = useRemainingPromptsCount();
 
   const [prompt, setPrompt] = useState<string>('');
 
@@ -78,7 +82,7 @@ export function PromptEditor({ displayedImagePrompt }: PromptEditorProps) {
           progress={progress}
           onClick={handleGenerateImage}
           className="w-full"
-          disabled={!prompt || progress > 0}
+          disabled={!prompt || progress > 0 || !remainingPrompts}
         >
           {progress > 0 ? (
             <>
@@ -88,7 +92,9 @@ export function PromptEditor({ displayedImagePrompt }: PromptEditorProps) {
           ) : (
             <>
               <Sparkles className="mr-2 h-4 w-4" />
-              {t('generate-new-image')}
+              {t('generate-new-image')}{' '}
+              {!isFetchingRemainingPromptsCount &&
+                t('remaining', { count: remainingPrompts ?? 0 })}
             </>
           )}
         </ProgressButton>

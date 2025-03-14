@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { getUserImagesQueryKey } from '@/src/hooks/useUserImages';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { getUseRemainingPromptsCountQueryKey } from '@/src/hooks/useRemainingPromptsCount';
 
 export const useImageGenerationListener = (userId: string) => {
   const { t } = useTranslation();
@@ -51,6 +52,13 @@ export const useImageGenerationListener = (userId: string) => {
                 queryKey: getUserImagesQueryKey(eventId, userId),
               });
 
+              queryClient.invalidateQueries({
+                queryKey: getUseRemainingPromptsCountQueryKey(
+                  userId,
+                  eventId as string
+                ),
+              });
+
               toast.success(t('successfully-generated-image'));
 
               setProgress(0);
@@ -74,7 +82,7 @@ export const useImageGenerationListener = (userId: string) => {
         onEvent
       );
     },
-    [eventId, eventsProvider, queryClient, userId]
+    [eventId, eventsProvider, queryClient, userId, t]
   );
 
   return {

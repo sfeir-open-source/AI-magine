@@ -4,20 +4,23 @@ import i18n from '@/src/config/i18n';
 import { useImageGenerationListener } from '@/src/hooks/useImageGenerationListener';
 import { useCreateEventPromptMutation } from '@/src/hooks/useCreateEventPromptMutation';
 import { userEvent } from '@testing-library/user-event';
-import { Mock } from 'vitest';
+import { expect, Mock } from 'vitest';
 import { useParams } from 'react-router';
 import { useUserId } from '@/src/hooks/useUserId';
+import { useRemainingPromptsCount } from '@/src/hooks/useRemainingPromptsCount';
 
 vi.mock('@/src/hooks/useCreateEventPromptMutation');
 vi.mock('@/src/hooks/useImageGenerationListener');
 vi.mock('react-router');
 vi.mock('@/src/hooks/useUserId');
+vi.mock('@/src/hooks/useRemainingPromptsCount');
 
 describe('PromptEditor', () => {
   it('displays an edit message if a prompt is given', () => {
     (useParams as Mock).mockReturnValue({});
     (useImageGenerationListener as Mock).mockReturnValue({});
     (useCreateEventPromptMutation as Mock).mockReturnValue({});
+    (useRemainingPromptsCount as Mock).mockReturnValue({ data: 5 });
 
     const fakeExistingPrompt = 'this is a test prompt';
 
@@ -31,6 +34,7 @@ describe('PromptEditor', () => {
     (useParams as Mock).mockReturnValue({});
     (useImageGenerationListener as Mock).mockReturnValue({});
     (useCreateEventPromptMutation as Mock).mockReturnValue({});
+    (useRemainingPromptsCount as Mock).mockReturnValue({ data: 5 });
 
     render(<PromptEditor displayedImagePrompt="" />);
 
@@ -45,6 +49,7 @@ describe('PromptEditor', () => {
     (useUserId as Mock).mockReturnValue(fakeUserId);
     const fakeEventId = 'test-event-id';
     (useParams as Mock).mockReturnValue({ eventId: fakeEventId });
+    (useRemainingPromptsCount as Mock).mockReturnValue({ data: 5 });
 
     const listenMock = vi.fn();
     (useImageGenerationListener as Mock).mockReturnValue({
@@ -66,7 +71,9 @@ describe('PromptEditor', () => {
       screen.getByPlaceholderText(i18n.t('enter-prompt-placeholder')),
       fakePrompt
     );
-    await userEvent.click(screen.getByText(i18n.t('generate-new-image')));
+    await userEvent.click(
+      screen.getByText(new RegExp(i18n.t('generate-new-image')))
+    );
 
     expect(mutateAsyncMock).toHaveBeenCalledWith({
       eventId: fakeEventId,
@@ -79,6 +86,7 @@ describe('PromptEditor', () => {
 
   it('displays a loading message when prompt is loading', async () => {
     (useParams as Mock).mockReturnValue({});
+    (useRemainingPromptsCount as Mock).mockReturnValue({ data: 5 });
 
     (useImageGenerationListener as Mock).mockReturnValue({
       listen: vi.fn(),
@@ -95,5 +103,41 @@ describe('PromptEditor', () => {
 
     expect(screen.getByText(buttonText)).toBeInTheDocument();
     expect(screen.getByText(buttonText)).toBeDisabled();
+  });
+
+  it('displays the number of remaining prompts', async () => {
+    (useParams as Mock).mockReturnValue({});
+    (useImageGenerationListener as Mock).mockReturnValue({});
+    (useCreateEventPromptMutation as Mock).mockReturnValue({});
+    (useRemainingPromptsCount as Mock).mockReturnValue({ data: 5 });
+
+    const fakeExistingPrompt = 'this is a test prompt';
+
+    render(<PromptEditor displayedImagePrompt={fakeExistingPrompt} />);
+
+    expect(
+      screen.getByText(new RegExp(i18n.t('remaining', { count: 5 })))
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(i18n.t('generate-new-image')))
+    ).not.toBeDisabled();
+  });
+
+  it('disables the submit button if no prompts remaining', () => {
+    (useParams as Mock).mockReturnValue({});
+    (useImageGenerationListener as Mock).mockReturnValue({});
+    (useCreateEventPromptMutation as Mock).mockReturnValue({});
+    (useRemainingPromptsCount as Mock).mockReturnValue({ data: 0 });
+
+    const fakeExistingPrompt = 'this is a test prompt';
+
+    render(<PromptEditor displayedImagePrompt={fakeExistingPrompt} />);
+
+    expect(
+      screen.getByText(new RegExp(i18n.t('remaining', { count: 0 })))
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(i18n.t('generate-new-image')))
+    ).toBeDisabled();
   });
 });

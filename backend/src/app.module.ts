@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { WinstonModule } from 'nest-winston';
-import { loggerConfig } from './config/logger.config';
+import { loggerConfig } from '@/logger.config';
 import { AppController } from './app.controller';
-import { HealthModule } from './health/health.module';
-import { SfeirEventModule } from '@/events/sfeir-event.module';
+import { HealthModule } from '@/infrastructure/health/health.module';
+import { SfeirEventModule } from '@/infrastructure/sfeir-event/sfeir-event.module';
 import * as path from 'node:path';
-import { PromptModule } from '@/prompt/prompt.module';
-import { UserModule } from '@/user/user.module';
-import { ImageGenerationModule } from '@/image-generation/image-generation.module';
-import { ImagesModule } from '@/images/images.module';
+import { PromptModule } from '@/infrastructure/prompt/prompt.module';
+import { UserModule } from '@/infrastructure/user/user.module';
+import { ImageGenerationModule } from '@/infrastructure/shared/image-generation/image-generation.module';
+import { ImageModule } from '@/infrastructure/image/image.module';
 import { ConfigModule } from '@nestjs/config';
-import { ConfigurationModule } from '@/configuration/configuration.module';
+import { ConfigurationModule } from '@/infrastructure/shared/configuration/configuration.module';
 
 @Module({
   imports: [
@@ -21,13 +21,13 @@ import { ConfigurationModule } from '@/configuration/configuration.module';
       rootPath: path.join(__dirname, '..', '..', 'public'),
       serveRoot: '/static',
     }),
-    HealthModule,
     ConfigurationModule,
+    HealthModule,
+    ImageModule,
+    PromptModule,
     SfeirEventModule,
     UserModule,
     ImageGenerationModule,
-    ImagesModule,
-    PromptModule,
   ],
   controllers: [AppController],
 })

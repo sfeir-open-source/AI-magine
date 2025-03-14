@@ -6,6 +6,7 @@ import {
 import { FirestoreClient } from '@/infrastructure/shared/persistence/firestore/firestore-client';
 import { ImageGenerationStatus } from '@/core/domain/image-generation/image-generation-status';
 import { ImageGenerationStatusRepository } from '@/core/domain/image-generation/image-generation-status.repository';
+import { FirestorePromptRepository } from '@/infrastructure/shared/persistence/firestore/firestore-prompt.repository';
 
 @Injectable()
 export class FirestoreImageGenerationStatusRepository
@@ -13,7 +14,10 @@ export class FirestoreImageGenerationStatusRepository
 {
   private readonly imageGenerationStatusCollection: CollectionReference;
 
-  constructor(private readonly firestoreClient: FirestoreClient) {
+  constructor(
+    private readonly firestoreClient: FirestoreClient,
+    private readonly promptRepository: FirestorePromptRepository
+  ) {
     this.imageGenerationStatusCollection = firestoreClient.getCollection(
       'image-generation-status'
     );
@@ -91,14 +95,11 @@ export class FirestoreImageGenerationStatusRepository
   }
 
   async countStatusByEvent(eventId: string, status: string): Promise<number> {
-    const prompts = await this.firestoreClient
-      .getCollection('prompts')
-      .where('eventId', '==', eventId)
-      .get();
+    const prompts = await this.promptRepository.getEventPrompts(eventId);
 
     return (
       await this.getStatusesFromPromptIds(
-        prompts.docs.map((doc) => doc.id),
+        prompts.map((prompt) => prompt.id),
         status
       )
     ).length;

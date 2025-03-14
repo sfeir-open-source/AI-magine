@@ -118,13 +118,10 @@ export class FirestoreImagesRepository implements ImageRepository {
   }
 
   async countImagesByEvent(eventId: string): Promise<number> {
-    const prompts = await this.firestoreClient
-      .getCollection('prompts')
-      .where('eventId', '==', eventId)
-      .get();
+    const prompts = await this.promptRepository.getEventPrompts(eventId);
 
     const images = await this.getImagesFromPromptIds(
-      prompts.docs.map((doc) => doc.id)
+      prompts.map((prompt) => prompt.id)
     );
 
     return images.length;

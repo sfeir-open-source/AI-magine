@@ -35,7 +35,7 @@ export class SqliteImagesRepository
       selected: boolean;
       promptId: string;
       prompt: string;
-      createdAt: globalThis.Date;
+      createdAt: Date;
     }>({
       sql: `SELECT images.id        as id,
                    images.url       as url,
@@ -75,7 +75,7 @@ export class SqliteImagesRepository
       selected: boolean;
       promptId: string;
       prompt: string;
-      createdAt: globalThis.Date;
+      createdAt: Date;
       userNickname: string;
     }>({
       sql: `SELECT images.id        as id,
@@ -88,7 +88,7 @@ export class SqliteImagesRepository
             FROM images
                      INNER JOIN main.prompts prompts
                                 on images.promptId = prompts.id
-                     INNER JOIN main.users users on prompts.userId = users.id
+                     INNER JOIN main.users users on prompts.user_id = users.id
             WHERE event_id = $1
               AND selected = true;`,
       params: {
@@ -131,7 +131,7 @@ export class SqliteImagesRepository
       url: string;
       promptId: string;
       selected: boolean;
-      createdAt: globalThis.Date;
+      createdAt: Date;
     }>({
       sql: `SELECT *
             FROM images

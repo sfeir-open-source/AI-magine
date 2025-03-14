@@ -1,4 +1,4 @@
-import { Mock } from 'vitest';
+import { expect, Mock } from 'vitest';
 import {
   CollectionReference,
   DocumentReference,
@@ -180,6 +180,83 @@ describe('FirestoreImagesRepository', () => {
         createdAt: testImage.createdAt,
         selected: testImage.selected,
       });
+    });
+  });
+
+  describe('countImagesByEvent', () => {
+    it('returns the correct count of images for an event', async () => {
+      const eventId = 'event-id';
+
+      const mockPromptDocs = [
+        { id: 'prompt-id', eventId },
+        { id: 'prompt-id-2', eventId },
+        { id: 'prompt-id-3', eventId: 'event-id-2' },
+      ].map((doc) => ({ id: doc.id, data: () => doc }));
+
+      (firestoreClientMock.getCollection as Mock).mockImplementation(
+        (collectionName) => {
+          if (collectionName === 'prompts') {
+            return {
+              where: vi.fn().mockReturnThis(),
+              get: vi.fn().mockResolvedValue({ docs: mockPromptDocs }),
+            };
+          }
+        }
+      );
+
+      const seconds = 1696540800;
+      (imagesCollectionMock.get as Mock).mockResolvedValue({
+        forEach: vi.fn((cb) => {
+          cb({
+            id: 'image1',
+            data: () => ({
+              url: 'https://test.image',
+              promptId: 'prompt-id',
+              userId: 'user-id',
+              createdAt: { _seconds: seconds },
+              selected: false,
+            }),
+            get: (field: string) => {
+              const fields: Record<string, unknown> = {
+                url: 'https://test.image',
+                promptId: 'prompt-id',
+                userId: 'user-id',
+                createdAt: { _seconds: seconds },
+                selected: false,
+              };
+              return fields[field];
+            },
+          });
+        }),
+      });
+
+      const result = await imagesRepository.countImagesByEvent(eventId);
+
+      expect(result).toBe(1);
+    });
+
+    it('returns 0 when there are no associated images', async () => {
+      const eventId = 'event-id';
+      const mockPromptDocs = [
+        { id: 'prompt-id', eventId },
+        { id: 'prompt-id-2', eventId },
+        { id: 'prompt-id-3', eventId: 'event-id-2' },
+      ].map((doc) => ({ id: doc.id, data: () => doc }));
+
+      (firestoreClientMock.getCollection as Mock).mockReturnValue({
+        where: vi.fn().mockReturnThis(),
+        get: vi.fn().mockResolvedValue({
+          docs: mockPromptDocs,
+        }),
+      });
+
+      (imagesCollectionMock.get as Mock).mockResolvedValue({
+        forEach: vi.fn(() => {}),
+      });
+
+      const result = await imagesRepository.countImagesByEvent('event1');
+
+      expect(result).toBe(0);
     });
   });
 });

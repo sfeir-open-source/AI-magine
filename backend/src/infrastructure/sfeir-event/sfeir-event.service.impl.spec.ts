@@ -8,11 +8,16 @@ import {
   USER_REPOSITORY,
   UserRepository,
 } from '@/core/domain/user/user.repository';
+import {
+  ImageRepository,
+  IMAGES_REPOSITORY,
+} from '@/core/domain/image/image.repository';
 
 describe('SfeirEventService', () => {
   let service: SfeirEventServiceImpl;
   let repositoryMock: SfeirEventRepository;
   let userRepositoryMock: UserRepository;
+  let imageRepositoryMock: ImageRepository;
 
   beforeEach(async () => {
     repositoryMock = {
@@ -26,12 +31,17 @@ describe('SfeirEventService', () => {
       countUsersByEvent: vi.fn(),
     } as unknown as UserRepository;
 
+    imageRepositoryMock = {
+      countImagesByEvent: vi.fn(),
+    } as unknown as ImageRepository;
+
     // TODO: remove testing module
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SfeirEventServiceImpl,
         { provide: SFEIR_EVENT_REPOSITORY, useValue: repositoryMock },
         { provide: USER_REPOSITORY, useValue: userRepositoryMock },
+        { provide: IMAGES_REPOSITORY, useValue: imageRepositoryMock },
       ],
     }).compile();
 
@@ -92,5 +102,17 @@ describe('SfeirEventService', () => {
       'event-id'
     );
     expect(userRepositoryMock.countUsersByEvent).toHaveBeenCalledTimes(1);
+  });
+
+  it('should get the event images count', async () => {
+    imageRepositoryMock.countImagesByEvent = vi.fn().mockResolvedValue(10);
+
+    const count = await service.countEventImages('event-id');
+
+    expect(count).toEqual(10);
+    expect(imageRepositoryMock.countImagesByEvent).toHaveBeenCalledWith(
+      'event-id'
+    );
+    expect(imageRepositoryMock.countImagesByEvent).toHaveBeenCalledTimes(1);
   });
 });

@@ -116,4 +116,17 @@ export class FirestoreImagesRepository implements ImageRepository {
       )
     );
   }
+
+  async countImagesByEvent(eventId: string): Promise<number> {
+    const prompts = await this.firestoreClient
+      .getCollection('prompts')
+      .where('eventId', '==', eventId)
+      .get();
+
+    const images = await this.getImagesFromPromptIds(
+      prompts.docs.map((doc) => doc.id)
+    );
+
+    return images.length;
+  }
 }

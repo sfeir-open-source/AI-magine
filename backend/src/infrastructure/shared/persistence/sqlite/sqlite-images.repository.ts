@@ -35,7 +35,7 @@ export class SqliteImagesRepository
       selected: boolean;
       promptId: string;
       prompt: string;
-      createdAt: Date;
+      createdAt: globalThis.Date;
     }>({
       sql: `SELECT images.id        as id,
                    images.url       as url,
@@ -75,7 +75,7 @@ export class SqliteImagesRepository
       selected: boolean;
       promptId: string;
       prompt: string;
-      createdAt: Date;
+      createdAt: globalThis.Date;
       userNickname: string;
     }>({
       sql: `SELECT images.id        as id,
@@ -131,7 +131,7 @@ export class SqliteImagesRepository
       url: string;
       promptId: string;
       selected: boolean;
-      createdAt: Date;
+      createdAt: globalThis.Date;
     }>({
       sql: `SELECT *
             FROM images
@@ -150,5 +150,18 @@ export class SqliteImagesRepository
       row.createdAt,
       row.selected
     );
+  }
+
+  async countImagesByEvent(eventId: string): Promise<number> {
+    const { count } = await this.sqliteClient.get<{ count: number }>({
+      sql: `SELECT COUNT(DISTINCT i.id) AS user_count
+            FROM images i
+                     INNER JOIN prompts p ON i.promptId = p.prompt
+            WHERE p.event_id = ?1;`,
+      params: {
+        1: eventId,
+      },
+    });
+    return count ?? 0;
   }
 }

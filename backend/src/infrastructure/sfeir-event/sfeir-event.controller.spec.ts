@@ -15,6 +15,7 @@ describe('SfeirEventController', () => {
       createSfeirEvent: vi.fn(),
       deleteSfeirEvent: vi.fn(),
       countEventUsers: vi.fn(),
+      countEventImages: vi.fn(),
     } as unknown as SfeirEventService;
 
     sfeirEventController = new SfeirEventController(sfeirEventService);
@@ -141,6 +142,26 @@ describe('SfeirEventController', () => {
 
       await expect(
         sfeirEventController.countEventUsers('valid-id')
+      ).resolves.toEqual(3);
+    });
+  });
+
+  describe('countEventImages', () => {
+    it('should return 404 if event does not exist', async () => {
+      vi.mocked(sfeirEventService.countEventImages).mockRejectedValue(
+        new NotFoundException()
+      );
+
+      await expect(
+        sfeirEventController.countEventImages('invalid-id')
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should return 200 and the number of iamges', async () => {
+      vi.mocked(sfeirEventService.countEventImages).mockResolvedValue(3);
+
+      await expect(
+        sfeirEventController.countEventImages('valid-id')
       ).resolves.toEqual(3);
     });
   });

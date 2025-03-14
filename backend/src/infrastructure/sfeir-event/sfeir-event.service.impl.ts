@@ -11,6 +11,10 @@ import {
   USER_REPOSITORY,
   UserRepository,
 } from '@/core/domain/user/user.repository';
+import {
+  ImageRepository,
+  IMAGES_REPOSITORY,
+} from '@/core/domain/image/image.repository';
 
 @Injectable()
 export class SfeirEventServiceImpl implements SfeirEventService {
@@ -18,7 +22,9 @@ export class SfeirEventServiceImpl implements SfeirEventService {
     @Inject(SFEIR_EVENT_REPOSITORY)
     private readonly sfeirEventRepository: SfeirEventRepository,
     @Inject(USER_REPOSITORY)
-    private readonly userRepository: UserRepository
+    private readonly userRepository: UserRepository,
+    @Inject(IMAGES_REPOSITORY)
+    private readonly imageRepository: ImageRepository
   ) {}
 
   async getSfeirEvents(): Promise<SfeirEvent[]> {
@@ -57,5 +63,9 @@ export class SfeirEventServiceImpl implements SfeirEventService {
 
   async countEventUsers(eventId: string): Promise<number> {
     return this.userRepository.countUsersByEvent(eventId);
+  }
+
+  async countEventImages(eventId: string): Promise<number> {
+    return this.imageRepository.countImagesByEvent(eventId);
   }
 }

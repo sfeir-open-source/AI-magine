@@ -115,4 +115,15 @@ describe('SqliteImagesRepository', () => {
       ]);
     });
   });
+
+  describe('countImagesByEvent', () => {
+    it('should return the count of images by event', async () => {
+      vi.spyOn(sqliteClient, 'get').mockResolvedValue({ count: 2 });
+
+      const result = await repository.countImagesByEvent('event-id');
+
+      expect(result).toEqual(2);
+      expect(sqliteClient.get).toHaveBeenCalled();
+    });
+  });
 });

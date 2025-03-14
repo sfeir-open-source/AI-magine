@@ -7,12 +7,18 @@ import {
   SfeirEventRepository,
 } from '@/core/domain/sfeir-event/sfeir-event.repository';
 import { SfeirEvent } from '@/core/domain/sfeir-event/sfeir-event';
+import {
+  USER_REPOSITORY,
+  UserRepository,
+} from '@/core/domain/user/user.repository';
 
 @Injectable()
 export class SfeirEventServiceImpl implements SfeirEventService {
   constructor(
     @Inject(SFEIR_EVENT_REPOSITORY)
-    private readonly sfeirEventRepository: SfeirEventRepository
+    private readonly sfeirEventRepository: SfeirEventRepository,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: UserRepository
   ) {}
 
   async getSfeirEvents(): Promise<SfeirEvent[]> {
@@ -47,5 +53,9 @@ export class SfeirEventServiceImpl implements SfeirEventService {
       throw new NotFoundException(`Event ${eventId} not found`);
     }
     return event.allowedPrompts;
+  }
+
+  async countEventUsers(eventId: string): Promise<number> {
+    return this.userRepository.countUsersByEvent(eventId);
   }
 }

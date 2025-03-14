@@ -79,4 +79,21 @@ export class FirestoreUserRepository implements IFirestoreUserRepository {
 
     return userDocuments.map(this.fromQueryDocumentSnapshotToUser);
   }
+
+  async countUsersByEvent(eventId: string): Promise<number> {
+    const prompts = await this.firestoreClient
+      .getCollection('prompts')
+      .where('eventId', '==', eventId)
+      .get();
+
+    const uniqueUserIds = new Set<string>();
+    prompts.forEach((doc) => {
+      const userId = doc.get('userId');
+      if (userId) {
+        uniqueUserIds.add(userId);
+      }
+    });
+
+    return uniqueUserIds.size;
+  }
 }

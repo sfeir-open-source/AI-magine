@@ -105,4 +105,15 @@ describe('SqliteUserRepository', () => {
       expect(sqliteClient.get).toHaveBeenCalled();
     });
   });
+
+  describe('countUsersByEvent', () => {
+    it('should return the count of users by event', async () => {
+      vi.spyOn(sqliteClient, 'get').mockResolvedValue({ count: 2 });
+
+      const result = await repository.countUsersByEvent('event-id');
+
+      expect(result).toEqual(2);
+      expect(sqliteClient.get).toHaveBeenCalled();
+    });
+  });
 });

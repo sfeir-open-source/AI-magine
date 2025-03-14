@@ -90,4 +90,20 @@ export class SfeirEventController {
     }
     return SfeirEventMappers.fromDomainToDTO(storedEvent);
   }
+
+  @Get(':id/users')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all users for an event' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'All users for an event',
+    type: Number,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'The event could not be found.',
+  })
+  async countEventUsers(@Param('id') eventId: string): Promise<number> {
+    return this.sfeirEventService.countEventUsers(eventId);
+  }
 }

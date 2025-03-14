@@ -23,6 +23,8 @@
   "failed-promote": "Échec de la promotion de l'image",
   "promote": "Promouvoir",
   "generate-new-image": "Générer une nouvelle image",
+  "remaining_one": "({{ count }} restante)",
+  "remaining_other": "({{ count }} restantes)",
   "generating-your-image": "Génération de votre image",
   "enter-event": "Accéder à l'évènement",
   "clear": "Effacer",

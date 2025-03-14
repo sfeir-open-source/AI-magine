@@ -5,16 +5,20 @@ import { ReactRouterConfig } from '@/src/config/react-router';
 import { EventsContext } from '@/src/providers/events/events.context';
 import { eventsApi } from '@/src/providers/events/events.api';
 import { Toaster } from '@/components/ui/sonner';
+import { UsersContext } from '@/src/providers/users/users.context';
+import { usersApi } from '@/src/providers/users/users.api';
 
 export const App = () => {
   return (
-    <EventsContext.Provider value={eventsApi}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <ReactRouterConfig />
-          <Toaster />
-        </BrowserRouter>
-      </QueryClientProvider>
-    </EventsContext.Provider>
+    <UsersContext.Provider value={usersApi}>
+      <EventsContext.Provider value={eventsApi}>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <ReactRouterConfig />
+            <Toaster />
+          </BrowserRouter>
+        </QueryClientProvider>
+      </EventsContext.Provider>
+    </UsersContext.Provider>
   );
 };

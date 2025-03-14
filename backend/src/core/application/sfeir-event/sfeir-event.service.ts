@@ -17,6 +17,8 @@ export interface SfeirEventService {
   countEventUsers(eventId: string): Promise<number>;
 
   countEventImages(eventId: string): Promise<number>;
+
+  countStatusByEvent(eventId: string, status: string): Promise<number>;
 }
 
 export const SFEIR_EVENT_SERVICE = Symbol('SFEIR_EVENT_SERVICE');

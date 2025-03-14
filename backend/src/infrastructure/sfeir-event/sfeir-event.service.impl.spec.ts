@@ -12,12 +12,17 @@ import {
   ImageRepository,
   IMAGES_REPOSITORY,
 } from '@/core/domain/image/image.repository';
+import {
+  IMAGE_GENERATION_STATUS_REPOSITORY,
+  ImageGenerationStatusRepository,
+} from '@/core/domain/image-generation/image-generation-status.repository';
 
 describe('SfeirEventService', () => {
   let service: SfeirEventServiceImpl;
   let repositoryMock: SfeirEventRepository;
   let userRepositoryMock: UserRepository;
   let imageRepositoryMock: ImageRepository;
+  let imageGenerationStatusRepository: ImageGenerationStatusRepository;
 
   beforeEach(async () => {
     repositoryMock = {
@@ -35,6 +40,10 @@ describe('SfeirEventService', () => {
       countImagesByEvent: vi.fn(),
     } as unknown as ImageRepository;
 
+    imageGenerationStatusRepository = {
+      countStatusByEvent: vi.fn(),
+    } as unknown as ImageGenerationStatusRepository;
+
     // TODO: remove testing module
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -42,6 +51,10 @@ describe('SfeirEventService', () => {
         { provide: SFEIR_EVENT_REPOSITORY, useValue: repositoryMock },
         { provide: USER_REPOSITORY, useValue: userRepositoryMock },
         { provide: IMAGES_REPOSITORY, useValue: imageRepositoryMock },
+        {
+          provide: IMAGE_GENERATION_STATUS_REPOSITORY,
+          useValue: imageGenerationStatusRepository,
+        },
       ],
     }).compile();
 
@@ -114,5 +127,21 @@ describe('SfeirEventService', () => {
       'event-id'
     );
     expect(imageRepositoryMock.countImagesByEvent).toHaveBeenCalledTimes(1);
+  });
+
+  it('should get the generation statuses count', async () => {
+    imageGenerationStatusRepository.countStatusByEvent = vi
+      .fn()
+      .mockResolvedValue(10);
+
+    const count = await service.countStatusByEvent('event-id', 'status');
+
+    expect(count).toEqual(10);
+    expect(
+      imageGenerationStatusRepository.countStatusByEvent
+    ).toHaveBeenCalledWith('event-id', 'status');
+    expect(
+      imageGenerationStatusRepository.countStatusByEvent
+    ).toHaveBeenCalledTimes(1);
   });
 });

@@ -7,6 +7,7 @@ import {
 import { FirestoreClient } from '@/infrastructure/shared/persistence/firestore/firestore-client';
 import { FirestoreImageGenerationStatusRepository } from '@/infrastructure/shared/persistence/firestore/firestore.image-generation-status.repository';
 import { ImageGenerationStatus } from '@/core/domain/image-generation/image-generation-status';
+import { Mock } from 'vitest';
 
 vi.mock('@google-cloud/firestore', () => ({
   CollectionReference: vi.fn(),
@@ -19,6 +20,12 @@ describe('FirestoreImageGenerationStatusRepository', () => {
   let firestoreClientMock: FirestoreClient;
   let repository: FirestoreImageGenerationStatusRepository;
   let mockCollection: CollectionReference;
+  const eventId = 'event-id';
+  const mockPromptDocs = [
+    { id: 'prompt-id', eventId },
+    { id: 'prompt-id-2', eventId },
+    { id: 'prompt-id-3', eventId: 'event-id-2' },
+  ].map((doc) => ({ id: doc.id, data: () => doc }));
 
   beforeEach(() => {
     mockCollection = {
@@ -136,6 +143,69 @@ describe('FirestoreImageGenerationStatusRepository', () => {
       expect(result.promptId).toBe(promptId);
       expect(result.status).toBe(status);
       expect(result.payload).toBe(payload);
+    });
+  });
+
+  describe('countStatusByEvent', () => {
+    it('should return 0 when no matching prompts are found for the given event', async () => {
+      (firestoreClientMock.getCollection as Mock).mockImplementation(
+        (collectionName) => {
+          if (collectionName === 'prompts') {
+            return {
+              where: vi.fn().mockReturnThis(),
+              get: vi.fn().mockResolvedValue({ docs: mockPromptDocs }),
+            };
+          }
+        }
+      );
+      (mockCollection.get as Mock).mockResolvedValue({
+        forEach: vi.fn(),
+      });
+
+      const result = await repository.countStatusByEvent(
+        'non-existent-event',
+        'completed'
+      );
+
+      expect(result).toBe(0);
+    });
+
+    it('should call getStatusesFromPromptIds and return the correct count when matching prompts and statuses are found', async () => {
+      (firestoreClientMock.getCollection as Mock).mockImplementation(
+        (collectionName) => {
+          if (collectionName === 'prompts') {
+            return {
+              where: vi.fn().mockReturnThis(),
+              get: vi.fn().mockResolvedValue({ docs: mockPromptDocs }),
+            };
+          }
+        }
+      );
+      (mockCollection.get as Mock).mockResolvedValue({
+        forEach: vi.fn((cb) => {
+          cb({
+            id: 'prompt-id-1',
+            data: () => ({
+              promptId: 'prompt-id-1',
+              status: 'completed',
+            }),
+            get: (field: string) => {
+              const fields: Record<string, unknown> = {
+                promptId: 'prompt-id-1',
+                status: 'completed',
+              };
+              return fields[field];
+            },
+          });
+        }),
+      });
+
+      const result = await repository.countStatusByEvent(
+        'test-event-id',
+        'completed'
+      );
+
+      expect(result).toBe(1);
     });
   });
 });

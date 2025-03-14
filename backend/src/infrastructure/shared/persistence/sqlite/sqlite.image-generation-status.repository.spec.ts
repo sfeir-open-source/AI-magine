@@ -74,4 +74,30 @@ describe('SqliteImageGenerationStatusRepository', () => {
       expect(result).toEqual(mockImageGenerationStatus);
     });
   });
+
+  describe('countStatusByEvent', () => {
+    it('should return 0 if no matching records are found', async () => {
+      vi.spyOn(sqliteClient, 'get').mockResolvedValueOnce({ count: 0 });
+
+      const result = await repository.countStatusByEvent(
+        'event-id',
+        'COMPLETED'
+      );
+
+      expect(sqliteClient.get).toHaveBeenCalled();
+      expect(result).toBe(0);
+    });
+
+    it('should return the count of matching records', async () => {
+      vi.spyOn(sqliteClient, 'get').mockResolvedValueOnce({ count: 5 });
+
+      const result = await repository.countStatusByEvent(
+        'event-id',
+        'COMPLETED'
+      );
+
+      expect(sqliteClient.get).toHaveBeenCalled();
+      expect(result).toBe(5);
+    });
+  });
 });

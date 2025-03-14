@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CollectionReference } from '@google-cloud/firestore';
+import {
+  CollectionReference,
+  QueryDocumentSnapshot,
+} from '@google-cloud/firestore';
 import { FirestoreClient } from '@/infrastructure/shared/persistence/firestore/firestore-client';
 import { ImageGenerationStatus } from '@/core/domain/image-generation/image-generation-status';
 import { ImageGenerationStatusRepository } from '@/core/domain/image-generation/image-generation-status.repository';
@@ -50,5 +53,54 @@ export class FirestoreImageGenerationStatusRepository
     await this.imageGenerationStatusCollection.doc(id).set(data);
 
     return newImageGenerationStatus;
+  }
+
+  private async getStatusesFromPromptIds(
+    promptIds: string[],
+    status: string
+  ): Promise<ImageGenerationStatus[]> {
+    const chunkSize = 30; // Firestore cannot handle more than 30 values with "IN"
+
+    const statusesSnapshot: QueryDocumentSnapshot[] = [];
+
+    for (let i = 0; i < promptIds.length; i += chunkSize) {
+      const chunk = promptIds.slice(i, i + chunkSize);
+      const querySnapshot = await this.imageGenerationStatusCollection
+        .where('promptId', 'in', chunk)
+        .where('status', '==', status)
+        .get();
+
+      querySnapshot.forEach((doc) => {
+        statusesSnapshot.push(doc);
+      });
+    }
+
+    if (statusesSnapshot.length === 0) {
+      return [];
+    }
+
+    return statusesSnapshot.map((doc) =>
+      ImageGenerationStatus.from(
+        doc.id,
+        doc.get('promptId'),
+        doc.get('status'),
+        doc.get('payload'),
+        new Date(doc.get('updatedAt'))
+      )
+    );
+  }
+
+  async countStatusByEvent(eventId: string, status: string): Promise<number> {
+    const prompts = await this.firestoreClient
+      .getCollection('prompts')
+      .where('eventId', '==', eventId)
+      .get();
+
+    return (
+      await this.getStatusesFromPromptIds(
+        prompts.docs.map((doc) => doc.id),
+        status
+      )
+    ).length;
   }
 }

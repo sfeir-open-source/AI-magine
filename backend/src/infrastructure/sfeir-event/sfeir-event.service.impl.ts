@@ -15,6 +15,10 @@ import {
   ImageRepository,
   IMAGES_REPOSITORY,
 } from '@/core/domain/image/image.repository';
+import {
+  IMAGE_GENERATION_STATUS_REPOSITORY,
+  ImageGenerationStatusRepository,
+} from '@/core/domain/image-generation/image-generation-status.repository';
 
 @Injectable()
 export class SfeirEventServiceImpl implements SfeirEventService {
@@ -24,7 +28,9 @@ export class SfeirEventServiceImpl implements SfeirEventService {
     @Inject(USER_REPOSITORY)
     private readonly userRepository: UserRepository,
     @Inject(IMAGES_REPOSITORY)
-    private readonly imageRepository: ImageRepository
+    private readonly imageRepository: ImageRepository,
+    @Inject(IMAGE_GENERATION_STATUS_REPOSITORY)
+    private readonly imageGenerationStatusRepository: ImageGenerationStatusRepository
   ) {}
 
   async getSfeirEvents(): Promise<SfeirEvent[]> {
@@ -67,5 +73,12 @@ export class SfeirEventServiceImpl implements SfeirEventService {
 
   async countEventImages(eventId: string): Promise<number> {
     return this.imageRepository.countImagesByEvent(eventId);
+  }
+
+  async countStatusByEvent(eventId: string, status: string): Promise<number> {
+    return this.imageGenerationStatusRepository.countStatusByEvent(
+      eventId,
+      status
+    );
   }
 }

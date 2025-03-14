@@ -122,4 +122,55 @@ export class SfeirEventController {
   async countEventImages(@Param('id') eventId: string): Promise<number> {
     return this.sfeirEventService.countEventImages(eventId);
   }
+
+  @Get(':id/prompt/generation-statuses/requests/count')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all generation requested for an event' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'All generation requested for an event',
+    type: Number,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'The event could not be found.',
+  })
+  async countEventGenerationRequested(@Param('id') eventId: string) {
+    return this.sfeirEventService.countStatusByEvent(
+      eventId,
+      'image:generation-requested'
+    );
+  }
+
+  @Get(':id/prompt/generation-statuses/done/count')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all generation done for an event' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'All generation done for an event',
+    type: Number,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'The event could not be found.',
+  })
+  async countEventGenerationDone(@Param('id') eventId: string) {
+    return this.sfeirEventService.countStatusByEvent(eventId, 'done');
+  }
+
+  @Get(':id/prompt/generation-statuses/error/count')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all generation errored for an event' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'All generation errored for an event',
+    type: Number,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'The event could not be found.',
+  })
+  async countEventGenerationError(@Param('id') eventId: string) {
+    return this.sfeirEventService.countStatusByEvent(eventId, 'error');
+  }
 }

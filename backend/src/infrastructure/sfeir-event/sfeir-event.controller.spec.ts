@@ -16,6 +16,7 @@ describe('SfeirEventController', () => {
       deleteSfeirEvent: vi.fn(),
       countEventUsers: vi.fn(),
       countEventImages: vi.fn(),
+      countStatusByEvent: vi.fn(),
     } as unknown as SfeirEventService;
 
     sfeirEventController = new SfeirEventController(sfeirEventService);
@@ -162,6 +163,66 @@ describe('SfeirEventController', () => {
 
       await expect(
         sfeirEventController.countEventImages('valid-id')
+      ).resolves.toEqual(3);
+    });
+  });
+
+  describe('countEventGenerationRequested', () => {
+    it('should return 404 if event does not exist', async () => {
+      vi.mocked(sfeirEventService.countStatusByEvent).mockRejectedValue(
+        new NotFoundException()
+      );
+
+      await expect(
+        sfeirEventController.countEventGenerationRequested('invalid-id')
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should return 200 and the number of generation requested', async () => {
+      vi.mocked(sfeirEventService.countStatusByEvent).mockResolvedValue(3);
+
+      await expect(
+        sfeirEventController.countEventGenerationRequested('valid-id')
+      ).resolves.toEqual(3);
+    });
+  });
+
+  describe('countEventGenerationDone', () => {
+    it('should return 404 if event does not exist', async () => {
+      vi.mocked(sfeirEventService.countStatusByEvent).mockRejectedValue(
+        new NotFoundException()
+      );
+
+      await expect(
+        sfeirEventController.countEventGenerationDone('invalid-id')
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should return 200 and the number of generation done', async () => {
+      vi.mocked(sfeirEventService.countStatusByEvent).mockResolvedValue(3);
+
+      await expect(
+        sfeirEventController.countEventGenerationDone('valid-id')
+      ).resolves.toEqual(3);
+    });
+  });
+
+  describe('countEventGenerationError', () => {
+    it('should return 404 if event does not exist', async () => {
+      vi.mocked(sfeirEventService.countStatusByEvent).mockRejectedValue(
+        new NotFoundException()
+      );
+
+      await expect(
+        sfeirEventController.countEventGenerationError('invalid-id')
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should return 200 and the number of generation errored', async () => {
+      vi.mocked(sfeirEventService.countStatusByEvent).mockResolvedValue(3);
+
+      await expect(
+        sfeirEventController.countEventGenerationError('valid-id')
       ).resolves.toEqual(3);
     });
   });

@@ -28,4 +28,6 @@ describe('ImageGenerationServiceImpl', () => {
       );
     });
   });
+
+  describe('countStatusByEvent', () => {});
 });

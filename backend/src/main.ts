@@ -8,8 +8,10 @@ config({
   override: true,
 });
 
-if (!process.env.EMAIL_HASH_SECRET)
-  throw new Error('Missing EMAIL_HASH_SECRET env var');
+if (!process.env.EMAIL_ENCRYPTION_KEY)
+  throw new Error('Missing EMAIL_ENCRYPTION_KEY env var');
+if (!process.env.EMAIL_ENCRYPTION_IV)
+  throw new Error('Missing EMAIL_ENCRYPTION_IV env var');
 if (process.env.IMAGEN_ENABLED && !process.env.IMAGEN_GCP_PROJECT_ID)
   throw new Error('Missing IMAGEN_GCP_PROJECT_ID env var');
 if (process.env.IMAGEN_ENABLED && !process.env.IMAGEN_REGION)

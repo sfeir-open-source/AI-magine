@@ -10,11 +10,6 @@ import { SfeirEvent } from '@/core/domain/sfeir-event/sfeir-event';
 import { CreatePromptBodyDto } from '@/core/application/prompt/dto/create-prompt.dto';
 import { ImageService } from '@/core/application/image/image.service';
 import { ImageWithPromptTextDto } from '@/core/application/image/dto/image-with-prompt-text.dto';
-import { PromptService } from '@/prompt/prompt.service';
-import { SfeirEventService } from '@/events/sfeir-event.service';
-import { SfeirEvent } from '@/events/domain';
-import { vi } from 'vitest';
-import { ImagesService } from '@/images/images.service';
 
 describe('PromptService', () => {
   let promptService: PromptService;

@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import {
-  CollectionReference,
-  QueryDocumentSnapshot,
-} from '@google-cloud/firestore';
+import { CollectionReference } from '@google-cloud/firestore';
 import { FirestoreClient } from '@/infrastructure/shared/persistence/firestore/firestore-client';
 import { ImageGenerationStatus } from '@/core/domain/image-generation/image-generation-status';
 import { ImageGenerationStatusRepository } from '@/core/domain/image-generation/image-generation-status.repository';
 import { FirestorePromptRepository } from '@/infrastructure/shared/persistence/firestore/firestore-prompt.repository';
+import { fetchDocumentsByChunks } from '@/infrastructure/shared/persistence/firestore/firestore.utils';
 
 @Injectable()
 export class FirestoreImageGenerationStatusRepository
@@ -63,25 +61,12 @@ export class FirestoreImageGenerationStatusRepository
     promptIds: string[],
     status: string
   ): Promise<ImageGenerationStatus[]> {
-    const chunkSize = 30; // Firestore cannot handle more than 30 values with "IN"
-
-    const statusesSnapshot: QueryDocumentSnapshot[] = [];
-
-    for (let i = 0; i < promptIds.length; i += chunkSize) {
-      const chunk = promptIds.slice(i, i + chunkSize);
-      const querySnapshot = await this.imageGenerationStatusCollection
-        .where('promptId', 'in', chunk)
-        .where('status', '==', status)
-        .get();
-
-      querySnapshot.forEach((doc) => {
-        statusesSnapshot.push(doc);
-      });
-    }
-
-    if (statusesSnapshot.length === 0) {
-      return [];
-    }
+    const statusesSnapshot = await fetchDocumentsByChunks(
+      this.imageGenerationStatusCollection,
+      'promptId',
+      promptIds,
+      [['status', '==', status]]
+    );
 
     return statusesSnapshot.map((doc) =>
       ImageGenerationStatus.from(

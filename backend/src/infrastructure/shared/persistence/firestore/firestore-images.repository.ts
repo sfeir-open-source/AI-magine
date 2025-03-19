@@ -2,15 +2,13 @@ import { ImageRepository } from '@/core/domain/image/image.repository';
 import { Image } from '@/core/domain/image/image';
 import { Injectable } from '@nestjs/common';
 import { FirestoreClient } from '@/infrastructure/shared/persistence/firestore/firestore-client';
-import {
-  CollectionReference,
-  QueryDocumentSnapshot,
-} from '@google-cloud/firestore';
+import { CollectionReference } from '@google-cloud/firestore';
 import { FirestorePromptRepository } from '@/infrastructure/shared/persistence/firestore/firestore-prompt.repository';
 import { ImageWithPromptTextDto } from '@/core/application/image/dto/image-with-prompt-text.dto';
 import { FirestoreUserRepository } from '@/infrastructure/shared/persistence/firestore/firestore-user.repository';
 import { ImageWithPromptTextAndAuthorDto } from '@/core/application/image/dto/image-with-prompt-text-and-author.dto';
 import { uniq } from '@/utils';
+import { fetchDocumentsByChunks } from '@/infrastructure/shared/persistence/firestore/firestore.utils';
 
 @Injectable()
 export class FirestoreImagesRepository implements ImageRepository {
@@ -83,28 +81,17 @@ export class FirestoreImagesRepository implements ImageRepository {
     promptIds: string[],
     filterOnSelected: boolean = false
   ): Promise<Image[]> {
-    const chunkSize = 30; // Firestore cannot handle more than 30 values with "IN"
-
-    const imagesSnapshot: QueryDocumentSnapshot[] = [];
-
-    for (let i = 0; i < promptIds.length; i += chunkSize) {
-      const chunk = promptIds.slice(i, i + chunkSize);
-      let query = this.imagesCollection.where('promptId', 'in', chunk);
-
-      if (filterOnSelected) {
-        query = query.where('selected', '==', true);
-      }
-
-      const querySnapshot = await query.get();
-
-      querySnapshot.forEach((doc) => {
-        imagesSnapshot.push(doc);
-      });
-    }
-
-    if (imagesSnapshot.length === 0) {
-      return [];
-    }
+    const additionalFilters: [
+      string,
+      FirebaseFirestore.WhereFilterOp,
+      string | number | boolean,
+    ][] = filterOnSelected ? [['selected', '==', true]] : [];
+    const imagesSnapshot = await fetchDocumentsByChunks(
+      this.imagesCollection,
+      'promptId',
+      promptIds,
+      additionalFilters
+    );
 
     return imagesSnapshot.map((doc) =>
       Image.from(
@@ -115,5 +102,15 @@ export class FirestoreImagesRepository implements ImageRepository {
         doc.get('selected') as boolean
       )
     );
+  }
+
+  async countImagesByEvent(eventId: string): Promise<number> {
+    const prompts = await this.promptRepository.getEventPrompts(eventId);
+
+    const images = await this.getImagesFromPromptIds(
+      prompts.map((prompt) => prompt.id)
+    );
+
+    return images.length;
   }
 }

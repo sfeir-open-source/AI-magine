@@ -1,8 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { WinstonModule } from 'nest-winston';
-import { loggerConfig } from '@/logger.config';
-import { AppController } from './app.controller';
 import { HealthModule } from '@/infrastructure/health/health.module';
 import { SfeirEventModule } from '@/infrastructure/sfeir-event/sfeir-event.module';
 import * as path from 'node:path';
@@ -16,7 +13,6 @@ import { ConfigurationModule } from '@/infrastructure/shared/configuration/confi
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    WinstonModule.forRoot(loggerConfig),
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, '..', '..', 'public'),
       serveRoot: '/static',
@@ -29,6 +25,5 @@ import { ConfigurationModule } from '@/infrastructure/shared/configuration/confi
     UserModule,
     ImageGenerationModule,
   ],
-  controllers: [AppController],
 })
 export class AppModule {}

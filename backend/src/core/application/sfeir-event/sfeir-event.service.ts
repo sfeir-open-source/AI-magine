@@ -13,6 +13,12 @@ export interface SfeirEventService {
   deleteSfeirEvent(id: string): Promise<void>;
 
   getAllowedEventPrompts(eventId: string): Promise<number>;
+
+  countEventUsers(eventId: string): Promise<number>;
+
+  countEventImages(eventId: string): Promise<number>;
+
+  countStatusByEvent(eventId: string, status: string): Promise<number>;
 }
 
 export const SFEIR_EVENT_SERVICE = Symbol('SFEIR_EVENT_SERVICE');

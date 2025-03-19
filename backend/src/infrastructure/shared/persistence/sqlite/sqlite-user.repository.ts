@@ -83,4 +83,17 @@ export class SqliteUserRepository
 
     return !!row;
   }
+
+  async countUsersByEvent(eventId: string): Promise<number> {
+    const { count } = await this.sqliteClient.get<{ count: number }>({
+      sql: `SELECT COUNT(DISTINCT u.id) AS user_count
+            FROM users u
+                     INNER JOIN prompts p ON u.id = p.user_id
+            WHERE p.event_id = ?1;`,
+      params: {
+        1: eventId,
+      },
+    });
+    return count ?? 0;
+  }
 }

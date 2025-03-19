@@ -8,12 +8,15 @@ import { SfeirEventService } from '@/core/application/sfeir-event/sfeir-event.se
 import { ImageGenerationService } from '@/core/application/image-generation/image-generation.service';
 import { SfeirEvent } from '@/core/domain/sfeir-event/sfeir-event';
 import { CreatePromptBodyDto } from '@/core/application/prompt/dto/create-prompt.dto';
+import { ImageService } from '@/core/application/image/image.service';
+import { ImageWithPromptTextDto } from '@/core/application/image/dto/image-with-prompt-text.dto';
 
 describe('PromptService', () => {
   let promptService: PromptService;
   let promptRepositoryMock: PromptRepository;
   let userServiceMock: UserService;
   let eventServiceMock: SfeirEventService;
+  let imagesServiceMock: ImageService;
   let imageGenerationServiceMock: ImageGenerationService;
 
   beforeEach(() => {
@@ -36,6 +39,10 @@ describe('PromptService', () => {
       getAllowedEventPrompts: vi.fn().mockResolvedValue(3),
     } as unknown as SfeirEventService;
 
+    imagesServiceMock = {
+      getImagesByEventAndUser: vi.fn(),
+    } as unknown as ImageService;
+
     imageGenerationServiceMock = {
       generateImageFromPrompt: vi.fn(),
     } as unknown as ImageGenerationService;
@@ -44,6 +51,7 @@ describe('PromptService', () => {
       promptRepositoryMock,
       eventServiceMock,
       userServiceMock,
+      imagesServiceMock,
       imageGenerationServiceMock
     );
   });
@@ -111,9 +119,17 @@ describe('PromptService', () => {
       vi.mocked(eventServiceMock.getSfeirEvent).mockResolvedValue(
         SfeirEvent.from('event1', 'event', 3, new Date(), new Date())
       );
-      vi.mocked(promptRepositoryMock.countByEventIdAndUserId).mockResolvedValue(
-        2
-      );
+      vi.mocked(imagesServiceMock.getImagesByEventAndUser).mockResolvedValue([
+        {
+          id: 'image-id',
+          promptId: 'prompt-id',
+          url: 'http://example.com/image.png',
+          selected: false,
+          createdAt: new Date(),
+          prompt: 'prompt',
+          author: 'author',
+        } as ImageWithPromptTextDto,
+      ]);
       vi.mocked(promptRepositoryMock.save).mockResolvedValue(expectedPrompt);
 
       const result = await promptService.createPrompt(dto);
@@ -121,7 +137,7 @@ describe('PromptService', () => {
       expect(result).toEqual(expectedPrompt);
       expect(userServiceMock.checkIfExists).toHaveBeenCalled();
       expect(eventServiceMock.getSfeirEvent).toHaveBeenCalled();
-      expect(promptRepositoryMock.countByEventIdAndUserId).toHaveBeenCalledWith(
+      expect(imagesServiceMock.getImagesByEventAndUser).toHaveBeenCalledWith(
         'event1',
         'existingUserId'
       );
@@ -137,18 +153,26 @@ describe('PromptService', () => {
 
       vi.mocked(userServiceMock.checkIfExists).mockResolvedValue(true);
       vi.mocked(eventServiceMock.getSfeirEvent).mockResolvedValue(
-        SfeirEvent.from('event1', 'event', 3, new Date(), new Date())
+        SfeirEvent.from('event1', 'event', 1, new Date(), new Date())
       );
-      vi.mocked(promptRepositoryMock.countByEventIdAndUserId).mockResolvedValue(
-        3
-      );
+      vi.mocked(imagesServiceMock.getImagesByEventAndUser).mockResolvedValue([
+        {
+          id: 'image-id',
+          promptId: 'prompt-id',
+          url: 'http://example.com/image.png',
+          selected: false,
+          createdAt: new Date(),
+          prompt: 'prompt',
+          author: 'author',
+        } as ImageWithPromptTextDto,
+      ]);
 
       await expect(promptService.createPrompt(dto)).rejects.toThrow(
         new BadRequestException('User has reached maximum number of prompts')
       );
       expect(userServiceMock.checkIfExists).toHaveBeenCalled();
       expect(eventServiceMock.getSfeirEvent).toHaveBeenCalled();
-      expect(promptRepositoryMock.countByEventIdAndUserId).toHaveBeenCalledWith(
+      expect(imagesServiceMock.getImagesByEventAndUser).toHaveBeenCalledWith(
         'event1',
         'existingUserId'
       );

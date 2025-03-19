@@ -4,10 +4,25 @@ import {
   SFEIR_EVENT_REPOSITORY,
   SfeirEventRepository,
 } from '@/core/domain/sfeir-event/sfeir-event.repository';
+import {
+  USER_REPOSITORY,
+  UserRepository,
+} from '@/core/domain/user/user.repository';
+import {
+  ImageRepository,
+  IMAGES_REPOSITORY,
+} from '@/core/domain/image/image.repository';
+import {
+  IMAGE_GENERATION_STATUS_REPOSITORY,
+  ImageGenerationStatusRepository,
+} from '@/core/domain/image-generation/image-generation-status.repository';
 
 describe('SfeirEventService', () => {
   let service: SfeirEventServiceImpl;
   let repositoryMock: SfeirEventRepository;
+  let userRepositoryMock: UserRepository;
+  let imageRepositoryMock: ImageRepository;
+  let imageGenerationStatusRepository: ImageGenerationStatusRepository;
 
   beforeEach(async () => {
     repositoryMock = {
@@ -17,11 +32,29 @@ describe('SfeirEventService', () => {
       deleteSfeirEvent: vi.fn(),
     };
 
+    userRepositoryMock = {
+      countUsersByEvent: vi.fn(),
+    } as unknown as UserRepository;
+
+    imageRepositoryMock = {
+      countImagesByEvent: vi.fn(),
+    } as unknown as ImageRepository;
+
+    imageGenerationStatusRepository = {
+      countStatusByEvent: vi.fn(),
+    } as unknown as ImageGenerationStatusRepository;
+
     // TODO: remove testing module
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SfeirEventServiceImpl,
         { provide: SFEIR_EVENT_REPOSITORY, useValue: repositoryMock },
+        { provide: USER_REPOSITORY, useValue: userRepositoryMock },
+        { provide: IMAGES_REPOSITORY, useValue: imageRepositoryMock },
+        {
+          provide: IMAGE_GENERATION_STATUS_REPOSITORY,
+          useValue: imageGenerationStatusRepository,
+        },
       ],
     }).compile();
 
@@ -70,5 +103,45 @@ describe('SfeirEventService', () => {
 
     expect(repositoryMock.deleteSfeirEvent).toHaveBeenCalledWith('1');
     expect(repositoryMock.deleteSfeirEvent).toHaveBeenCalledTimes(1);
+  });
+
+  it('should get the event users count', async () => {
+    userRepositoryMock.countUsersByEvent = vi.fn().mockResolvedValue(10);
+
+    const count = await service.countEventUsers('event-id');
+
+    expect(count).toEqual(10);
+    expect(userRepositoryMock.countUsersByEvent).toHaveBeenCalledWith(
+      'event-id'
+    );
+    expect(userRepositoryMock.countUsersByEvent).toHaveBeenCalledTimes(1);
+  });
+
+  it('should get the event images count', async () => {
+    imageRepositoryMock.countImagesByEvent = vi.fn().mockResolvedValue(10);
+
+    const count = await service.countEventImages('event-id');
+
+    expect(count).toEqual(10);
+    expect(imageRepositoryMock.countImagesByEvent).toHaveBeenCalledWith(
+      'event-id'
+    );
+    expect(imageRepositoryMock.countImagesByEvent).toHaveBeenCalledTimes(1);
+  });
+
+  it('should get the generation statuses count', async () => {
+    imageGenerationStatusRepository.countStatusByEvent = vi
+      .fn()
+      .mockResolvedValue(10);
+
+    const count = await service.countStatusByEvent('event-id', 'status');
+
+    expect(count).toEqual(10);
+    expect(
+      imageGenerationStatusRepository.countStatusByEvent
+    ).toHaveBeenCalledWith('event-id', 'status');
+    expect(
+      imageGenerationStatusRepository.countStatusByEvent
+    ).toHaveBeenCalledTimes(1);
   });
 });

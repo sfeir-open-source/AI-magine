@@ -30,7 +30,7 @@ describe('UserService', () => {
   beforeEach(() => {
     encryptionServiceMock = {
       encryptEmail: vi.fn().mockReturnValue('encrypted'),
-    };
+    } as unknown as EncryptionService;
 
     imagesRepositoryMock = {
       getImageByEventIdAndUserId: vi

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Subject } from 'rxjs';
 import { ImageGenerationEventEmitter } from '@/infrastructure/shared/image-generation/event-emitter/image-generation-event-emitter';
 import {
@@ -22,6 +22,7 @@ import {
 @Injectable()
 export class ImageGenerationEngine {
   private emitter: ImageGenerationEventEmitter;
+  private readonly logger = new Logger(ImageGenerationEngine.name);
 
   constructor(
     @Inject(IMAGE_GENERATION_STATUS_REPOSITORY)
@@ -95,6 +96,7 @@ export class ImageGenerationEngine {
 
       this.emitter.emit('done', { promptId, imageURL });
     } catch (error) {
+      this.logger.error(error);
       this.emitter.emit('error', { promptId, error });
     }
   }

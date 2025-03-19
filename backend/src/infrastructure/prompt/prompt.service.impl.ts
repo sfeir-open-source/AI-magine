@@ -20,6 +20,10 @@ import {
   IMAGE_GENERATION_SERVICE,
   ImageGenerationService,
 } from '@/core/application/image-generation/image-generation.service';
+import {
+  IMAGE_SERVICE,
+  ImageService,
+} from '@/core/application/image/image.service';
 
 @Injectable()
 export class PromptServiceImpl implements PromptService {
@@ -30,6 +34,8 @@ export class PromptServiceImpl implements PromptService {
     private readonly eventService: SfeirEventService,
     @Inject(USER_SERVICE)
     private readonly userService: UserService,
+    @Inject(IMAGE_SERVICE)
+    private readonly imagesService: ImageService,
     @Inject(IMAGE_GENERATION_SERVICE)
     private readonly imageGenerationService: ImageGenerationService
   ) {}
@@ -57,10 +63,12 @@ export class PromptServiceImpl implements PromptService {
       throw new BadRequestException('Event is not active');
     }
 
-    const userPromptCountOnEvent =
-      await this.promptRepository.countByEventIdAndUserId(eventId, userId);
+    const userImages = await this.imagesService.getImagesByEventAndUser(
+      eventId,
+      userId
+    );
 
-    if (userPromptCountOnEvent >= event.allowedPrompts) {
+    if (userImages.length >= event.allowedPrompts) {
       throw new BadRequestException(
         'User has reached maximum number of prompts'
       );

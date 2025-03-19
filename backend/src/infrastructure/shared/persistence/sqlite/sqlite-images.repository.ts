@@ -88,7 +88,7 @@ export class SqliteImagesRepository
             FROM images
                      INNER JOIN main.prompts prompts
                                 on images.promptId = prompts.id
-                     INNER JOIN main.users users on prompts.userId = users.id
+                     INNER JOIN main.users users on prompts.user_id = users.id
             WHERE event_id = $1
               AND selected = true;`,
       params: {
@@ -150,5 +150,18 @@ export class SqliteImagesRepository
       row.createdAt,
       row.selected
     );
+  }
+
+  async countImagesByEvent(eventId: string): Promise<number> {
+    const { count } = await this.sqliteClient.get<{ count: number }>({
+      sql: `SELECT COUNT(DISTINCT i.id) AS user_count
+            FROM images i
+                     INNER JOIN prompts p ON i.promptId = p.prompt
+            WHERE p.event_id = ?1;`,
+      params: {
+        1: eventId,
+      },
+    });
+    return count ?? 0;
   }
 }

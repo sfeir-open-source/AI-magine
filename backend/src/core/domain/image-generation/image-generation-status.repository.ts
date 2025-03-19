@@ -14,4 +14,6 @@ export interface ImageGenerationStatusRepository {
     status: string,
     payload: string
   ): Promise<ImageGenerationStatus>;
+
+  countStatusByEvent(eventId: string, status: string): Promise<number>;
 }

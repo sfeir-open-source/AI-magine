@@ -1,20 +1,44 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
-title: ''
+about: Proposition d'une nouvelle fonctionnalité
+title: '[Feature]'
 labels: ''
 assignees: ''
-
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## Description du comportement
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+**Given** (Contexte)
+<!-- Décrivez le contexte dans lequel la fonctionnalité sera utilisée -->
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+**When** (Action)
+<!-- Décrivez l'action déclenchée par l'utilisateur -->
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+**Then** (Résultat attendu)
+<!-- Décrivez le comportement attendu -->
+
+## Implémentation technique
+
+**backend**:
+<!-- Décrivez les modifications nécessaires côté API -->
+
+**frontend**:
+<!-- Décrivez les modifications nécessaires côté interface utilisateur -->
+
+## Sous-tâches
+
+- [ ] Tâche 1
+- [ ] Tâche 2
+- [ ] Tâche 3
+
+## Informations additionnelles
+
+**Captures d'écran**
+<!-- Si applicable, ajoutez des captures d'écran -->
+
+**Contexte additionnel**
+<!-- Ajoutez tout autre contexte concernant la fonctionnalité ici -->
+
+---
+<!-- Ne pas modifier -->
+/label ~feature

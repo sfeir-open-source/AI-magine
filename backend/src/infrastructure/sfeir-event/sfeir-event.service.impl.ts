@@ -7,12 +7,30 @@ import {
   SfeirEventRepository,
 } from '@/core/domain/sfeir-event/sfeir-event.repository';
 import { SfeirEvent } from '@/core/domain/sfeir-event/sfeir-event';
+import {
+  USER_REPOSITORY,
+  UserRepository,
+} from '@/core/domain/user/user.repository';
+import {
+  ImageRepository,
+  IMAGES_REPOSITORY,
+} from '@/core/domain/image/image.repository';
+import {
+  IMAGE_GENERATION_STATUS_REPOSITORY,
+  ImageGenerationStatusRepository,
+} from '@/core/domain/image-generation/image-generation-status.repository';
 
 @Injectable()
 export class SfeirEventServiceImpl implements SfeirEventService {
   constructor(
     @Inject(SFEIR_EVENT_REPOSITORY)
-    private readonly sfeirEventRepository: SfeirEventRepository
+    private readonly sfeirEventRepository: SfeirEventRepository,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: UserRepository,
+    @Inject(IMAGES_REPOSITORY)
+    private readonly imageRepository: ImageRepository,
+    @Inject(IMAGE_GENERATION_STATUS_REPOSITORY)
+    private readonly imageGenerationStatusRepository: ImageGenerationStatusRepository
   ) {}
 
   async getSfeirEvents(): Promise<SfeirEvent[]> {
@@ -47,5 +65,20 @@ export class SfeirEventServiceImpl implements SfeirEventService {
       throw new NotFoundException(`Event ${eventId} not found`);
     }
     return event.allowedPrompts;
+  }
+
+  async countEventUsers(eventId: string): Promise<number> {
+    return this.userRepository.countUsersByEvent(eventId);
+  }
+
+  async countEventImages(eventId: string): Promise<number> {
+    return this.imageRepository.countImagesByEvent(eventId);
+  }
+
+  async countStatusByEvent(eventId: string, status: string): Promise<number> {
+    return this.imageGenerationStatusRepository.countStatusByEvent(
+      eventId,
+      status
+    );
   }
 }

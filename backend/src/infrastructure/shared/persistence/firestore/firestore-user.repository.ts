@@ -6,12 +6,17 @@ import {
 } from '@google-cloud/firestore';
 import { IFirestoreUserRepository } from '@/core/domain/user/user.repository';
 import { User } from '@/core/domain/user/user';
+import { FirestorePromptRepository } from '@/infrastructure/shared/persistence/firestore/firestore-prompt.repository';
+import { uniq } from '@/utils';
 
 @Injectable()
 export class FirestoreUserRepository implements IFirestoreUserRepository {
   private userCollection: CollectionReference;
 
-  constructor(private readonly firestoreClient: FirestoreClient) {
+  constructor(
+    private readonly firestoreClient: FirestoreClient,
+    private readonly promptRepository: FirestorePromptRepository
+  ) {
     this.userCollection = firestoreClient.getCollection('users');
   }
 
@@ -78,5 +83,13 @@ export class FirestoreUserRepository implements IFirestoreUserRepository {
     }
 
     return userDocuments.map(this.fromQueryDocumentSnapshotToUser);
+  }
+
+  async countUsersByEvent(eventId: string): Promise<number> {
+    const prompts = await this.promptRepository.getEventPrompts(eventId);
+
+    const uniqueUserIds = uniq<string>(prompts.map((prompt) => prompt.userId));
+
+    return uniqueUserIds.length;
   }
 }

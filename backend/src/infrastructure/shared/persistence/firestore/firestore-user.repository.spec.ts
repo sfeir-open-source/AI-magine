@@ -3,6 +3,7 @@ import type { CollectionReference } from '@google-cloud/firestore';
 import { FirestoreClient } from '@/infrastructure/shared/persistence/firestore/firestore-client';
 import { FirestoreUserRepository } from '@/infrastructure/shared/persistence/firestore/firestore-user.repository';
 import { User } from '@/core/domain/user/user';
+import { FirestorePromptRepository } from '@/infrastructure/shared/persistence/firestore/firestore-prompt.repository';
 
 vi.mock('@google-cloud/firestore', async () => ({
   CollectionReference: vi.fn(),
@@ -11,9 +12,12 @@ vi.mock('@google-cloud/firestore', async () => ({
 describe('FirestoreUserRepository', () => {
   let mockFirestoreClient: FirestoreClient;
   let mockUserCollection: CollectionReference;
+  let promptsRepositoryMock: FirestorePromptRepository;
   let firestoreUserRepository: FirestoreUserRepository;
 
   beforeEach(() => {
+    vi.resetAllMocks();
+
     mockUserCollection = {
       where: vi.fn().mockReturnThis(),
       get: vi.fn().mockReturnThis(),
@@ -21,12 +25,19 @@ describe('FirestoreUserRepository', () => {
       doc: vi.fn().mockReturnThis(),
     } as unknown as CollectionReference;
 
+    promptsRepositoryMock = {
+      getEventPrompts: vi.fn(),
+    } as unknown as FirestorePromptRepository;
+
     mockFirestoreClient = {
       getCollection: vi.fn().mockReturnValue(mockUserCollection),
       getAll: vi.fn(),
     } as unknown as FirestoreClient;
 
-    firestoreUserRepository = new FirestoreUserRepository(mockFirestoreClient);
+    firestoreUserRepository = new FirestoreUserRepository(
+      mockFirestoreClient,
+      promptsRepositoryMock
+    );
   });
 
   describe('checkExistsById', () => {
@@ -256,6 +267,37 @@ describe('FirestoreUserRepository', () => {
           nickname: 'nickname-user-id-2',
         }),
       ]);
+    });
+  });
+
+  describe('countUsersByEvent', () => {
+    it('should return the correct count of unique user IDs for a given event ID', async () => {
+      const eventId = 'event-1';
+      (promptsRepositoryMock.getEventPrompts as Mock).mockResolvedValue([
+        { id: 'prompt-id', eventId, userId: 'user-id' },
+        { id: 'prompt-id-2', eventId, userId: 'user-id-2' },
+        { id: 'prompt-id-3', eventId: 'event-id-2', userId: 'user-id' },
+      ]);
+
+      const userCount =
+        await firestoreUserRepository.countUsersByEvent(eventId);
+
+      expect(mockFirestoreClient.getCollection).toHaveBeenCalledWith('users');
+      expect(userCount).toBe(2);
+    });
+
+    it('should return 0 if no users are associated with the given event ID', async () => {
+      const eventId = 'event-2';
+      (promptsRepositoryMock.getEventPrompts as Mock).mockResolvedValue([]);
+      (mockUserCollection.get as Mock).mockResolvedValue({
+        forEach: vi.fn(() => {}),
+      });
+
+      const userCount =
+        await firestoreUserRepository.countUsersByEvent(eventId);
+
+      expect(mockFirestoreClient.getCollection).toHaveBeenCalledWith('users');
+      expect(userCount).toBe(0);
     });
   });
 });

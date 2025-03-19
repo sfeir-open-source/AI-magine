@@ -15,4 +15,6 @@ export interface ImageRepository {
     eventId: string,
     userId: string
   ): Promise<ImageWithPromptTextDto[]>;
+
+  countImagesByEvent(eventId: string): Promise<number>;
 }

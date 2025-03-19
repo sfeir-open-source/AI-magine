@@ -75,4 +75,18 @@ export class SqliteImageGenerationStatusRepository
     });
     return newImageGenerationStatus;
   }
+
+  async countStatusByEvent(eventId: string, status: string): Promise<number> {
+    const { count } = await this.sqliteClient.get<{ count: number }>({
+      sql: `SELECT COUNT(*) AS count
+            FROM image_generation_status
+            WHERE promptId IN (SELECT promptId FROM prompts WHERE event_id = ?1)
+            AND status = ?2;`,
+      params: {
+        1: eventId,
+        2: status,
+      },
+    });
+    return count ?? 0;
+  }
 }

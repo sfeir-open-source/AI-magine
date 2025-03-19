@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/thomassloboda/AI-magine/compare/v1.0.0...v1.0.1) (2025-03-19)
+
+
+### Bug Fixes
+
+* add github to semantic-release config ([#80](https://github.com/thomassloboda/AI-magine/issues/80)) ([cfbd743](https://github.com/thomassloboda/AI-magine/commit/cfbd743d3fa15964e34d44580966464634da8d90))
+
 # 1.0.0 (2025-03-19)
 
 

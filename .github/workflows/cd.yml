@@ -2,6 +2,13 @@ name: CD
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to deploy (e.g., v1.0.0). Leave empty to use the latest tag'
+        required: false
+  push:
+    tags:
+      - 'v*'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,6 +27,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine tag to deploy
+        id: get_tag
+        run: |
+          if [ -z "${{ github.event.inputs.tag }}" ]; then
+            tag=$(git describe --tags --abbrev=0)
+          else
+            tag=${{ github.event.inputs.tag }}
+          fi
+          echo "tag=$tag" >> $GITHUB_ENV
+          echo "Deploying tag: $tag"
 
       - id: auth
         name: Authenticate with Google Cloud
@@ -41,15 +61,15 @@ jobs:
 
       - name: Build and Push Backend
         run: |
-          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-backend:${{ github.sha }} -f backend/Dockerfile ./backend
-          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-backend:${{ github.sha }}
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-backend:$tag -f backend/Dockerfile ./backend
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-backend:$tag
 
       - name: Deploy Backend to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: "aimagine-sfeirlille-backend"
           region: ${{ env.REGION }}
-          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-backend:${{ github.sha }}
+          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-backend:$tag
           flags: '--service-account="aimagine-sfeirlille@lil-onboard-gcp.iam.gserviceaccount.com" --allow-unauthenticated'
           env_vars: |
             HOST=${{ vars.BACKEND_HOST }}
@@ -68,13 +88,13 @@ jobs:
 
       - name: Build and Push Frontend
         run: |
-          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:${{ github.sha }} -f public-frontend/Dockerfile --build-arg VITE_BACKEND_API_URL=${{ vars.PUBLIC_FRONTEND_VITE_BACKEND_API_URL }} .
-          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:${{ github.sha }}
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:$tag -f public-frontend/Dockerfile --build-arg VITE_BACKEND_API_URL=${{ vars.PUBLIC_FRONTEND_VITE_BACKEND_API_URL }} .
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:$tag
 
       - name: Deploy Public Frontend to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: "aimagine-sfeirlille-public-frontend"
           region: ${{ env.REGION }}
-          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:${{ github.sha }}
+          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:$tag
           flags: '--service-account="aimagine-sfeirlille@lil-onboard-gcp.iam.gserviceaccount.com" --allow-unauthenticated'

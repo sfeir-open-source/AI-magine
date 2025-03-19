@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/thomassloboda/AI-magine/compare/v1.0.2...v1.0.3) (2025-03-19)
+
+
+### Bug Fixes
+
+* update env var naming in CD ([#82](https://github.com/thomassloboda/AI-magine/issues/82)) ([761c3fa](https://github.com/thomassloboda/AI-magine/commit/761c3fa622b786d8e96a56da276934b75af9330c))
+
 ## [1.0.2](https://github.com/thomassloboda/AI-magine/compare/v1.0.1...v1.0.2) (2025-03-19)
 
 

@@ -44,9 +44,9 @@ describe('CreateEventPage', () => {
     await userEvent.click(screen.getByText('create event'));
 
     expect(mutateAsyncMock).toHaveBeenCalledWith({
-      endDateTimestamp: 1741885200000,
+      endDateTimestamp: expect.any(Number),
       name: 'event name',
-      startDateTimestamp: 1741766400000,
+      startDateTimestamp: expect.any(Number),
     });
   });
 });

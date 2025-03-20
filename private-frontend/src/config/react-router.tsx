@@ -1,25 +1,15 @@
-import { createBrowserRouter, RouterProvider } from 'react-router';
-import { RootPage } from '@/src/pages/root.page';
-import { Foo } from '@/src/components/foo';
+import { Navigate, Route, Routes } from 'react-router';
 import { EventListPage } from '@/src/pages/event-list.page';
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <RootPage />,
-    children: [
-      {
-        path: '/events',
-        element: <EventListPage />,
-      },
-      {
-        path: '/events/:id',
-        element: <Foo />,
-      },
-    ],
-  },
-]);
+import { EventDetailPage } from '@/src/pages/event-detail.page';
+import { CreateEventPage } from '@/src/pages/create-event.page';
 
 export const ReactRouterConfig = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <Routes>
+      <Route path="/" element={<Navigate to="/events" replace />} />
+      <Route path="/events" Component={EventListPage} />
+      <Route path="/events/create" Component={CreateEventPage} />
+      <Route path="/events/:eventId" Component={EventDetailPage} />
+    </Routes>
+  );
 };

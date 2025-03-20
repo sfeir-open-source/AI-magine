@@ -2,21 +2,19 @@ import { useEventsProvider } from '@/src/providers/events/useEventsProvider';
 import { useQuery } from '@tanstack/react-query';
 import { Event } from '@/src/domain/Event';
 import {
-  addMonths,
-  endOfDay,
   isAfter,
   isBefore,
+  isWithinInterval,
   parseISO,
   startOfDay,
 } from 'date-fns';
 
 export const upcomingEventsSelector = (events: Event[]) => {
   const today = new Date();
-  const oneMonthFromNow = addMonths(today, 1);
 
   return events.filter((event) => {
-    const eventDate = parseISO(event.startDate);
-    return isAfter(eventDate, today) && isBefore(eventDate, oneMonthFromNow);
+    const eventStartDate = parseISO(event.startDate);
+    return isAfter(eventStartDate, today);
   });
 };
 
@@ -24,26 +22,19 @@ export const pastEventsSelector = (events: Event[]) => {
   const today = startOfDay(new Date());
 
   return events.filter((event) => {
-    const eventDate = parseISO(event.startDate);
-    return isBefore(eventDate, today);
+    const eventEndDate = parseISO(event.endDate);
+    return isBefore(eventEndDate, today);
   });
 };
 
 export const todayEventsSelector = (events: Event[]) => {
-  const todayStart = startOfDay(new Date());
-  const todayEnd = endOfDay(new Date());
+  const today = new Date();
 
-  return events.filter((event) => {
-    const eventDate = parseISO(event.startDate);
-    return isAfter(eventDate, todayStart) && isBefore(eventDate, todayEnd);
-  });
-};
-
-export const byDateSelector = (events: Event[]) => {
-  return events.sort(
-    (eventA, eventB) =>
-      new Date(eventA.startDate).getTime() -
-      new Date(eventB.startDate).getTime()
+  return events.filter(({ startDate, endDate }) =>
+    isWithinInterval(today, {
+      start: parseISO(startDate),
+      end: parseISO(endDate),
+    })
   );
 };
 

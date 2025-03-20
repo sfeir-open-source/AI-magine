@@ -16,33 +16,22 @@ import { PersistenceModule } from '@/infrastructure/shared/persistence/persisten
 @Module({
   imports: [ImageModule, PersistenceModule],
   providers: [
-    GCPBucketImagesStorage,
-    FakeImagesStorage,
-    ImagenImageGenerationClient,
-    PicsumImageGenerationClient,
     {
       provide: IMAGES_STORAGE,
-      inject: [ConfigurationService, GCPBucketImagesStorage, FakeImagesStorage],
-      useFactory: (
-        configurationService: ConfigurationService,
-        gcpStorage: GCPBucketImagesStorage,
-        fakeStorage: FakeImagesStorage
-      ) => (configurationService.getBucketEnabled() ? gcpStorage : fakeStorage),
+      inject: [ConfigurationService],
+      useFactory: (configurationService: ConfigurationService) =>
+        configurationService.getBucketEnabled()
+          ? new GCPBucketImagesStorage(configurationService)
+          : new FakeImagesStorage(),
     },
     { provide: IMAGE_GENERATION_SERVICE, useClass: ImageGenerationServiceImpl },
     {
       provide: IMAGE_GENERATION_CLIENT,
-      inject: [
-        ConfigurationService,
-        ImagenImageGenerationClient,
-        PicsumImageGenerationClient,
-      ],
-      useFactory: (
-        configurationService: ConfigurationService,
-        imagenClient: ImagenImageGenerationClient,
-        picsumClient: PicsumImageGenerationClient
-      ) =>
-        configurationService.getImagenEnabled() ? imagenClient : picsumClient,
+      inject: [ConfigurationService],
+      useFactory: (configurationService: ConfigurationService) =>
+        configurationService.getImagenEnabled()
+          ? new ImagenImageGenerationClient(configurationService)
+          : new PicsumImageGenerationClient(),
     },
     ImageGenerationEngine,
     ImageGenerationEventEmitter,

@@ -3,12 +3,15 @@ import { queryClient } from '@/src/config/tanstack-query';
 import { ReactRouterConfig } from '@/src/config/react-router';
 import { EventsContext } from '@/src/providers/events/events.context';
 import { eventsApi } from '@/src/providers/events/events.api';
+import { BrowserRouter } from 'react-router';
 
 export const App = () => {
   return (
     <EventsContext.Provider value={eventsApi}>
       <QueryClientProvider client={queryClient}>
-        <ReactRouterConfig />
+        <BrowserRouter>
+          <ReactRouterConfig />
+        </BrowserRouter>
       </QueryClientProvider>
     </EventsContext.Provider>
   );

@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/thomassloboda/AI-magine/compare/v1.1.0...v1.1.1) (2025-03-20)
+
+
+### Bug Fixes
+
+* remove version from CloudRUN deployments ([#86](https://github.com/thomassloboda/AI-magine/issues/86)) ([eaf08d8](https://github.com/thomassloboda/AI-magine/commit/eaf08d89e945918be6bd2e3dba30b04ed7753478))
+
 # [1.1.0](https://github.com/thomassloboda/AI-magine/compare/v1.0.3...v1.1.0) (2025-03-20)
 
 

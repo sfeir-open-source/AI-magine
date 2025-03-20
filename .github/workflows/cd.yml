@@ -88,7 +88,7 @@ jobs:
             BUCKET_GCP_PROJECT_ID=${{ vars.BACKEND_BUCKET_GCP_PROJECT_ID }}
             BUCKET_ENABLED=${{ vars.BACKEND_BUCKET_ENABLED }}
 
-      - name: Build and Push Frontend
+      - name: Build and Push Public Frontend
         run: |
           docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:${{ env.TAG }} -f public-frontend/Dockerfile --build-arg VITE_BACKEND_API_URL=${{ vars.PUBLIC_FRONTEND_VITE_BACKEND_API_URL }} .
           docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:${{ env.TAG }}
@@ -99,6 +99,21 @@ jobs:
           service: "aimagine-sfeirlille-public-frontend"
           region: ${{ env.REGION }}
           image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-public-frontend:${{ env.TAG }}
+          labels: |-
+            version=${{ env.TAG }}
+          flags: '--service-account="aimagine-sfeirlille@lil-onboard-gcp.iam.gserviceaccount.com" --allow-unauthenticated'
+
+      - name: Build and Push Private Frontend
+        run: |
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-private-frontend:${{ env.TAG }} -f private-frontend/Dockerfile --build-arg VITE_BACKEND_API_URL=${{ vars.PRIVATE_FRONTEND_VITE_BACKEND_API_URL }} .
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-private-frontend:${{ env.TAG }}
+
+      - name: Deploy Private Frontend to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: "aimagine-sfeirlille-private-frontend"
+          region: ${{ env.REGION }}
+          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/cloud-run-source-deploy/aimagine-private-frontend:${{ env.TAG }}
           labels: |-
             version=${{ env.TAG }}
           flags: '--service-account="aimagine-sfeirlille@lil-onboard-gcp.iam.gserviceaccount.com" --allow-unauthenticated'

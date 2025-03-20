@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/thomassloboda/AI-magine/compare/v1.0.3...v1.1.0) (2025-03-20)
+
+
+### Features
+
+* add event management in private-frontend ([#84](https://github.com/thomassloboda/AI-magine/issues/84)) ([ae39e99](https://github.com/thomassloboda/AI-magine/commit/ae39e996776a516a37595fe5f72bf0072405ff37))
+
 ## [1.0.3](https://github.com/thomassloboda/AI-magine/compare/v1.0.2...v1.0.3) (2025-03-19)
 
 

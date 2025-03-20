@@ -78,9 +78,9 @@ export class SQLiteEventsRepository
       params: {
         1: sfeirEvent.id,
         2: sfeirEvent.name,
-        3: sfeirEvent.startDate.getTime(),
-        4: sfeirEvent.endDate.getTime(),
-        5: sfeirEvent.allowedPrompts,
+        3: sfeirEvent.allowedPrompts,
+        4: sfeirEvent.startDate.getTime(),
+        5: sfeirEvent.endDate.getTime(),
       },
     });
     return sfeirEvent;

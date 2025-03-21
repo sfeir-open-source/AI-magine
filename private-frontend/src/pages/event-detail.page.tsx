@@ -1,4 +1,4 @@
-import { Calendar, ArrowLeft } from 'lucide-react';
+import { Calendar, ArrowLeft, SquareArrowOutUpRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import {
@@ -65,7 +65,16 @@ export const EventDetailPage = () => {
       <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
         <Card className="h-full">
           <CardHeader>
-            <CardTitle>{t('event-information')}</CardTitle>
+            <CardTitle>
+              <Button variant="link" asChild className="has-[>svg]:px-0">
+                <a
+                  href={`${import.meta.env.VITE_PUBLIC_FRONTEND_URL}/events/${event.id}/gallery`}
+                >
+                  <h3 className="text-xl font-semibold">{event.name}</h3>
+                  <SquareArrowOutUpRight />
+                </a>
+              </Button>
+            </CardTitle>
             <CardDescription>
               {isPast ? t('event-has-ended') : t('event-is-active')}
             </CardDescription>
@@ -73,7 +82,6 @@ export const EventDetailPage = () => {
           <CardContent>
             <div className="space-y-4">
               <div>
-                <h3 className="text-xl font-semibold">{event.name}</h3>
                 <p className="text-xs font-mono text-muted-foreground">
                   ID: {event.id}
                 </p>

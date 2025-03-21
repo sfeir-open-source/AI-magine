@@ -2,6 +2,7 @@
 FROM node:22-alpine AS builder
 
 ARG VITE_BACKEND_API_URL
+ARG VITE_PUBLIC_FRONTEND_URL
 
 WORKDIR /app
 
@@ -15,6 +16,7 @@ RUN npm install
 WORKDIR /app/private-frontend
 
 RUN echo "VITE_BACKEND_API_URL=$VITE_BACKEND_API_URL" >> .env.production
+RUN echo "VITE_PUBLIC_FRONTEND_URL=$VITE_PUBLIC_FRONTEND_URL" >> .env.production
 
 # Build the React app
 RUN npm run build

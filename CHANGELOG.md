@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/thomassloboda/AI-magine/compare/v1.1.1...v1.2.0) (2025-03-21)
+
+
+### Bug Fixes
+
+* **private-frontend:** add base to Vite config ([#88](https://github.com/thomassloboda/AI-magine/issues/88)) ([6d76a97](https://github.com/thomassloboda/AI-magine/commit/6d76a97fa6258122facf5eaa8376e1302a96a977))
+
+
+### Features
+
+* **private-frontend:** add link to event gallery ([#87](https://github.com/thomassloboda/AI-magine/issues/87)) ([c46ce4f](https://github.com/thomassloboda/AI-magine/commit/c46ce4f570fa4336fe90d0894de9d79604e8bd8e))
+
 ## [1.1.1](https://github.com/thomassloboda/AI-magine/compare/v1.1.0...v1.1.1) (2025-03-20)
 
 

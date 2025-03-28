@@ -1,9 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { EncryptionService } from '@/infrastructure/shared/encryption/encryption.service';
 import { RemainingPromptsDto } from '@/core/application/user/dto/remaining-prompts.dto';
 import {
-  IMAGES_REPOSITORY,
   ImageRepository,
+  IMAGES_REPOSITORY,
 } from '@/core/domain/image/image.repository';
 import { UserService } from '@/core/application/user/user.service';
 import {
@@ -66,5 +66,16 @@ export class UserServiceImpl implements UserService {
       remaining: (event?.allowedPrompts ?? 0) - images.length,
       allowed: event?.allowedPrompts ?? 0,
     };
+  }
+
+  async getUserEmailByUserNameAndEvent(
+    userName: string,
+    eventId: string
+  ): Promise<string> {
+    const event = await this.eventRepository.getSfeirEvent(eventId);
+    if (!event) throw new NotFoundException('Event not found');
+    const user = await this.userRepository.getUserByUserName(userName);
+    if (!user) throw new NotFoundException('User not found');
+    return this.encryptionService.decryptEmail(user.email);
   }
 }

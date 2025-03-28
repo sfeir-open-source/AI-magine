@@ -12,6 +12,8 @@ export interface UserRepository {
   getUserByEmail(email: string): Promise<User | undefined>;
 
   countUsersByEvent(eventId: string): Promise<number>;
+
+  getUserByUserName(userName: string): Promise<User | undefined>;
 }
 
 export interface IFirestoreUserRepository extends UserRepository {

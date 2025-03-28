@@ -14,6 +14,11 @@ export interface UserService {
     eventId: string,
     userId: string
   ): Promise<RemainingPromptsDto>;
+
+  getUserEmailByUserNameAndEvent(
+    userName: string,
+    eventId: string
+  ): Promise<string>;
 }
 
 export const USER_SERVICE = Symbol('USER_SERVICE');

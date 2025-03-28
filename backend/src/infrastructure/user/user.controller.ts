@@ -71,4 +71,20 @@ export class UserController {
   ) {
     return this.userService.getUserRemainingPromptsByEvent(userId, eventId);
   }
+
+  @Get(':userName/:eventId/email')
+  @ApiOperation({
+    summary: 'Get the email of a user by its username and the event',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'The email of a user by its username and the event',
+    type: String,
+  })
+  async getUserEmailByUsername(
+    @Param('userName') userName: string,
+    @Param('eventId') eventId: string
+  ) {
+    return this.userService.getUserEmailByUserNameAndEvent(userName, eventId);
+  }
 }

@@ -19,6 +19,7 @@ import {
   IMAGE_GENERATION_STATUS_REPOSITORY,
   ImageGenerationStatusRepository,
 } from '@/core/domain/image-generation/image-generation-status.repository';
+import { EncryptionService } from '@/infrastructure/shared/encryption/encryption.service';
 
 @Injectable()
 export class SfeirEventServiceImpl implements SfeirEventService {
@@ -30,7 +31,8 @@ export class SfeirEventServiceImpl implements SfeirEventService {
     @Inject(IMAGES_REPOSITORY)
     private readonly imageRepository: ImageRepository,
     @Inject(IMAGE_GENERATION_STATUS_REPOSITORY)
-    private readonly imageGenerationStatusRepository: ImageGenerationStatusRepository
+    private readonly imageGenerationStatusRepository: ImageGenerationStatusRepository,
+    private readonly encryptionService: EncryptionService
   ) {}
 
   async getSfeirEvents(): Promise<SfeirEvent[]> {
@@ -80,5 +82,15 @@ export class SfeirEventServiceImpl implements SfeirEventService {
       eventId,
       status
     );
+  }
+
+  async getEventUsers(eventId: string) {
+    const event = await this.sfeirEventRepository.getSfeirEvent(eventId);
+    if (!event) throw new NotFoundException(`Event ${eventId} not found`);
+    const eventUsers = await this.userRepository.getUsersByEvent(eventId);
+    return eventUsers.map((user) => ({
+      ...user,
+      email: this.encryptionService.decryptEmail(user.email),
+    }));
   }
 }

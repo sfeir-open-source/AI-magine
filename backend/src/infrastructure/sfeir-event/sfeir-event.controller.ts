@@ -173,4 +173,19 @@ export class SfeirEventController {
   async countEventGenerationError(@Param('id') eventId: string) {
     return this.sfeirEventService.countStatusByEvent(eventId, 'error');
   }
+
+  @Get(':id/users')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all users for an event' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'All users for an event',
+    type: Number,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+  })
+  async getEventUsers(@Param('id') eventId: string) {
+    return this.sfeirEventService.getEventUsers(eventId);
+  }
 }

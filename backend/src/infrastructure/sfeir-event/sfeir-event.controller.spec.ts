@@ -3,6 +3,7 @@ import { SfeirEventController } from '@/infrastructure/sfeir-event/sfeir-event.c
 import { CreateSfeirEventDto } from '@/core/application/sfeir-event/dto/create-sfeir-event.dto';
 import { SfeirEvent } from '@/core/domain/sfeir-event/sfeir-event';
 import { SfeirEventService } from '@/core/application/sfeir-event/sfeir-event.service';
+import { User } from '@/core/domain/user/user';
 
 describe('SfeirEventController', () => {
   let sfeirEventController: SfeirEventController;
@@ -17,6 +18,7 @@ describe('SfeirEventController', () => {
       countEventUsers: vi.fn(),
       countEventImages: vi.fn(),
       countStatusByEvent: vi.fn(),
+      getEventUsers: vi.fn(),
     } as unknown as SfeirEventService;
 
     sfeirEventController = new SfeirEventController(sfeirEventService);
@@ -224,6 +226,49 @@ describe('SfeirEventController', () => {
       await expect(
         sfeirEventController.countEventGenerationError('valid-id')
       ).resolves.toEqual(3);
+    });
+  });
+
+  describe('getEventUsers', () => {
+    it('should return a list of users when the event is found', async () => {
+      const mockUsers = [
+        User.from({
+          id: 'user1',
+          email: 'user-1@example.com',
+          nickname: 'user-1',
+          allowContact: false,
+          browserFingerprint: 'fingerprint',
+        }),
+        User.from({
+          id: 'user-2',
+          email: 'user-2@example.com',
+          nickname: 'user-2',
+          allowContact: false,
+          browserFingerprint: 'fingerprint',
+        }),
+        User.from({
+          id: 'user-3',
+          email: 'user-3@example.com',
+          nickname: 'user-3',
+          allowContact: false,
+          browserFingerprint: 'fingerprint',
+        }),
+      ];
+      vi.mocked(sfeirEventService.getEventUsers).mockResolvedValue(mockUsers);
+
+      await expect(
+        sfeirEventController.getEventUsers('valid-id')
+      ).resolves.toEqual(mockUsers);
+    });
+
+    it('should throw a 404 error if the event does not exist', async () => {
+      vi.mocked(sfeirEventService.getEventUsers).mockRejectedValue(
+        new NotFoundException()
+      );
+
+      await expect(
+        sfeirEventController.getEventUsers('invalid-id')
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

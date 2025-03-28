@@ -122,4 +122,31 @@ export class SqliteUserRepository
       allowContact: storedUser.allowContact,
     });
   }
+
+  async getUsersByEvent(eventId: string): Promise<User[]> {
+    const rows = await this.sqliteClient.all<{
+      id: string;
+      nickname: string;
+      hashedEmail: string;
+      browserFingerprint: string;
+      allowContact: boolean;
+    }>({
+      sql: `SELECT id, nickname, hashedEmail, browserFingerprint, allowContact
+            FROM users u
+                     INNER JOIN prompts p ON u.id = p.user_id
+            WHERE p.event_id = ?1;`,
+      params: {
+        1: eventId,
+      },
+    });
+    return rows.map((row) =>
+      User.from({
+        id: row.id,
+        email: row.hashedEmail,
+        nickname: row.nickname,
+        browserFingerprint: row.browserFingerprint,
+        allowContact: row.allowContact,
+      })
+    );
+  }
 }

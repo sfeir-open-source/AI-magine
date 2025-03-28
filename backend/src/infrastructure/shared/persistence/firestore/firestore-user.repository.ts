@@ -102,4 +102,11 @@ export class FirestoreUserRepository implements IFirestoreUserRepository {
     }
     return this.fromQueryDocumentSnapshotToUser(searchedUser.docs[0]);
   }
+
+  async getUsersByEvent(eventId: string): Promise<User[]> {
+    const prompts = await this.promptRepository.getEventPrompts(eventId);
+
+    const uniqueUserIds = uniq<string>(prompts.map((prompt) => prompt.userId));
+    return this.getUsersById(uniqueUserIds);
+  }
 }

@@ -363,4 +363,78 @@ describe('FirestoreUserRepository', () => {
       );
     });
   });
+
+  describe('getUsersByEvent', () => {
+    it('returns an empty list if no prompts are returned for the event ID', async () => {
+      (promptsRepositoryMock.getEventPrompts as Mock).mockResolvedValue([]);
+
+      const eventId = 'event-empty';
+      const result = await firestoreUserRepository.getUsersByEvent(eventId);
+
+      expect(promptsRepositoryMock.getEventPrompts).toHaveBeenCalledWith(
+        eventId
+      );
+      expect(result).toEqual([]);
+    });
+
+    it('returns a list of users corresponding to unique user IDs from prompts', async () => {
+      const eventId = 'event-1';
+      (promptsRepositoryMock.getEventPrompts as Mock).mockResolvedValue([
+        { id: 'prompt-1', userId: 'user-1', eventId },
+        { id: 'prompt-2', userId: 'user-2', eventId },
+      ]);
+      const rawUsers = [
+        {
+          id: 'user-1',
+          email: 'hashedu1@test.com',
+          hashedEmail: 'hashedu1@test.com',
+          nickname: 'User1',
+          browserFingerprint: 'fp1',
+          allowContact: true,
+        },
+        {
+          id: 'user-2',
+          email: 'hashedu2@test.com',
+          hashedEmail: 'hashedu2@test.com',
+          nickname: 'User2',
+          browserFingerprint: 'fp2',
+          allowContact: false,
+        },
+      ];
+
+      const mockUsers = rawUsers.map((rawUser) => User.from(rawUser));
+      (mockFirestoreClient.getAll as Mock).mockResolvedValue(
+        rawUsers.map((user) => ({
+          id: user.id,
+          get: vi.fn((property: string) => user[property as keyof User]),
+        }))
+      );
+
+      const result = await firestoreUserRepository.getUsersByEvent(eventId);
+
+      expect(promptsRepositoryMock.getEventPrompts).toHaveBeenCalledWith(
+        eventId
+      );
+      expect(mockFirestoreClient.getAll).toHaveBeenCalled();
+      expect(result).toEqual(mockUsers);
+    });
+
+    it('returns an empty list if user IDs are returned but no users are found', async () => {
+      const eventId = 'event-2';
+      (promptsRepositoryMock.getEventPrompts as Mock).mockResolvedValue([
+        { id: 'prompt-1', userId: 'user-3', eventId },
+        { id: 'prompt-2', userId: 'user-4', eventId },
+      ]);
+
+      (mockFirestoreClient.getAll as Mock).mockResolvedValue([]);
+
+      const result = await firestoreUserRepository.getUsersByEvent(eventId);
+
+      expect(promptsRepositoryMock.getEventPrompts).toHaveBeenCalledWith(
+        eventId
+      );
+      expect(mockFirestoreClient.getAll).toHaveBeenCalled();
+      expect(result).toEqual([]);
+    });
+  });
 });

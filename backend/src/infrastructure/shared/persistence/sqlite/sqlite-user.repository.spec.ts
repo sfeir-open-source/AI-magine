@@ -150,4 +150,80 @@ describe('SqliteUserRepository', () => {
       expect(sqliteClient.get).toHaveBeenCalled();
     });
   });
+
+  describe('getUsersByEvent', () => {
+    it('should return an array of users participating in a specific event', async () => {
+      vi.spyOn(sqliteClient, 'all').mockResolvedValue([
+        {
+          id: mockUser.id,
+          nickname: mockUser.nickname,
+          hashedEmail: mockUser.email,
+          browserFingerprint: mockUser.browserFingerprint,
+          allowContact: mockUser.allowContact,
+        },
+      ]);
+
+      const result = await repository.getUsersByEvent('event-id');
+
+      expect(result).toEqual([mockUser]);
+      expect(sqliteClient.all).toHaveBeenCalledWith({
+        sql: expect.stringContaining(
+          'SELECT id, nickname, hashedEmail, browserFingerprint, allowContact'
+        ),
+        params: { 1: 'event-id' },
+      });
+    });
+
+    it('should return an empty array if no users are linked to a specific event', async () => {
+      vi.spyOn(sqliteClient, 'all').mockResolvedValue([]);
+
+      const result = await repository.getUsersByEvent('event-id');
+
+      expect(result).toEqual([]);
+      expect(sqliteClient.all).toHaveBeenCalledWith({
+        sql: expect.stringContaining(
+          'SELECT id, nickname, hashedEmail, browserFingerprint, allowContact'
+        ),
+        params: { 1: 'event-id' },
+      });
+    });
+  });
+
+  describe('SqliteUserRepository - getUsersByEvent', () => {
+    it('should return an array of users participating in a specific event', async () => {
+      vi.spyOn(sqliteClient, 'all').mockResolvedValue([
+        {
+          id: mockUser.id,
+          nickname: mockUser.nickname,
+          hashedEmail: mockUser.email,
+          browserFingerprint: mockUser.browserFingerprint,
+          allowContact: mockUser.allowContact,
+        },
+      ]);
+
+      const result = await repository.getUsersByEvent('event-id');
+
+      expect(result).toEqual([mockUser]);
+      expect(sqliteClient.all).toHaveBeenCalledWith({
+        sql: expect.stringContaining(
+          'SELECT id, nickname, hashedEmail, browserFingerprint, allowContact'
+        ),
+        params: { 1: 'event-id' },
+      });
+    });
+
+    it('should return an empty array if no users are linked to a specific event', async () => {
+      vi.spyOn(sqliteClient, 'all').mockResolvedValue([]);
+
+      const result = await repository.getUsersByEvent('event-id');
+
+      expect(result).toEqual([]);
+      expect(sqliteClient.all).toHaveBeenCalledWith({
+        sql: expect.stringContaining(
+          'SELECT id, nickname, hashedEmail, browserFingerprint, allowContact'
+        ),
+        params: { 1: 'event-id' },
+      });
+    });
+  });
 });

@@ -13,6 +13,8 @@ export interface UserRepository {
 
   countUsersByEvent(eventId: string): Promise<number>;
 
+  getUsersByEvent(eventId: string): Promise<User[]>;
+
   getUserByUserName(userName: string): Promise<User | undefined>;
 }
 

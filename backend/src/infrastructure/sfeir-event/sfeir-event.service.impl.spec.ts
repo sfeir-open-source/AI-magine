@@ -1,21 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { SfeirEventServiceImpl } from './sfeir-event.service.impl';
-import {
-  SFEIR_EVENT_REPOSITORY,
-  SfeirEventRepository,
-} from '@/core/domain/sfeir-event/sfeir-event.repository';
-import {
-  USER_REPOSITORY,
-  UserRepository,
-} from '@/core/domain/user/user.repository';
-import {
-  ImageRepository,
-  IMAGES_REPOSITORY,
-} from '@/core/domain/image/image.repository';
-import {
-  IMAGE_GENERATION_STATUS_REPOSITORY,
-  ImageGenerationStatusRepository,
-} from '@/core/domain/image-generation/image-generation-status.repository';
+import { SfeirEventRepository } from '@/core/domain/sfeir-event/sfeir-event.repository';
+import { UserRepository } from '@/core/domain/user/user.repository';
+import { ImageRepository } from '@/core/domain/image/image.repository';
+import { ImageGenerationStatusRepository } from '@/core/domain/image-generation/image-generation-status.repository';
+import { NotFoundException } from '@nestjs/common';
+import { EncryptionService } from '@/infrastructure/shared/encryption/encryption.service';
 
 describe('SfeirEventService', () => {
   let service: SfeirEventServiceImpl;
@@ -23,6 +12,7 @@ describe('SfeirEventService', () => {
   let userRepositoryMock: UserRepository;
   let imageRepositoryMock: ImageRepository;
   let imageGenerationStatusRepository: ImageGenerationStatusRepository;
+  let encryptionServiceMock: EncryptionService;
 
   beforeEach(async () => {
     repositoryMock = {
@@ -34,6 +24,7 @@ describe('SfeirEventService', () => {
 
     userRepositoryMock = {
       countUsersByEvent: vi.fn(),
+      getUsersByEvent: vi.fn(),
     } as unknown as UserRepository;
 
     imageRepositoryMock = {
@@ -44,21 +35,18 @@ describe('SfeirEventService', () => {
       countStatusByEvent: vi.fn(),
     } as unknown as ImageGenerationStatusRepository;
 
-    // TODO: remove testing module
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        SfeirEventServiceImpl,
-        { provide: SFEIR_EVENT_REPOSITORY, useValue: repositoryMock },
-        { provide: USER_REPOSITORY, useValue: userRepositoryMock },
-        { provide: IMAGES_REPOSITORY, useValue: imageRepositoryMock },
-        {
-          provide: IMAGE_GENERATION_STATUS_REPOSITORY,
-          useValue: imageGenerationStatusRepository,
-        },
-      ],
-    }).compile();
+    encryptionServiceMock = {
+      encryptEmail: vi.fn().mockReturnValue('encrypted'),
+      decryptEmail: vi.fn().mockReturnValue('decrypted'),
+    } as unknown as EncryptionService;
 
-    service = module.get<SfeirEventServiceImpl>(SfeirEventServiceImpl);
+    service = new SfeirEventServiceImpl(
+      repositoryMock,
+      userRepositoryMock,
+      imageRepositoryMock,
+      imageGenerationStatusRepository,
+      encryptionServiceMock
+    );
   });
 
   it('should retrieve all events using getSfeirEvents', async () => {
@@ -143,5 +131,37 @@ describe('SfeirEventService', () => {
     expect(
       imageGenerationStatusRepository.countStatusByEvent
     ).toHaveBeenCalledTimes(1);
+  });
+
+  it('should retrieve the users for a specific event using getEventUsers', async () => {
+    const mockEvent = { id: '1', name: 'Event A' };
+    const mockUsers = [
+      { id: 'user1', name: 'User A', email: 'decrypted' },
+      { id: 'user2', name: 'User B', email: 'decrypted' },
+    ];
+
+    repositoryMock.getSfeirEvent = vi.fn().mockResolvedValue(mockEvent);
+    userRepositoryMock.getUsersByEvent = vi.fn().mockResolvedValue(mockUsers);
+
+    const result = await service.getEventUsers('1');
+
+    expect(repositoryMock.getSfeirEvent).toHaveBeenCalledWith('1');
+    expect(userRepositoryMock.getUsersByEvent).toHaveBeenCalledWith('1');
+    expect(result).toEqual(mockUsers);
+  });
+
+  it('should throw NotFoundException if event is not found when retrieving users', async () => {
+    repositoryMock.getSfeirEvent = vi.fn().mockResolvedValue(undefined);
+
+    await expect(
+      service.getEventUsers('non-existing-event-id')
+    ).rejects.toThrowError(
+      new NotFoundException('Event non-existing-event-id not found')
+    );
+
+    expect(repositoryMock.getSfeirEvent).toHaveBeenCalledWith(
+      'non-existing-event-id'
+    );
+    expect(userRepositoryMock.getUsersByEvent).not.toHaveBeenCalled();
   });
 });

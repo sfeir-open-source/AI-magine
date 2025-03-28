@@ -111,7 +111,7 @@ export const EventDetailPage = () => {
             </div>
           </CardContent>
         </Card>
-        <EventMetrics />
+        <EventMetrics eventId={params.eventId ?? ''} />
       </div>
       <EventSelectedImages eventId={params.eventId ?? ''} />
     </div>

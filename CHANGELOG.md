@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/sfeir-open-source/AI-magine/compare/v1.3.0...v1.4.0) (2025-03-28)
+
+
+### Features
+
+* **backend:** retrieve users per event ([#90](https://github.com/sfeir-open-source/AI-magine/issues/90)) ([7c4b627](https://github.com/sfeir-open-source/AI-magine/commit/7c4b6277e5693ca67a1a51739890494745f50b2d))
+
 # [1.3.0](https://github.com/sfeir-open-source/AI-magine/compare/v1.2.0...v1.3.0) (2025-03-28)
 
 

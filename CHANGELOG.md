@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/sfeir-open-source/AI-magine/compare/v1.2.0...v1.3.0) (2025-03-28)
+
+
+### Features
+
+* **backend:** allow user email retrieve using event id and username ([#89](https://github.com/sfeir-open-source/AI-magine/issues/89)) ([6d44e4f](https://github.com/sfeir-open-source/AI-magine/commit/6d44e4f368dbd4401c9f933ced200b3f8788bca5))
+
 # [1.2.0](https://github.com/thomassloboda/AI-magine/compare/v1.1.1...v1.2.0) (2025-03-21)
 
 

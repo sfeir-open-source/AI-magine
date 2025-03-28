@@ -300,4 +300,67 @@ describe('FirestoreUserRepository', () => {
       expect(userCount).toBe(0);
     });
   });
+
+  describe('getUserByUserName', () => {
+    it('returns undefined if no user with the specified email exists', async () => {
+      (mockUserCollection.get as Mock).mockResolvedValue({
+        empty: true,
+      });
+
+      const fakeUsername = 'JohnDoe';
+      const result =
+        await firestoreUserRepository.getUserByUserName(fakeUsername);
+
+      expect(result).toBeUndefined();
+      expect(mockUserCollection.where).toHaveBeenCalledWith(
+        'nickname',
+        '==',
+        fakeUsername
+      );
+    });
+
+    it('returns found user for email', async () => {
+      const fakeUsername = 'JohnDoe';
+
+      (mockUserCollection.get as Mock).mockResolvedValue({
+        empty: false,
+        docs: [
+          {
+            id: '1',
+            get: vi.fn((property: string) => {
+              switch (property) {
+                case 'hashedEmail':
+                  return 'johndoe@example.com';
+                case 'nickname':
+                  return fakeUsername;
+                case 'browserFingerprint':
+                  return 'fp';
+                case 'allowContact':
+                  return false;
+              }
+            }),
+          },
+        ],
+      });
+
+      const result =
+        await firestoreUserRepository.getUserByUserName(fakeUsername);
+
+      expect(result).toEqual(
+        User.from({
+          id: '1',
+          email: 'johndoe@example.com',
+          nickname: fakeUsername,
+          browserFingerprint: 'fp',
+          allowContact: false,
+        })
+      );
+
+      expect(mockUserCollection.where).toHaveBeenCalledWith(
+        'nickname',
+        '==',
+        fakeUsername
+      );
+    });
+  });
 });

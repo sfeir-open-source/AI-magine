@@ -106,6 +106,40 @@ describe('SqliteUserRepository', () => {
     });
   });
 
+  describe('getUserByUserName', () => {
+    it('should return the user when the username exists in the database', async () => {
+      vi.spyOn(sqliteClient, 'get').mockResolvedValue({
+        id: mockUser.id,
+        nickname: mockUser.nickname,
+        hashedEmail: mockUser.email,
+        browserFingerprint: mockUser.browserFingerprint,
+        allowContact: mockUser.allowContact,
+      });
+
+      const result = await repository.getUserByUserName(mockUser.nickname);
+      expect(result).toEqual(mockUser);
+      expect(sqliteClient.get).toHaveBeenCalledWith({
+        sql: expect.stringContaining(
+          'SELECT id, nickname, hashedEmail, browserFingerprint, allowContact'
+        ),
+        params: { 1: mockUser.nickname },
+      });
+    });
+
+    it('should return undefined when the username does not exist in the database', async () => {
+      vi.spyOn(sqliteClient, 'get').mockResolvedValue(undefined);
+
+      const result = await repository.getUserByUserName(mockUser.nickname);
+      expect(result).toBeUndefined();
+      expect(sqliteClient.get).toHaveBeenCalledWith({
+        sql: expect.stringContaining(
+          'SELECT id, nickname, hashedEmail, browserFingerprint, allowContact'
+        ),
+        params: { 1: mockUser.nickname },
+      });
+    });
+  });
+
   describe('countUsersByEvent', () => {
     it('should return the count of users by event', async () => {
       vi.spyOn(sqliteClient, 'get').mockResolvedValue({ count: 2 });

@@ -96,4 +96,30 @@ export class SqliteUserRepository
     });
     return count ?? 0;
   }
+
+  async getUserByUserName(username: string): Promise<User | undefined> {
+    const storedUser = await this.sqliteClient.get<{
+      id: string;
+      nickname: string;
+      hashedEmail: string;
+      browserFingerprint: string;
+      allowContact: boolean;
+    }>({
+      sql: `SELECT id, nickname, hashedEmail, browserFingerprint, allowContact
+            FROM users
+            WHERE nickname = ?1;
+      `,
+      params: {
+        1: username,
+      },
+    });
+    if (!storedUser) return undefined;
+    return User.from({
+      id: storedUser.id,
+      email: storedUser.hashedEmail,
+      nickname: storedUser.nickname,
+      browserFingerprint: storedUser.browserFingerprint,
+      allowContact: storedUser.allowContact,
+    });
+  }
 }

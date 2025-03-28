@@ -1,6 +1,6 @@
 import { UserController } from './user.controller';
 import { Response } from 'express';
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, NotFoundException } from '@nestjs/common';
 import { UserService } from '@/core/application/user/user.service';
 import { User } from '@/core/domain/user/user';
 
@@ -14,6 +14,7 @@ describe('UserController', () => {
       getUserByEmail: vi.fn(),
       create: vi.fn(),
       getUserRemainingPromptsByEvent: vi.fn(),
+      getUserEmailByUserNameAndEvent: vi.fn(),
     } as unknown as UserService;
 
     response = {
@@ -96,6 +97,58 @@ describe('UserController', () => {
         allowed: 3,
         spent: 2,
         remaining: 1,
+      });
+    });
+
+    describe('getUserEmailByUsername', () => {
+      it('should return the email of the user given username and event ID', async () => {
+        const userName = 'testUser';
+        const eventId = 'event123';
+        const mockEmail = 'test@example.com';
+
+        vi.mocked(userService.getUserEmailByUserNameAndEvent).mockResolvedValue(
+          mockEmail
+        );
+
+        const result = await controller.getUserEmailByUsername(
+          userName,
+          eventId
+        );
+
+        expect(userService.getUserEmailByUserNameAndEvent).toHaveBeenCalledWith(
+          userName,
+          eventId
+        );
+        expect(result).toBe(mockEmail);
+      });
+
+      it('should handle an error thrown by the service', async () => {
+        const userName = 'testUser';
+        const eventId = 'event123';
+
+        vi.mocked(userService.getUserEmailByUserNameAndEvent).mockRejectedValue(
+          new NotFoundException('User not found')
+        );
+
+        await expect(
+          controller.getUserEmailByUsername(userName, eventId)
+        ).rejects.toThrow(new NotFoundException('User not found'));
+        expect(userService.getUserEmailByUserNameAndEvent).toHaveBeenCalledWith(
+          userName,
+          eventId
+        );
+
+        vi.mocked(userService.getUserEmailByUserNameAndEvent).mockRejectedValue(
+          new NotFoundException('Event not found')
+        );
+
+        await expect(
+          controller.getUserEmailByUsername(userName, eventId)
+        ).rejects.toThrow(new NotFoundException('Event not found'));
+        expect(userService.getUserEmailByUserNameAndEvent).toHaveBeenCalledWith(
+          userName,
+          eventId
+        );
       });
     });
   });

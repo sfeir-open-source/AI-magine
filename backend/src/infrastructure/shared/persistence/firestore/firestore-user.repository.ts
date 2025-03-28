@@ -92,4 +92,14 @@ export class FirestoreUserRepository implements IFirestoreUserRepository {
 
     return uniqueUserIds.length;
   }
+
+  async getUserByUserName(username: string): Promise<User | undefined> {
+    const searchedUser = await this.userCollection
+      .where('nickname', '==', username)
+      .get();
+    if (searchedUser.empty) {
+      return undefined;
+    }
+    return this.fromQueryDocumentSnapshotToUser(searchedUser.docs[0]);
+  }
 }

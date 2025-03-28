@@ -6,6 +6,8 @@ import { Image } from '@/core/domain/image/image';
 import { SfeirEventRepository } from '@/core/domain/sfeir-event/sfeir-event.repository';
 import { SfeirEvent } from '@/core/domain/sfeir-event/sfeir-event';
 import { UserRepository } from '@/core/domain/user/user.repository';
+import { expect, Mock } from 'vitest';
+import { NotFoundException } from '@nestjs/common';
 
 const mockUser = User.from({
   id: '1',
@@ -19,6 +21,7 @@ const mockUserRepository = {
   getUserIdByEmail: vi.fn().mockResolvedValue('123'),
   getUserByEmail: vi.fn(),
   checkExistsById: vi.fn(),
+  getUserByUserName: vi.fn(),
 };
 
 describe('UserService', () => {
@@ -30,6 +33,7 @@ describe('UserService', () => {
   beforeEach(() => {
     encryptionServiceMock = {
       encryptEmail: vi.fn().mockReturnValue('encrypted'),
+      decryptEmail: vi.fn().mockReturnValue('decrypted'),
     } as unknown as EncryptionService;
 
     imagesRepositoryMock = {
@@ -160,6 +164,63 @@ describe('UserService', () => {
         spent: 1,
         remaining: 2,
       });
+    });
+  });
+
+  describe('getUserEmailByUserNameAndEvent', () => {
+    const userName = 'testUser';
+    const eventId = 'testEventId';
+    const userEmail = 'test@example.com';
+
+    it('should return the email of the user when both user and event exist', async () => {
+      const mockEvent = { id: eventId };
+      const mockUser = { userName, email: userEmail };
+
+      (eventRepositoryMock.getSfeirEvent as Mock).mockResolvedValue(mockEvent);
+      (mockUserRepository.getUserByUserName as Mock).mockResolvedValue(
+        mockUser
+      );
+
+      const result = await userService.getUserEmailByUserNameAndEvent(
+        userName,
+        eventId
+      );
+
+      expect(result).toBe('decrypted');
+      expect(eventRepositoryMock.getSfeirEvent).toHaveBeenCalledWith(eventId);
+      expect(mockUserRepository.getUserByUserName).toHaveBeenCalledWith(
+        userName
+      );
+      expect(encryptionServiceMock.decryptEmail).toHaveBeenCalledWith(
+        userEmail
+      );
+    });
+
+    it('should throw NotFoundException if the event does not exist', async () => {
+      (eventRepositoryMock.getSfeirEvent as Mock).mockResolvedValue(null);
+
+      await expect(
+        userService.getUserEmailByUserNameAndEvent(userName, eventId)
+      ).rejects.toThrow(NotFoundException);
+
+      expect(eventRepositoryMock.getSfeirEvent).toHaveBeenCalledWith(eventId);
+      expect(mockUserRepository.getUserByUserName).not.toHaveBeenCalled();
+    });
+
+    it('should throw NotFoundException if the user does not exist', async () => {
+      const mockEvent = { id: eventId };
+
+      (eventRepositoryMock.getSfeirEvent as Mock).mockResolvedValue(mockEvent);
+      (mockUserRepository.getUserByUserName as Mock).mockResolvedValue(null);
+
+      await expect(
+        userService.getUserEmailByUserNameAndEvent(userName, eventId)
+      ).rejects.toThrow(NotFoundException);
+
+      expect(eventRepositoryMock.getSfeirEvent).toHaveBeenCalledWith(eventId);
+      expect(mockUserRepository.getUserByUserName).toHaveBeenCalledWith(
+        userName
+      );
     });
   });
 });

@@ -70,7 +70,43 @@ class EventsApi implements EventRepository {
 
       return response.data;
     } catch {
-      throw new Error('Failed to get promoted images for event');
+      throw new Error('Failed to get promoted images for the event');
+    }
+  }
+
+  async getCountEventGenerationRequested(eventId: string) {
+    try {
+      const response = await this.http.get<number>(
+        `/events/${eventId}/prompt/generation-statuses/requests/count`
+      );
+
+      return response.data;
+    } catch {
+      throw new Error('Failed to get generation requests count for the event');
+    }
+  }
+
+  async getCountEventGenerationDone(eventId: string) {
+    try {
+      const response = await this.http.get<number>(
+        `/events/${eventId}/prompt/generation-statuses/done/count`
+      );
+
+      return response.data;
+    } catch {
+      throw new Error('Failed to get generated images count for the event');
+    }
+  }
+
+  async getCountEventGenerationError(eventId: string) {
+    try {
+      const response = await this.http.get<number>(
+        `/events/${eventId}/prompt/generation-statuses/error/count`
+      );
+
+      return response.data;
+    } catch {
+      throw new Error('Failed to get errors count for the event');
     }
   }
 }

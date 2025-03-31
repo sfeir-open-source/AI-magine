@@ -21,4 +21,10 @@ export interface EventRepository {
   createEvent(payload: CreateEventPayload): Promise<Event>;
 
   getPromotedImagesForEvent(eventId: string): Promise<PromotedImage[]>;
+
+  getCountEventGenerationRequested(eventId: string): Promise<number>;
+
+  getCountEventGenerationDone(eventId: string): Promise<number>;
+
+  getCountEventGenerationError(eventId: string): Promise<number>;
 }
